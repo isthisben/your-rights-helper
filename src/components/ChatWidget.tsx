@@ -393,21 +393,50 @@ function useSpeechRecognition() {
   return { startListening, stopListening, isListening, transcript, supported };
 }
 
+// Generate check-in prompts based on journey progress
+function getCheckInPrompts(caseState: ReturnType<typeof useApp>['caseState']): string[] {
+  const prompts: string[] = [];
+  const progress = caseState.journeyProgress || {};
+  
+  // If ACAS started but not completed, check in about certificate
+  if (caseState.acasStatus === 'started' && !progress.acas?.completed) {
+    prompts.push(t('journey.checkIn.acasComplete'));
+  }
+  
+  // If ACAS completed but ET1 not submitted
+  if (progress.acas?.completed && !progress.et1?.completed) {
+    prompts.push(t('journey.checkIn.et1Submitted'));
+  }
+  
+  return prompts;
+}
+
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
+  const { caseState } = useApp();
+  
+  // Generate initial message with check-in prompts
+  const getInitialMessages = (): Message[] => {
+    const checkInPrompts = getCheckInPrompts(caseState);
+    let greeting = t('chat.greeting') + '\n\n' + t('chat.disclaimer');
+    
+    if (checkInPrompts.length > 0) {
+      greeting += '\n\n' + checkInPrompts.join('\n');
+    }
+    
+    return [{
       id: '1',
       role: 'assistant',
-      content: t('chat.greeting') + '\n\n' + t('chat.disclaimer'),
+      content: greeting,
       timestamp: new Date(),
-    }
-  ]);
+    }];
+  };
+  
+  const [messages, setMessages] = useState<Message[]>(getInitialMessages);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { caseState } = useApp();
   
   const { speak, stop, isSpeaking, isLoading: ttsLoading } = useSpeechSynthesis();
   const { startListening, stopListening, isListening, transcript, supported: sttSupported } = useSpeechRecognition();
