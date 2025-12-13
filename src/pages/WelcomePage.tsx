@@ -7,6 +7,7 @@ import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { ChatWidget } from '@/components/ChatWidget';
 import { clearChatMessages } from '@/lib/chatStorage';
+import DotGrid from '@/components/DotGrid';
 import { Scale, ArrowRight, AlertCircle, Shield, Clock } from 'lucide-react';
 
 export default function WelcomePage() {
@@ -24,7 +25,22 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Animated Dot Grid Background - only on welcome page */}
+      <DotGrid 
+        dotSize={12}
+        gap={28}
+        baseColor="#8B6F47"
+        activeColor="#B8956A"
+        proximity={120}
+        speedTrigger={80}
+        shockRadius={200}
+        shockStrength={4}
+        className="welcome-dot-grid"
+      />
+      
+      {/* Content overlay with subtle background */}
+      <div className="relative z-10 min-h-screen bg-background/60 flex flex-col">
       {/* Skip link */}
       <a href="#main-content" className="skip-link">
         {t('app.skipToMain')}
@@ -117,6 +133,7 @@ export default function WelcomePage() {
 
       <BottomNav />
       <ChatWidget />
+      </div>
     </div>
   );
 }
