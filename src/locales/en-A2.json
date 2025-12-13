@@ -73,6 +73,9 @@
     "upcoming": "Coming up",
     "markComplete": "Mark as done",
     "edit": "Edit",
+    "previous": "Previous",
+    "next": "Next",
+    "stepOf": "Step {{current}} of {{total}}",
     "showChecklist": "Show tasks",
     "hideChecklist": "Hide tasks",
     "progress": {
