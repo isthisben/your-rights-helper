@@ -13,11 +13,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const GREENPT_API_KEY = process.env.GREENPT_API_KEY;
+  // Get and trim API key (in case there's whitespace)
+  let GREENPT_API_KEY = process.env.GREENPT_API_KEY;
+  if (GREENPT_API_KEY) {
+    GREENPT_API_KEY = GREENPT_API_KEY.trim();
+  }
+  
   if (!GREENPT_API_KEY) {
     console.error('GREENPT_API_KEY is not configured');
-    return res.status(500).json({ error: 'Chat service not configured' });
+    return res.status(500).json({ 
+      error: 'Chat service not configured',
+      message: 'GREENPT_API_KEY environment variable is missing. Please add it in Vercel project settings.'
+    });
   }
+  
+  // Log API key status (without exposing the key)
+  console.log('GREENPT_API_KEY found:', GREENPT_API_KEY ? `Yes (${GREENPT_API_KEY.length} chars)` : 'No');
 
   try {
     const { messages } = req.body;
@@ -69,6 +80,15 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
       const errorText = await response.text();
       console.error('GreenPT API error:', response.status, errorText);
       
+      // Handle specific error codes
+      if (response.status === 401 || response.status === 403) {
+        return res.status(401).json({ 
+          error: 'Invalid API key',
+          message: 'The GreenPT API key is invalid or expired. Please check your GREENPT_API_KEY in Vercel environment variables.',
+          details: errorText.slice(0, 200)
+        });
+      }
+      
       if (response.status === 429) {
         return res.status(429).json({ 
           error: 'Too many requests. Please wait a moment and try again.' 
@@ -82,9 +102,9 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
       }
 
       const safeErrorMessage = errorText || 'Unknown error from chat provider';
-      return res.status(500).json({ 
+      return res.status(response.status).json({ 
         error: `Failed to get response from chat service (status ${response.status}).`,
-        details: safeErrorMessage.slice(0, 500),
+        message: safeErrorMessage.slice(0, 500),
       });
     }
 

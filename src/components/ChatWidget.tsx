@@ -72,9 +72,11 @@ async function streamChat({
 
     if (!resp.ok) {
       let errorText = 'Unknown error';
+      let errorMessage = '';
       try {
         const errorData = await resp.json();
         errorText = errorData.error || errorData.message || errorData.details || JSON.stringify(errorData);
+        errorMessage = errorData.message || errorData.error || '';
       } catch {
         try {
           errorText = await resp.text();
@@ -82,7 +84,13 @@ async function streamChat({
           errorText = `HTTP ${resp.status}`;
         }
       }
-      throw new Error(errorText);
+      
+      // Provide specific error messages for common issues
+      if (resp.status === 401 || resp.status === 403) {
+        throw new Error(errorMessage || 'Invalid API key. Please check your Vercel environment variables.');
+      }
+      
+      throw new Error(errorMessage || errorText);
     }
 
     if (!resp.body) {

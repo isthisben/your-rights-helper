@@ -25,9 +25,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+  // Get and trim API key (in case there's whitespace)
+  let ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+  if (ELEVENLABS_API_KEY) {
+    ELEVENLABS_API_KEY = ELEVENLABS_API_KEY.trim();
+  }
+  
   if (!ELEVENLABS_API_KEY) {
-    return res.status(500).json({ error: 'Text-to-speech service not configured' });
+    return res.status(500).json({ 
+      error: 'Text-to-speech service not configured',
+      message: 'ELEVENLABS_API_KEY environment variable is missing. Please add it in Vercel project settings.'
+    });
   }
 
   try {
