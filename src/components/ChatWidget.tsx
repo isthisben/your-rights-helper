@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/context/AppContext';
 import { ContactHumanButton } from '@/components/ContactHumanButton';
+import { logger } from '@/lib/logger';
 import { 
   MessageCircle, 
   X, 
@@ -58,8 +59,8 @@ async function streamChat({
 }) {
   try {
     const chatUrl = getChatUrl();
-    console.log('Making request to:', chatUrl);
-    console.log('Messages count:', messages.length);
+    logger.debug('Making request to:', chatUrl);
+    logger.debug('Messages count:', messages.length);
     
     const resp = await fetch(chatUrl, {
       method: 'POST',
@@ -69,12 +70,12 @@ async function streamChat({
       body: JSON.stringify({ messages }),
     }).catch((fetchError) => {
       // Network errors (CORS, connection refused, etc.)
-      console.error('Fetch error:', fetchError);
+      logger.error('Fetch error:', fetchError);
       throw new Error(`Network error: ${fetchError.message}. Please check if the API endpoint is accessible.`);
     });
     
-    console.log('Response received. Status:', resp.status, 'OK:', resp.ok);
-    console.log('Content-Type:', resp.headers.get('content-type'));
+    logger.debug('Response received. Status:', resp.status, 'OK:', resp.ok);
+    logger.debug('Content-Type:', resp.headers.get('content-type'));
 
     if (!resp.ok) {
       let errorText = 'Unknown error';
@@ -110,13 +111,13 @@ async function streamChat({
     let totalBytes = 0;
     let lineCount = 0;
 
-    console.log('Starting to read stream, content-type:', resp.headers.get('content-type'));
+    logger.debug('Starting to read stream, content-type:', resp.headers.get('content-type'));
 
     while (true) {
       const { done, value } = await reader.read();
       
       if (done) {
-        console.log('Stream reading completed. Total bytes:', totalBytes, 'Buffer length:', textBuffer.length, 'Lines processed:', lineCount);
+        logger.debug('Stream reading completed. Total bytes:', totalBytes, 'Buffer length:', textBuffer.length, 'Lines processed:', lineCount);
         break;
       }
       
@@ -130,7 +131,7 @@ async function streamChat({
         textBuffer += chunk;
         // Log first chunk to see what we're receiving
         if (totalBytes === value.length) {
-          console.log('First chunk from API (first 500 chars):', chunk.substring(0, 500));
+          logger.debug('First chunk from API (first 500 chars):', chunk.substring(0, 500));
         }
       }
 
@@ -144,7 +145,7 @@ async function streamChat({
 
         // Skip SSE comments
         if (trimmedLine.startsWith(':')) {
-          console.log('Skipping SSE comment:', trimmedLine.substring(0, 50));
+          logger.debug('Skipping SSE comment:', trimmedLine.substring(0, 50));
           continue;
         }
 
@@ -153,7 +154,7 @@ async function streamChat({
           const jsonStr = trimmedLine.slice(6).trim();
           
           if (jsonStr === '[DONE]') {
-            console.log('Received [DONE] marker');
+            logger.debug('Received [DONE] marker');
             continue;
           }
 
@@ -184,16 +185,16 @@ async function streamChat({
             // Also check for finish_reason to see if stream is ending
             const finishReason = parsed.choices?.[0]?.finish_reason;
             if (finishReason) {
-              console.log('Stream finished with reason:', finishReason);
+              logger.debug('Stream finished with reason:', finishReason);
             }
 
             if (content) {
               receivedAnyContent = true;
-              console.log('✓ Received content chunk (' + content.length + ' chars):', content.substring(0, 100));
+              logger.debug('✓ Received content chunk (' + content.length + ' chars):', content.substring(0, 100));
               onDelta(content);
             } else {
               // Log when we get a data line but no content
-              console.log('⚠ Data line parsed but no content found. Structure:', {
+              logger.debug('⚠ Data line parsed but no content found. Structure:', {
                 hasChoices: !!parsed.choices,
                 choicesLength: parsed.choices?.length,
                 hasDelta: !!parsed.choices?.[0]?.delta,
@@ -203,7 +204,7 @@ async function streamChat({
             }
           } catch (parseError) {
             // Log parse errors to help debug
-            console.warn('❌ Failed to parse JSON. Line:', jsonStr.substring(0, 200), 'Error:', parseError);
+            logger.warn('❌ Failed to parse JSON. Line:', jsonStr.substring(0, 200), 'Error:', parseError);
           }
         } else {
           // Try parsing line directly as JSON (non-SSE format)
@@ -217,13 +218,13 @@ async function streamChat({
             
             if (content) {
               receivedAnyContent = true;
-              console.log('✓ Received content (non-SSE format):', content.substring(0, 100));
+              logger.debug('✓ Received content (non-SSE format):', content.substring(0, 100));
               onDelta(content);
             }
           } catch {
             // Not JSON, might be plain text - log it
             if (trimmedLine.length > 0) {
-              console.log('⚠ Non-JSON line received:', trimmedLine.substring(0, 100));
+              logger.debug('⚠ Non-JSON line received:', trimmedLine.substring(0, 100));
             }
           }
         }
@@ -254,7 +255,7 @@ async function streamChat({
 
     if (!receivedAnyContent) {
       // Try to get more info about what went wrong
-      console.error('No content received from chat stream');
+      logger.error('No content received from chat stream');
       onError('No content received from chat service. Please check:\n1. The API is deployed correctly\n2. GREENPT_API_KEY is set in Vercel\n3. The API key is valid\n\nCheck browser console for more details.');
       return;
     }

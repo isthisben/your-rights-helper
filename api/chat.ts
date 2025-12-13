@@ -27,13 +27,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
   
-  // Log API key status (without exposing the key)
-  console.log('GREENPT_API_KEY found:', GREENPT_API_KEY ? `Yes (${GREENPT_API_KEY.length} chars)` : 'No');
-
   try {
     const { messages } = req.body;
-    
-    console.log('Received chat request with', messages?.length || 0, 'messages');
 
     if (!messages || !Array.isArray(messages)) {
       console.error('Invalid messages format:', typeof messages);
@@ -54,7 +49,6 @@ IMPORTANT RULES:
 
 Start responses with empathy when appropriate. Keep answers concise and actionable.`;
 
-    console.log('Calling GreenPT API...');
     const response = await fetch('https://api.greenpt.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -74,12 +68,6 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
       }),
     });
 
-    console.log('GreenPT API response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-    console.log('Response body exists:', !!response.body);
-    console.log('Response body type:', response.body?.constructor?.name);
-    console.log('Response bodyUsed:', (response as any).bodyUsed);
-    
     // Check if body was already consumed
     if ((response as any).bodyUsed) {
       console.error('Response body was already consumed!');
@@ -130,8 +118,6 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no'); // Disable buffering
 
-    console.log('Starting to stream response...');
-    console.log('Response body is ReadableStream:', response.body instanceof ReadableStream);
 
     // In Vercel Node.js runtime, we need to handle the stream properly
     // The issue might be that the stream completes immediately
@@ -160,14 +146,13 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
         try {
           readResult = await Promise.race([readPromise, timeoutPromise]) as ReadableStreamReadResult<Uint8Array>;
         } catch (timeoutError) {
-          console.error('Read timeout after 30s, attempts:', readAttempts);
+          // Timeout handled silently, will break loop
           break;
         }
         
         const { done, value } = readResult;
         
         if (done) {
-          console.log(`Stream reading done after ${readAttempts} attempts. Chunks: ${chunkCount}, Bytes: ${totalBytes}, Had data: ${hasReceivedData}`);
           break;
         }
         
@@ -178,39 +163,22 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
           
           if (chunk && chunk.length > 0) {
             chunkCount++;
-            // Log first few chunks to verify data is coming through
-            if (chunkCount <= 3) {
-              console.log(`✓ Chunk ${chunkCount} received! Length: ${chunk.length}, First 200 chars:`, chunk.substring(0, 200));
-            }
             res.write(chunk);
             // Force flush (important for Vercel)
             if (typeof (res as any).flush === 'function') {
               (res as any).flush();
             }
-          } else {
-            if (chunkCount < 5) {
-              console.warn(`Chunk ${chunkCount + 1}: Decoded chunk is empty despite value length:`, value.length);
-            }
           }
         } else {
-          if (readAttempts <= 10) {
-            console.warn(`Read attempt ${readAttempts}: Reader returned no value or empty value`);
-          }
           // If we've tried many times with no data, break
           if (readAttempts > 100 && !hasReceivedData) {
-            console.error('⚠️ No data received after 100 attempts, breaking');
             break;
           }
         }
       }
       
-      if (readAttempts >= maxReadAttempts) {
-        console.error('⚠️ Hit max read attempts limit!');
-      }
-      
       if (!hasReceivedData) {
-        console.error('⚠️ No data received from GreenPT stream despite 200 status!');
-        // Try to get error info - but we can't read the body again
+        console.error('No data received from GreenPT stream despite 200 status');
         return res.status(500).json({ 
           error: 'No data received from chat service',
           message: 'The API returned successfully but no content was streamed. This might be a GreenPT API issue or streaming format problem.',
@@ -223,7 +191,6 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
       }
       
       // Finalize the stream
-      console.log('✓ Ending response stream. Total chunks sent:', chunkCount, 'Total bytes:', totalBytes);
       res.end();
     } catch (streamError) {
       console.error('Stream error:', streamError);

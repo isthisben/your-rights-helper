@@ -22,12 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-
-// Email validation
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+import { isValidEmail } from '@/lib/validation';
 
 const fadeUpVariants = {
   hidden: { opacity: 0, y: 24 },
