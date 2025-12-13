@@ -1,0 +1,21 @@
+{
+  "app": {
+    "title": "Navigator Drepturile Muncii",
+    "subtitle": "Ajutor cu Tribunalul Muncii din UK"
+  },
+  "nav": {
+    "home": "Acasă",
+    "dashboard": "Planul meu",
+    "settings": "Setări"
+  },
+  "welcome": {
+    "title": "Bun venit",
+    "startButton": "Începe"
+  },
+  "common": {
+    "loading": "Se încarcă...",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "close": "Închide"
+  }
+}

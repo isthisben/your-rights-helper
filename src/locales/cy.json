@@ -1,0 +1,21 @@
+{
+  "app": {
+    "title": "Llwybrwr Hawliau Gwaith",
+    "subtitle": "Cymorth gyda Thribiwnlys Cyflogaeth y DU"
+  },
+  "nav": {
+    "home": "Hafan",
+    "dashboard": "Fy Nghynllun",
+    "settings": "Gosodiadau"
+  },
+  "welcome": {
+    "title": "Croeso",
+    "startButton": "Dechrau"
+  },
+  "common": {
+    "loading": "Yn llwytho...",
+    "save": "Cadw",
+    "cancel": "Canslo",
+    "close": "Cau"
+  }
+}
