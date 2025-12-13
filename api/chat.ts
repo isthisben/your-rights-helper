@@ -21,8 +21,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { messages } = req.body;
+    
+    console.log('Received chat request with', messages?.length || 0, 'messages');
 
     if (!messages || !Array.isArray(messages)) {
+      console.error('Invalid messages format:', typeof messages);
       return res.status(400).json({ error: 'Messages array is required' });
     }
 
@@ -40,6 +43,7 @@ IMPORTANT RULES:
 
 Start responses with empathy when appropriate. Keep answers concise and actionable.`;
 
+    console.log('Calling GreenPT API...');
     const response = await fetch('https://api.greenpt.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -58,6 +62,8 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
         stream: true,
       }),
     });
+
+    console.log('GreenPT API response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -86,30 +92,55 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
       return res.status(500).json({ error: 'No response body from chat service' });
     }
 
-    // Stream the response back to the client
+    // Set headers for streaming response BEFORE any writes
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable buffering
 
+    console.log('Starting to stream response...');
+
+    // Get the reader and decoder
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
+    let chunkCount = 0;
 
+    // Stream chunks using a while loop
     try {
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
         
-        const chunk = decoder.decode(value, { stream: true });
-        res.write(chunk);
+        if (done) {
+          console.log('Stream completed. Total chunks:', chunkCount);
+          break;
+        }
+        
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          if (chunk) {
+            chunkCount++;
+            res.write(chunk);
+            // Force flush (important for Vercel)
+            if (typeof (res as any).flush === 'function') {
+              (res as any).flush();
+            }
+          }
+        }
       }
+      
+      // Finalize the stream
+      console.log('Ending response stream');
       res.end();
     } catch (streamError) {
       console.error('Stream error:', streamError);
       if (!res.headersSent) {
-        res.status(500).json({ error: 'Stream error occurred' });
+        return res.status(500).json({ error: 'Stream error occurred' });
+      } else {
+        res.end();
       }
     }
+    
   } catch (error) {
     console.error('Chat function error:', error);
     if (!res.headersSent) {

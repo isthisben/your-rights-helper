@@ -198,8 +198,9 @@ async function streamChat({
     }
 
     if (!receivedAnyContent) {
-      // This might mean the stream format is different or the function returned an error
-      onError('No content received from chat service. The API may not be configured correctly. Please check your Vercel environment variables.');
+      // Try to get more info about what went wrong
+      console.error('No content received from chat stream');
+      onError('No content received from chat service. Please check:\n1. The API is deployed correctly\n2. GREENPT_API_KEY is set in Vercel\n3. The API key is valid\n\nCheck browser console for more details.');
       return;
     }
 
