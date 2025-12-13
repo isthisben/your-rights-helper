@@ -13,66 +13,70 @@
     /* Text size scale - controlled by accessibility */
     --text-scale: 1;
     
-    /* Core palette - Dusty rose base */
-    --background: 0 40% 56%;
-    --foreground: 20 15% 25%;
+    /* Core palette - Warm ivory cream */
+    --background: 35 50% 96%;
+    --foreground: 20 40% 18%;
 
-    --card: 30 50% 96%;
-    --card-foreground: 20 15% 25%;
+    --card: 35 45% 98%;
+    --card-foreground: 20 40% 18%;
 
-    --popover: 30 50% 97%;
-    --popover-foreground: 20 15% 25%;
+    --popover: 35 45% 99%;
+    --popover-foreground: 20 40% 18%;
 
-    /* Primary - Warm coral/peach */
-    --primary: 15 70% 55%;
-    --primary-foreground: 35 40% 98%;
-    --primary-light: 15 60% 94%;
+    /* Primary - Warm terracotta */
+    --primary: 25 45% 50%;
+    --primary-foreground: 35 50% 98%;
+    --primary-light: 25 40% 92%;
 
     /* Secondary - Soft warm sand */
-    --secondary: 35 30% 90%;
-    --secondary-foreground: 20 20% 30%;
+    --secondary: 32 30% 88%;
+    --secondary-foreground: 20 35% 25%;
 
     /* Muted - Warm beige */
-    --muted: 30 25% 88%;
-    --muted-foreground: 20 12% 45%;
+    --muted: 30 25% 90%;
+    --muted-foreground: 20 20% 40%;
 
-    /* Accent - Soft golden yellow */
-    --accent: 45 65% 88%;
-    --accent-foreground: 35 50% 25%;
+    /* Accent - Soft peach */
+    --accent: 20 50% 92%;
+    --accent-foreground: 20 45% 25%;
 
-    /* Destructive - Muted red */
-    --destructive: 0 55% 50%;
+    /* Destructive - Muted warm red */
+    --destructive: 5 50% 48%;
     --destructive-foreground: 0 0% 100%;
 
     /* Status colors - warm tones */
-    --status-ok: 145 40% 42%;
-    --status-ok-bg: 145 35% 94%;
-    --status-ok-border: 145 30% 72%;
+    --status-ok: 145 35% 40%;
+    --status-ok-bg: 145 30% 94%;
+    --status-ok-border: 145 25% 70%;
     
-    --status-warning: 40 80% 50%;
-    --status-warning-bg: 40 70% 94%;
-    --status-warning-border: 40 60% 70%;
+    --status-warning: 35 70% 48%;
+    --status-warning-bg: 35 60% 94%;
+    --status-warning-border: 35 50% 68%;
     
-    --status-urgent: 0 60% 55%;
-    --status-urgent-bg: 0 50% 96%;
-    --status-urgent-border: 0 45% 72%;
+    --status-urgent: 5 55% 50%;
+    --status-urgent-bg: 5 45% 96%;
+    --status-urgent-border: 5 40% 70%;
 
     /* Borders & inputs - warm tones */
-    --border: 30 20% 86%;
-    --input: 30 20% 86%;
-    --ring: 15 70% 55%;
+    --border: 30 25% 85%;
+    --input: 30 25% 85%;
+    --ring: 25 45% 50%;
 
     --radius: 1rem;
+    
+    /* Header color - Warm camel/tan */
+    --header: 30 30% 62%;
+    --header-foreground: 20 40% 18%;
 
     /* Sidebar */
-    --sidebar-background: 35 35% 98%;
-    --sidebar-foreground: 20 15% 25%;
-    --sidebar-primary: 15 70% 55%;
-    --sidebar-primary-foreground: 35 40% 98%;
-    --sidebar-accent: 45 65% 90%;
-    --sidebar-accent-foreground: 35 50% 25%;
-    --sidebar-border: 30 20% 86%;
-    --sidebar-ring: 15 70% 55%;
+    --sidebar-background: 35 45% 98%;
+    --sidebar-foreground: 20 40% 18%;
+    --sidebar-primary: 25 45% 50%;
+    --sidebar-primary-foreground: 35 50% 98%;
+    --sidebar-accent: 20 50% 92%;
+    --sidebar-accent-foreground: 20 45% 25%;
+    --sidebar-border: 30 25% 85%;
+    --sidebar-ring: 25 45% 50%;
 
     /* Accessibility overrides */
     --font-family: 'Inter', system-ui, -apple-system, sans-serif;
