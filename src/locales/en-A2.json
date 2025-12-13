@@ -73,6 +73,8 @@
     "upcoming": "Coming up",
     "markComplete": "Mark as done",
     "edit": "Edit",
+    "showChecklist": "Show tasks",
+    "hideChecklist": "Hide tasks",
     "certificate": {
       "acas": "ACAS certificate number",
       "et1": "ET1 case number",
@@ -115,7 +117,10 @@
     },
     "checkIn": {
       "acasComplete": "Have you finished with ACAS? Do you have your certificate?",
-      "et1Submitted": "Have you submitted your ET1 form? Enter your case number to track it."
+      "et1Submitted": "Have you submitted your ET1 form? Enter your case number to track it.",
+      "witnessStatement": "Have you started writing your witness statement? I can help you.",
+      "scheduleOfLoss": "Do you need help with your schedule of loss?",
+      "hearingPrep": "Are you ready for your hearing? I can explain what to expect."
     }
   },
   "deadline": {
@@ -144,6 +149,130 @@
     "disclaimer": "I can't give legal advice. I can explain steps and help you organize info.",
     "greeting": "Hello! How can I help you today? I can explain the steps or answer questions about your situation.",
     "thinking": "Thinking..."
+  },
+  "documents": {
+    "prepTitle": "Prepare Documents",
+    "prepDescription": "Create important documents for your case.",
+    "step": "Part {{current}} of {{total}}",
+    "askForHelp": "Ask for help",
+    "help": "Help",
+    "saveDraft": "Save draft",
+    "complete": "Finish",
+    "download": "Download",
+    "start": "Start",
+    "completed": "Done",
+    "draft": "Draft",
+    "witnessStatement": {
+      "title": "Witness Statement",
+      "description": "Your story in your own words",
+      "sections": {
+        "introduction": {
+          "title": "Who you are",
+          "description": "Start with your name, job title, and how long you worked there.",
+          "placeholder": "I am [your name]. I worked at [company] as a [job title] from [date] to [date]."
+        },
+        "background": {
+          "title": "Your job",
+          "description": "Describe your role and what you did at work.",
+          "placeholder": "My job was to... I worked with... My manager was..."
+        },
+        "events": {
+          "title": "What happened",
+          "description": "Explain what happened step by step. Use dates if you can.",
+          "placeholder": "On [date]... Then... After that..."
+        },
+        "impact": {
+          "title": "How it affected you",
+          "description": "Explain how this made you feel and any harm it caused.",
+          "placeholder": "This made me feel... I had to... It affected my..."
+        },
+        "conclusion": {
+          "title": "What you want",
+          "description": "Say what you are asking the tribunal to decide.",
+          "placeholder": "I believe that... I am asking for..."
+        }
+      }
+    },
+    "scheduleOfLoss": {
+      "title": "Schedule of Loss",
+      "description": "Calculate money you lost",
+      "sections": {
+        "pastLoss": {
+          "title": "Money lost so far",
+          "description": "Wages, benefits, or expenses you have already lost.",
+          "placeholder": "Weekly pay: £... x [weeks] = £..."
+        },
+        "futureLoss": {
+          "title": "Future money loss",
+          "description": "Wages or benefits you expect to lose in the future.",
+          "placeholder": "I expect to lose... per week for... weeks."
+        },
+        "benefits": {
+          "title": "Lost benefits",
+          "description": "Pension, health insurance, or other benefits you lost.",
+          "placeholder": "Pension contributions: £... per month"
+        },
+        "injury": {
+          "title": "Hurt feelings",
+          "description": "Compensation for how you were treated (injury to feelings).",
+          "placeholder": "The lower band is £1,000 to £11,000. The middle band is £11,000 to £33,000."
+        }
+      }
+    },
+    "chronology": {
+      "title": "Timeline",
+      "description": "List of important dates",
+      "sections": {
+        "events": {
+          "title": "Important dates",
+          "description": "List each important date and what happened.",
+          "placeholder": "[Date] - Started work\n[Date] - First problem\n[Date] - Complained to manager"
+        }
+      }
+    },
+    "listOfIssues": {
+      "title": "List of Issues",
+      "description": "Questions the tribunal will decide",
+      "sections": {
+        "claims": {
+          "title": "Your claims",
+          "description": "What laws do you say were broken?",
+          "placeholder": "1. Was I unfairly dismissed?\n2. Did they discriminate against me because of...?"
+        }
+      }
+    }
+  },
+  "checklists": {
+    "progress": "Tasks done",
+    "et1": {
+      "acasCert": "Get your ACAS certificate number",
+      "personalDetails": "Prepare your personal details (name, address, phone)",
+      "employerDetails": "Get your employer's name and address",
+      "claimDetails": "Write what happened and what you want",
+      "submit": "Submit the ET1 form online",
+      "submitLink": "Go to GOV.UK"
+    },
+    "et3": {
+      "received": "Wait for employer's response (they have 28 days)",
+      "review": "Read what they say and note what is wrong"
+    },
+    "caseManagement": {
+      "readOrders": "Read the tribunal's orders carefully",
+      "noteDeadlines": "Write down all the deadlines",
+      "gatherDocuments": "Collect all your documents"
+    },
+    "witness": {
+      "writeStatement": "Write your witness statement",
+      "getOthers": "Ask other witnesses to write statements",
+      "prepareBundle": "Put all documents in order (the bundle)",
+      "scheduleOfLoss": "Calculate what you lost (schedule of loss)"
+    },
+    "hearing": {
+      "prepare": "Practice what you will say",
+      "travel": "Plan how to get to the tribunal",
+      "dress": "Choose smart clothes to wear",
+      "bringDocuments": "Bring copies of all documents"
+    }
   },
   "accessibility": {
     "title": "Accessibility",
