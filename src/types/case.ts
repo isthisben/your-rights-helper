@@ -10,12 +10,17 @@ export type AcasStatus = 'not_started' | 'started' | 'unknown';
 
 export type TextSize = 'small' | 'medium' | 'large';
 
+export type SpeechRate = 0.5 | 0.75 | 1.0 | 1.25 | 1.5;
+
 export interface AccessibilitySettings {
   textSize: TextSize;
   highContrast: boolean;
   reduceMotion: boolean;
   dyslexiaFont: boolean;
   colorblindMode: boolean;
+  speechRate: SpeechRate;
+  autoReadMessages: boolean;
+  useElevenLabs: boolean;
 }
 
 export interface CaseState {
@@ -36,6 +41,9 @@ export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
   reduceMotion: false,
   dyslexiaFont: false,
   colorblindMode: false,
+  speechRate: 1.0,
+  autoReadMessages: false,
+  useElevenLabs: true,
 };
 
 export const DEFAULT_CASE_STATE: CaseState = {

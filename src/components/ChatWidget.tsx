@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { t } from '@/lib/i18n';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { t, getLanguage } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useApp } from '@/context/AppContext';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   MessageCircle, 
   X, 
@@ -23,6 +25,18 @@ interface Message {
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+// Language code to BCP 47 mapping for speech recognition
+const LANG_TO_BCP47: Record<string, string> = {
+  'en-A2': 'en-GB',
+  'cy': 'cy-GB',
+  'pl': 'pl-PL',
+  'ur': 'ur-PK',
+  'pa': 'pa-IN',
+  'bn': 'bn-BD',
+  'ro': 'ro-RO',
+  'ar': 'ar-SA',
+};
 
 // Stream chat with GreenPT API
 async function streamChat({
@@ -114,39 +128,143 @@ async function streamChat({
   }
 }
 
-// Web Speech API helpers
-function useSpeechSynthesis() {
+// ElevenLabs TTS hook
+function useElevenLabsTTS() {
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { caseState } = useApp();
+
+  const speak = useCallback(async (text: string) => {
+    if (isSpeaking || isLoading) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+        body: { 
+          text, 
+          language: caseState.language,
+          speed: caseState.accessibility.speechRate 
+        },
+      });
+
+      if (error) throw error;
+
+      // Create audio from the response
+      const audioBlob = new Blob([data], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      if (audioRef.current) {
+        audioRef.current.pause();
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+      
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      setIsSpeaking(true);
+      setIsLoading(false);
+      await audio.play();
+    } catch (error) {
+      console.error('ElevenLabs TTS error:', error);
+      setIsLoading(false);
+      throw error; // Re-throw to allow fallback
+    }
+  }, [isSpeaking, isLoading, caseState.language, caseState.accessibility.speechRate]);
+
+  const stop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsSpeaking(false);
+    }
+  }, []);
+
+  return { speak, stop, isSpeaking, isLoading };
+}
+
+// Web Speech API TTS fallback
+function useWebSpeechTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const { caseState } = useApp();
 
-  const speak = (text: string) => {
+  const speak = useCallback((text: string) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
+      utterance.rate = caseState.accessibility.speechRate;
+      utterance.lang = LANG_TO_BCP47[caseState.language] || 'en-GB';
       utterance.onend = () => setIsSpeaking(false);
       utterance.onerror = () => setIsSpeaking(false);
       utteranceRef.current = utterance;
       setIsSpeaking(true);
       window.speechSynthesis.speak(utterance);
     }
-  };
+  }, [caseState.accessibility.speechRate, caseState.language]);
 
-  const stop = () => {
+  const stop = useCallback(() => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
     }
-  };
+  }, []);
 
   return { speak, stop, isSpeaking };
 }
 
+// Combined TTS hook with ElevenLabs primary and Web Speech fallback
+function useSpeechSynthesis() {
+  const { caseState } = useApp();
+  const elevenLabs = useElevenLabsTTS();
+  const webSpeech = useWebSpeechTTS();
+  const [activeTTS, setActiveTTS] = useState<'elevenlabs' | 'webspeech' | null>(null);
+
+  const speak = useCallback(async (text: string) => {
+    if (caseState.accessibility.useElevenLabs) {
+      try {
+        setActiveTTS('elevenlabs');
+        await elevenLabs.speak(text);
+      } catch {
+        // Fallback to Web Speech API
+        console.log('Falling back to Web Speech API');
+        setActiveTTS('webspeech');
+        webSpeech.speak(text);
+      }
+    } else {
+      setActiveTTS('webspeech');
+      webSpeech.speak(text);
+    }
+  }, [caseState.accessibility.useElevenLabs, elevenLabs, webSpeech]);
+
+  const stop = useCallback(() => {
+    elevenLabs.stop();
+    webSpeech.stop();
+    setActiveTTS(null);
+  }, [elevenLabs, webSpeech]);
+
+  const isSpeaking = elevenLabs.isSpeaking || webSpeech.isSpeaking;
+  const isLoading = elevenLabs.isLoading;
+
+  return { speak, stop, isSpeaking, isLoading };
+}
+
+// Speech recognition hook with language awareness
 function useSpeechRecognition() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
+  const { caseState } = useApp();
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,7 +273,7 @@ function useSpeechRecognition() {
       const recognition = new SpeechRecognitionAPI();
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.lang = 'en-GB';
+      recognition.lang = LANG_TO_BCP47[caseState.language] || 'en-GB';
       
       recognition.onresult = (event: { results: { length: number; [key: number]: { [key: number]: { transcript: string } } } }) => {
         const current = event.results[event.results.length - 1];
@@ -173,22 +291,24 @@ function useSpeechRecognition() {
         recognitionRef.current.abort();
       }
     };
-  }, []);
+  }, [caseState.language]);
 
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (recognitionRef.current) {
+      // Update language before starting
+      recognitionRef.current.lang = LANG_TO_BCP47[caseState.language] || 'en-GB';
       setTranscript('');
       setIsListening(true);
       recognitionRef.current.start();
     }
-  };
+  }, [caseState.language]);
 
-  const stopListening = () => {
+  const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
     }
-  };
+  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supported = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in (window as any);
@@ -210,8 +330,9 @@ export function ChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { caseState } = useApp();
   
-  const { speak, stop, isSpeaking } = useSpeechSynthesis();
+  const { speak, stop, isSpeaking, isLoading: ttsLoading } = useSpeechSynthesis();
   const { startListening, stopListening, isListening, transcript, supported: sttSupported } = useSpeechRecognition();
 
   // Update input when transcript changes
@@ -225,6 +346,23 @@ export function ChatWidget() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Auto-read new assistant messages
+  const lastMessageRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (caseState.accessibility.autoReadMessages) {
+      const lastMessage = messages[messages.length - 1];
+      if (
+        lastMessage && 
+        lastMessage.role === 'assistant' && 
+        lastMessage.id !== lastMessageRef.current &&
+        !lastMessage.id.startsWith('streaming-')
+      ) {
+        lastMessageRef.current = lastMessage.id;
+        speak(lastMessage.content);
+      }
+    }
+  }, [messages, caseState.accessibility.autoReadMessages, speak]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -302,6 +440,14 @@ export function ChatWidget() {
     }
   };
 
+  const handleSpeak = (text: string) => {
+    if (isSpeaking) {
+      stop();
+    } else {
+      speak(text);
+    }
+  };
+
   return (
     <>
       {/* Floating button */}
@@ -366,10 +512,16 @@ export function ChatWidget() {
                       variant="ghost"
                       size="sm"
                       className="mt-2 h-8 text-xs"
-                      onClick={() => isSpeaking ? stop() : speak(message.content)}
+                      onClick={() => handleSpeak(message.content)}
+                      disabled={ttsLoading}
                       aria-label={isSpeaking ? t('chat.stop') : t('chat.readAloud')}
                     >
-                      {isSpeaking ? (
+                      {ttsLoading ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          {t('common.loading')}
+                        </>
+                      ) : isSpeaking ? (
                         <>
                           <VolumeX className="h-3 w-3 mr-1" />
                           {t('chat.stop')}
@@ -433,5 +585,3 @@ export function ChatWidget() {
     </>
   );
 }
-
-// Web Speech API types are handled via 'any' casting above
