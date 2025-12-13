@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    // Validate email field exists and is a string
+    // Validate and trim email field
     if (!payload.email || typeof payload.email !== 'string') {
       console.error('Email field missing or invalid:', {
         email: payload.email,
@@ -54,34 +54,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // Trim email and validate it's not empty after trimming
+    const trimmedEmail = payload.email.trim();
+    if (!trimmedEmail) {
+      console.error('Email field is empty or whitespace only:', {
+        originalEmail: payload.email,
+        trimmedEmail: trimmedEmail,
+      });
+      return res.status(400).json({ 
+        error: 'Email field cannot be empty or whitespace only',
+        received: payload.email
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      console.error('Email field has invalid format:', trimmedEmail);
+      return res.status(400).json({ 
+        error: 'Email field must be a valid email address',
+        received: trimmedEmail
+      });
+    }
+
     // Log the payload for debugging (without sensitive data)
     console.log('Export snapshot webhook called');
     console.log('Webhook URL:', WEBHOOK_URL);
     console.log('Payload keys:', Object.keys(payload || {}));
-    console.log('Email in payload:', payload.email);
-    console.log('Email type:', typeof payload.email);
+    console.log('Email in payload (trimmed):', trimmedEmail);
+    console.log('Email type:', typeof trimmedEmail);
     console.log('Has caseState:', !!payload?.caseState);
     console.log('CaseState scenario:', payload?.caseState?.scenario);
     console.log('CaseState incidentDate:', payload?.caseState?.incidentDate);
     console.log('CaseState acasStatus:', payload?.caseState?.acasStatus);
     console.log('Full payload structure:', JSON.stringify({
-      email: payload.email,
+      email: trimmedEmail,
       timestamp: payload?.timestamp,
       hasCaseState: !!payload?.caseState,
       caseStateKeys: payload?.caseState ? Object.keys(payload.caseState) : [],
     }, null, 2));
 
-    // Construct payload explicitly to ensure email is at top level
+    // Construct payload explicitly to ensure email is at top level with trimmed value
     const webhookPayload = {
-      email: payload.email, // Explicitly ensure email is first
+      email: trimmedEmail, // Use trimmed email to ensure no whitespace issues
       timestamp: payload.timestamp,
       caseState: payload.caseState,
       metadata: payload.metadata,
     };
 
-    // Log the exact payload being sent to Activepieces
-    console.log('Payload being sent to Activepieces:', JSON.stringify({
+    // Log the exact payload being sent to Activepieces (full structure)
+    console.log('Payload being sent to Activepieces (full):', JSON.stringify(webhookPayload, null, 2));
+    console.log('Payload being sent to Activepieces (summary):', JSON.stringify({
       email: webhookPayload.email,
+      emailLength: webhookPayload.email?.length,
       hasTimestamp: !!webhookPayload.timestamp,
       hasCaseState: !!webhookPayload.caseState,
       hasMetadata: !!webhookPayload.metadata,

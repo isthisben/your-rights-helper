@@ -41,44 +41,70 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    // Email is optional for case created, but if provided, validate it
-    if (payload.email !== undefined && typeof payload.email !== 'string') {
-      console.error('Email field has invalid type:', {
-        email: payload.email,
-        emailType: typeof payload.email,
-      });
+    // Email is optional for case created, but if provided, validate and trim it
+    let validEmail: string | undefined = undefined;
+    if (payload.email !== undefined) {
+      if (typeof payload.email !== 'string') {
+        console.error('Email field has invalid type:', {
+          email: payload.email,
+          emailType: typeof payload.email,
+        });
+        // Don't fail, just log - email is optional
+      } else {
+        const trimmed = payload.email.trim();
+        if (trimmed) {
+          // Validate email format if provided
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (emailRegex.test(trimmed)) {
+            validEmail = trimmed;
+          } else {
+            console.error('Email field has invalid format:', trimmed);
+            // Don't fail, just log - email is optional
+          }
+        } else {
+          console.warn('Email field is empty or whitespace only, omitting from payload');
+          // Don't include email if it's just whitespace
+        }
+      }
     }
 
     // Log the payload for debugging (without sensitive data)
     console.log('Case created webhook called');
     console.log('Webhook URL:', WEBHOOK_URL);
     console.log('Payload keys:', Object.keys(payload || {}));
-    console.log('Email in payload:', payload?.email);
-    console.log('Email type:', typeof payload?.email);
+    console.log('Email in payload (original):', payload?.email);
+    console.log('Email in payload (validated):', validEmail);
+    console.log('Email type:', typeof validEmail);
     console.log('Has caseState:', !!payload?.caseState);
     console.log('CaseState scenario:', payload?.caseState?.scenario);
     console.log('CaseState incidentDate:', payload?.caseState?.incidentDate);
     console.log('CaseState acasStatus:', payload?.caseState?.acasStatus);
     console.log('Language:', payload?.language);
     console.log('Full payload structure:', JSON.stringify({
-      email: payload?.email,
+      email: validEmail,
       timestamp: payload?.timestamp,
       language: payload?.language,
       hasCaseState: !!payload?.caseState,
       caseStateKeys: payload?.caseState ? Object.keys(payload.caseState) : [],
     }, null, 2));
 
-    // Construct payload explicitly to ensure structure is correct
-    const webhookPayload = {
-      email: payload.email, // Explicitly ensure email is at top level if provided
+    // Construct payload explicitly - only include email if it's valid
+    const webhookPayload: any = {
       timestamp: payload.timestamp,
       language: payload.language,
       caseState: payload.caseState,
     };
+    
+    // Only include email if it's a valid non-empty string
+    if (validEmail) {
+      webhookPayload.email = validEmail;
+    }
 
-    // Log the exact payload being sent to Activepieces
-    console.log('Payload being sent to Activepieces:', JSON.stringify({
+    // Log the exact payload being sent to Activepieces (full structure)
+    console.log('Payload being sent to Activepieces (full):', JSON.stringify(webhookPayload, null, 2));
+    console.log('Payload being sent to Activepieces (summary):', JSON.stringify({
       email: webhookPayload.email,
+      emailLength: webhookPayload.email?.length,
       hasTimestamp: !!webhookPayload.timestamp,
       hasLanguage: !!webhookPayload.language,
       hasCaseState: !!webhookPayload.caseState,
