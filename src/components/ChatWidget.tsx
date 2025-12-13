@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/context/AppContext';
 import { ContactHumanButton } from '@/components/ContactHumanButton';
 import { logger } from '@/lib/logger';
+import { loadChatMessages, saveChatMessages } from '@/lib/chatStorage';
 import { 
   MessageCircle, 
   X, 
@@ -506,6 +507,18 @@ export function ChatWidget() {
   
   // Generate initial message with check-in prompts
   const getInitialMessages = (): Message[] => {
+    // Try to load saved messages first
+    const savedMessages = loadChatMessages();
+    if (savedMessages && savedMessages.length > 0) {
+      // Only use saved messages if there's actual conversation (user has sent messages)
+      const hasUserMessages = savedMessages.some(msg => msg.role === 'user');
+      if (hasUserMessages) {
+        return savedMessages;
+      }
+      // If only greeting exists, fall through to regenerate (in case case state changed)
+    }
+    
+    // Otherwise, generate new greeting
     const checkInPrompts = getCheckInPrompts(caseState);
     let greeting = t('chat.greeting') + '\n\n' + t('chat.disclaimer');
     
@@ -522,6 +535,15 @@ export function ChatWidget() {
   };
   
   const [messages, setMessages] = useState<Message[]>(getInitialMessages);
+  
+  // Save messages to localStorage whenever they change (only if there's actual conversation)
+  useEffect(() => {
+    // Only save if there's actual conversation (user has sent at least one message)
+    const hasUserMessages = messages.some(msg => msg.role === 'user');
+    if (hasUserMessages) {
+      saveChatMessages(messages);
+    }
+  }, [messages]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

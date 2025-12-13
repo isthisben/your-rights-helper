@@ -1,16 +1,27 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { ChatWidget } from '@/components/ChatWidget';
+import { clearChatMessages } from '@/lib/chatStorage';
 import { Scale, ArrowRight, AlertCircle, Shield, Clock } from 'lucide-react';
 
 export default function WelcomePage() {
-  const { caseState } = useApp();
+  const { caseState, resetCase } = useApp();
+  const navigate = useNavigate();
   const hasProgress = caseState.currentIntakeStep > 0 || caseState.intakeCompleted;
+  
+  const handleStartNew = () => {
+    // Reset all case state to default (new user)
+    resetCase();
+    // Clear chat messages for a fresh start
+    clearChatMessages();
+    // Navigate to intake
+    navigate('/intake');
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -81,18 +92,23 @@ export default function WelcomePage() {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="w-full min-h-tap">
-                  <Link to="/intake">
-                    {t('welcome.startButton')}
-                  </Link>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full min-h-tap"
+                  onClick={handleStartNew}
+                >
+                  {t('welcome.startButton')}
                 </Button>
               </>
             ) : (
-              <Button asChild size="lg" className="w-full min-h-tap text-lg">
-                <Link to="/intake">
-                  {t('welcome.startButton')}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button 
+                size="lg" 
+                className="w-full min-h-tap text-lg"
+                onClick={handleStartNew}
+              >
+                {t('welcome.startButton')}
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             )}
           </div>
