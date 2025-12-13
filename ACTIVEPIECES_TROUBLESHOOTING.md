@@ -65,7 +65,14 @@ The webhook sends this payload structure:
 
 ```json
 {
-  "caseState": { ... },
+  "caseState": {
+    "scenario": "fired",
+    "incidentDate": "2024-01-01",
+    "acasStatus": "started",
+    "acasStartDate": "2024-01-15",
+    "legalAdvisor": { "name": "...", "email": "..." },
+    ...
+  },
   "timestamp": "2024-01-01T00:00:00.000Z",
   "email": "user@example.com",
   "metadata": {
@@ -77,11 +84,16 @@ The webhook sends this payload structure:
 
 In your Activepieces flow, make sure you're accessing:
 - **Email**: `{{trigger.body.email}}` ⚠️ **This is the correct path!**
-- **Case data**: `{{trigger.body.caseState}}`
+- **Scenario**: `{{trigger.body.caseState.scenario}}`
+- **Incident Date**: `{{trigger.body.caseState.incidentDate}}`
+- **ACAS Status**: `{{trigger.body.caseState.acasStatus}}`
+- **Legal Advisor Email**: `{{trigger.body.caseState.legalAdvisor.email}}`
 - **Timestamp**: `{{trigger.body.timestamp}}`
-- **Metadata**: `{{trigger.body.metadata}}`
 
-**Important**: Always use `{{trigger.body.*}}` to access webhook payload data in Activepieces.
+**Important**: 
+- Always use `{{trigger.body.*}}` to access webhook payload data in Activepieces
+- For nested fields, use dot notation: `{{trigger.body.caseState.scenario}}`
+- See `ACTIVEPIECES_GOOGLE_SHEETS_FIELDS.md` for complete field mapping guide
 
 ## Common Issues
 
