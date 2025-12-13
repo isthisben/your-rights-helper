@@ -71,6 +71,17 @@
     "youAreHere": "You are here",
     "completed": "Done",
     "upcoming": "Coming up",
+    "markComplete": "Mark as done",
+    "edit": "Edit",
+    "certificate": {
+      "acas": "ACAS certificate number",
+      "et1": "ET1 case number",
+      "number": "Reference number",
+      "placeholder": "Enter your number",
+      "required": "This number is required",
+      "invalidFormat": "Please check the format",
+      "acasHint": "The number looks like R123456/01/23"
+    },
     "steps": {
       "incident": {
         "title": "Something happened",
@@ -101,6 +112,10 @@
         "title": "Hearing",
         "description": "You go to the tribunal. You tell your story. They make a decision."
       }
+    },
+    "checkIn": {
+      "acasComplete": "Have you finished with ACAS? Do you have your certificate?",
+      "et1Submitted": "Have you submitted your ET1 form? Enter your case number to track it."
     }
   },
   "deadline": {

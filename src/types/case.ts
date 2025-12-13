@@ -8,6 +8,16 @@ export type Scenario =
 
 export type AcasStatus = 'not_started' | 'started' | 'unknown';
 
+export type JourneyStepKey = 'incident' | 'acas' | 'et1' | 'et3' | 'caseManagement' | 'witness' | 'hearing';
+
+export interface JourneyStepProgress {
+  completed: boolean;
+  completedAt?: string; // ISO date
+  certificateNumber?: string; // For ACAS certificate, ET1 case number, etc.
+}
+
+export type JourneyProgress = Partial<Record<JourneyStepKey, JourneyStepProgress>>;
+
 export type TextSize = 'small' | 'medium' | 'large';
 
 export type SpeechRate = 0.5 | 0.75 | 1.0 | 1.25 | 1.5;
@@ -33,6 +43,7 @@ export interface CaseState {
   accessibility: AccessibilitySettings;
   intakeCompleted: boolean;
   currentIntakeStep: number;
+  journeyProgress: JourneyProgress;
 }
 
 export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
@@ -56,4 +67,7 @@ export const DEFAULT_CASE_STATE: CaseState = {
   accessibility: DEFAULT_ACCESSIBILITY,
   intakeCompleted: false,
   currentIntakeStep: 0,
+  journeyProgress: {
+    incident: { completed: true }, // Always completed since they started the app
+  },
 };
