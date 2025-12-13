@@ -1,5 +1,3 @@
-import { DocumentDraft, DocumentType } from './documents';
-
 export type Scenario = 
   | 'fired' 
   | 'hourscut' 
@@ -36,6 +34,17 @@ export interface AccessibilitySettings {
   useElevenLabs: boolean;
 }
 
+// Inline document types to avoid circular imports
+export type DocumentType = 'witnessStatement' | 'scheduleOfLoss' | 'chronology' | 'listOfIssues';
+
+export interface DocumentDraftState {
+  type: DocumentType;
+  sections: Record<string, string>;
+  createdAt: string;
+  updatedAt: string;
+  completed: boolean;
+}
+
 export interface CaseState {
   scenario: Scenario | null;
   incidentDate: string | null; // ISO date string
@@ -47,7 +56,7 @@ export interface CaseState {
   intakeCompleted: boolean;
   currentIntakeStep: number;
   journeyProgress: JourneyProgress;
-  documentDrafts: Partial<Record<DocumentType, DocumentDraft>>;
+  documentDrafts: Partial<Record<DocumentType, DocumentDraftState>>;
 }
 
 export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
