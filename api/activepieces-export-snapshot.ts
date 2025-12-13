@@ -28,6 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Log the payload for debugging (without sensitive data)
     console.log('Export snapshot webhook called');
+    console.log('Webhook URL:', WEBHOOK_URL);
     console.log('Payload keys:', Object.keys(payload || {}));
     console.log('Email in payload:', payload?.email);
     console.log('Has caseState:', !!payload?.caseState);

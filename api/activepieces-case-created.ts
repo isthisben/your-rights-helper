@@ -28,9 +28,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Log the payload for debugging (without sensitive data)
     console.log('Case created webhook called');
+    console.log('Webhook URL:', WEBHOOK_URL);
     console.log('Payload keys:', Object.keys(payload || {}));
     console.log('Email in payload:', payload?.email);
     console.log('Has caseState:', !!payload?.caseState);
+    console.log('CaseState scenario:', payload?.caseState?.scenario);
+    console.log('CaseState incidentDate:', payload?.caseState?.incidentDate);
+    console.log('CaseState acasStatus:', payload?.caseState?.acasStatus);
+    console.log('Language:', payload?.language);
+    console.log('Full payload structure:', JSON.stringify({
+      email: payload?.email,
+      timestamp: payload?.timestamp,
+      language: payload?.language,
+      hasCaseState: !!payload?.caseState,
+      caseStateKeys: payload?.caseState ? Object.keys(payload.caseState) : [],
+    }, null, 2));
 
     // Forward the request to Activepieces webhook
     const response = await fetch(WEBHOOK_URL, {
@@ -42,30 +54,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     console.log('Activepieces response status:', response.status);
+    console.log('Activepieces response headers:', Object.fromEntries(response.headers.entries()));
+
+    // Read response body once (can only be read once)
+    const responseText = await response.text().catch(() => '');
+    console.log('Activepieces response body:', responseText || '(empty)');
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      console.error('Activepieces webhook error:', response.status, errorText);
+      console.error('Activepieces webhook error:', response.status, responseText);
       
       return res.status(response.status).json({
         error: 'Webhook request failed',
         status: response.status,
-        details: errorText.slice(0, 500), // Limit error text length
+        details: responseText.slice(0, 500) || 'Unknown error', // Limit error text length
       });
     }
 
     // Activepieces webhooks typically return empty JSON or minimal response
+    // Note: 200 OK from Activepieces means the webhook was RECEIVED, not that the flow completed
     let responseData;
     const contentType = response.headers.get('content-type');
-    if (contentType?.includes('application/json')) {
+    
+    if (contentType?.includes('application/json') && responseText) {
       try {
-        responseData = await response.json();
+        responseData = JSON.parse(responseText);
       } catch {
-        responseData = {};
+        responseData = { raw: responseText };
       }
     } else {
-      responseData = { success: true };
+      responseData = responseText ? { raw: responseText } : { success: true };
     }
+
+    console.log('Webhook accepted by Activepieces. Flow execution status should be checked in Activepieces dashboard.');
 
     // Return success response
     res.setHeader('Access-Control-Allow-Origin', '*');
