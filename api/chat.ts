@@ -109,6 +109,7 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
     }
 
     if (!response.body) {
+      console.error('No response body from GreenPT');
       return res.status(500).json({ error: 'No response body from chat service' });
     }
 
@@ -125,6 +126,7 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let chunkCount = 0;
+    let totalBytes = 0;
 
     // Stream chunks using a while loop
     try {
@@ -132,14 +134,19 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
         const { done, value } = await reader.read();
         
         if (done) {
-          console.log('Stream completed. Total chunks:', chunkCount);
+          console.log('Stream completed. Total chunks:', chunkCount, 'Total bytes:', totalBytes);
           break;
         }
         
         if (value) {
+          totalBytes += value.length;
           const chunk = decoder.decode(value, { stream: true });
           if (chunk) {
             chunkCount++;
+            // Log first chunk to verify data is coming through
+            if (chunkCount === 1) {
+              console.log('First chunk received from GreenPT (first 300 chars):', chunk.substring(0, 300));
+            }
             res.write(chunk);
             // Force flush (important for Vercel)
             if (typeof (res as any).flush === 'function') {
@@ -150,7 +157,7 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
       }
       
       // Finalize the stream
-      console.log('Ending response stream');
+      console.log('Ending response stream. Total chunks sent:', chunkCount);
       res.end();
     } catch (streamError) {
       console.error('Stream error:', streamError);
@@ -170,4 +177,3 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
     }
   }
 }
-

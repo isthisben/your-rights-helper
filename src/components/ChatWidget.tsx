@@ -58,6 +58,8 @@ async function streamChat({
 }) {
   try {
     const chatUrl = getChatUrl();
+    console.log('Making request to:', chatUrl);
+    console.log('Messages count:', messages.length);
     
     const resp = await fetch(chatUrl, {
       method: 'POST',
@@ -67,8 +69,12 @@ async function streamChat({
       body: JSON.stringify({ messages }),
     }).catch((fetchError) => {
       // Network errors (CORS, connection refused, etc.)
+      console.error('Fetch error:', fetchError);
       throw new Error(`Network error: ${fetchError.message}. Please check if the API endpoint is accessible.`);
     });
+    
+    console.log('Response received. Status:', resp.status, 'OK:', resp.ok);
+    console.log('Content-Type:', resp.headers.get('content-type'));
 
     if (!resp.ok) {
       let errorText = 'Unknown error';
@@ -101,16 +107,32 @@ async function streamChat({
     const decoder = new TextDecoder();
     let textBuffer = '';
     let receivedAnyContent = false;
+    let totalBytes = 0;
+    let lineCount = 0;
+
+    console.log('Starting to read stream, content-type:', resp.headers.get('content-type'));
 
     while (true) {
       const { done, value } = await reader.read();
       
       if (done) {
+        console.log('Stream reading completed. Total bytes:', totalBytes, 'Buffer length:', textBuffer.length, 'Lines processed:', lineCount);
         break;
       }
       
+      if (!value) {
+        continue;
+      }
+      
+      totalBytes += value.length;
       const chunk = decoder.decode(value, { stream: true });
-      textBuffer += chunk;
+      if (chunk) {
+        textBuffer += chunk;
+        // Log first chunk to see what we're receiving
+        if (totalBytes === value.length) {
+          console.log('First chunk from API (first 500 chars):', chunk.substring(0, 500));
+        }
+      }
 
       // Process complete lines
       const lines = textBuffer.split('\n');
@@ -121,13 +143,17 @@ async function streamChat({
         if (!trimmedLine) continue;
 
         // Skip SSE comments
-        if (trimmedLine.startsWith(':')) continue;
+        if (trimmedLine.startsWith(':')) {
+          console.log('Skipping SSE comment:', trimmedLine.substring(0, 50));
+          continue;
+        }
 
         // Handle SSE data format
         if (trimmedLine.startsWith('data: ')) {
           const jsonStr = trimmedLine.slice(6).trim();
           
           if (jsonStr === '[DONE]') {
+            console.log('Received [DONE] marker');
             continue;
           }
 
@@ -154,13 +180,30 @@ async function streamChat({
             if (!content && typeof parsed.text === 'string') {
               content = parsed.text;
             }
+            
+            // Also check for finish_reason to see if stream is ending
+            const finishReason = parsed.choices?.[0]?.finish_reason;
+            if (finishReason) {
+              console.log('Stream finished with reason:', finishReason);
+            }
 
             if (content) {
               receivedAnyContent = true;
+              console.log('✓ Received content chunk (' + content.length + ' chars):', content.substring(0, 100));
               onDelta(content);
+            } else {
+              // Log when we get a data line but no content
+              console.log('⚠ Data line parsed but no content found. Structure:', {
+                hasChoices: !!parsed.choices,
+                choicesLength: parsed.choices?.length,
+                hasDelta: !!parsed.choices?.[0]?.delta,
+                hasMessage: !!parsed.choices?.[0]?.message,
+                keys: Object.keys(parsed)
+              });
             }
-          } catch {
-            // Silently ignore parse errors for malformed JSON
+          } catch (parseError) {
+            // Log parse errors to help debug
+            console.warn('❌ Failed to parse JSON. Line:', jsonStr.substring(0, 200), 'Error:', parseError);
           }
         } else {
           // Try parsing line directly as JSON (non-SSE format)
@@ -174,10 +217,14 @@ async function streamChat({
             
             if (content) {
               receivedAnyContent = true;
+              console.log('✓ Received content (non-SSE format):', content.substring(0, 100));
               onDelta(content);
             }
           } catch {
-            // Not JSON, might be plain text - ignore
+            // Not JSON, might be plain text - log it
+            if (trimmedLine.length > 0) {
+              console.log('⚠ Non-JSON line received:', trimmedLine.substring(0, 100));
+            }
           }
         }
       }
