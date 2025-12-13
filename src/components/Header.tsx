@@ -9,7 +9,7 @@ export function Header() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-[hsl(15_99%_33%)] border-b border-border/40 py-5 px-4 sticky top-0 z-50"
+      className="bg-[hsl(20_61%_15%)] border-b border-border/40 py-5 px-4 sticky top-0 z-50"
     >
       <div className="container mx-auto">
         <div className="flex items-center gap-3">

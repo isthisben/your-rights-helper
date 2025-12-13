@@ -20,7 +20,7 @@ export function BottomNav() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-      className="fixed bottom-0 left-0 right-0 z-40 bg-[hsl(15_99%_33%)] border-t border-border/40 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-[hsl(20_61%_15%)] border-t border-border/40 safe-area-bottom"
       role="navigation"
       aria-label="Main navigation"
     >
