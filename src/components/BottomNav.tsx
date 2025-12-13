@@ -20,7 +20,7 @@ export function BottomNav() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-      className="fixed bottom-0 left-0 right-0 z-40 bg-[hsl(34_68%_88%)] border-t border-border/40 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-[hsl(var(--header))] border-t border-border/40 safe-area-bottom"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -36,15 +36,15 @@ export function BottomNav() {
               className={cn(
                 'relative flex flex-col items-center justify-center py-3 px-5 min-h-tap min-w-[64px] transition-all duration-300 ease-out-expo',
                 isActive 
-                  ? 'text-foreground' 
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-[hsl(var(--header-foreground))]' 
+                  : 'text-[hsl(var(--header-foreground)/0.6)] hover:text-[hsl(var(--header-foreground))]'
               )}
               aria-current={isActive ? 'page' : undefined}
             >
               {isActive && (
                 <motion.span
                   layoutId="nav-indicator"
-                  className="absolute inset-x-2 top-1 h-0.5 bg-foreground rounded-full"
+                  className="absolute inset-x-2 top-1 h-0.5 bg-[hsl(var(--header-foreground))] rounded-full"
                   transition={{ type: "spring", stiffness: 500, damping: 35 }}
                 />
               )}
