@@ -408,6 +408,17 @@ function getCheckInPrompts(caseState: ReturnType<typeof useApp>['caseState']): s
     prompts.push(t('journey.checkIn.et1Submitted'));
   }
   
+  // If preparing witness statements
+  if (progress.caseManagement?.completed && !progress.witness?.completed) {
+    prompts.push(t('journey.checkIn.witnessStatement'));
+    prompts.push(t('journey.checkIn.scheduleOfLoss'));
+  }
+  
+  // If hearing is coming up
+  if (progress.witness?.completed && !progress.hearing?.completed) {
+    prompts.push(t('journey.checkIn.hearingPrep'));
+  }
+  
   return prompts;
 }
 

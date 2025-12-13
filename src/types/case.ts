@@ -1,3 +1,5 @@
+import { DocumentDraft, DocumentType } from './documents';
+
 export type Scenario = 
   | 'fired' 
   | 'hourscut' 
@@ -14,6 +16,7 @@ export interface JourneyStepProgress {
   completed: boolean;
   completedAt?: string; // ISO date
   certificateNumber?: string; // For ACAS certificate, ET1 case number, etc.
+  checklistItems?: string[]; // Completed checklist item IDs
 }
 
 export type JourneyProgress = Partial<Record<JourneyStepKey, JourneyStepProgress>>;
@@ -44,6 +47,7 @@ export interface CaseState {
   intakeCompleted: boolean;
   currentIntakeStep: number;
   journeyProgress: JourneyProgress;
+  documentDrafts: Partial<Record<DocumentType, DocumentDraft>>;
 }
 
 export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
@@ -70,4 +74,5 @@ export const DEFAULT_CASE_STATE: CaseState = {
   journeyProgress: {
     incident: { completed: true }, // Always completed since they started the app
   },
+  documentDrafts: {},
 };
