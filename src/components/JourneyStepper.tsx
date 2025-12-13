@@ -7,6 +7,7 @@ import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { StepChecklist } from '@/components/StepChecklist';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   AlertCircle, 
   CheckCircle2, 
@@ -16,11 +17,12 @@ import {
   Scale, 
   Users,
   ArrowRight,
+  ArrowLeft,
   Edit2,
   Save,
   X,
-  ChevronDown,
-  ChevronUp
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface JourneyStepperProps {
@@ -47,7 +49,7 @@ const STEPS: StepConfig[] = [
     mandatory: true,
     requiresCertificate: true,
     certificateLabel: 'journey.certificate.acas',
-    certificatePattern: /^[A-Z]{1,2}\d{6}\/\d{2}\/\d{2}$/i, // e.g. R123456/01/23
+    certificatePattern: /^[A-Z]{1,2}\d{6}\/\d{2}\/\d{2}$/i,
   },
   { 
     key: 'et1', 
@@ -63,7 +65,6 @@ const STEPS: StepConfig[] = [
 ];
 
 function getCurrentStep(acasStatus: AcasStatus, journeyProgress: Record<string, JourneyStepProgress | undefined>): number {
-  // Find the first step that isn't completed
   for (let i = 0; i < STEPS.length; i++) {
     const stepProgress = journeyProgress[STEPS[i].key];
     if (!stepProgress?.completed) {
@@ -73,26 +74,39 @@ function getCurrentStep(acasStatus: AcasStatus, journeyProgress: Record<string, 
   return STEPS.length - 1;
 }
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 100 : -100,
+    opacity: 0,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 100 : -100,
+    opacity: 0,
+  }),
+};
+
 export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyStepperProps) {
   const { caseState, updateCaseState } = useApp();
   const journeyProgress = caseState.journeyProgress || {};
-  const currentStep = getCurrentStep(acasStatus, journeyProgress);
+  const currentJourneyStep = getCurrentStep(acasStatus, journeyProgress);
   
+  const [viewingStep, setViewingStep] = useState(currentJourneyStep);
+  const [direction, setDirection] = useState(0);
   const [editingStep, setEditingStep] = useState<JourneyStepKey | null>(null);
   const [certificateInput, setCertificateInput] = useState('');
   const [inputError, setInputError] = useState('');
-  const [expandedChecklists, setExpandedChecklists] = useState<Set<JourneyStepKey>>(new Set(['et1', 'witness']));
 
-  const toggleChecklist = (stepKey: JourneyStepKey) => {
-    setExpandedChecklists(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(stepKey)) {
-        newSet.delete(stepKey);
-      } else {
-        newSet.add(stepKey);
-      }
-      return newSet;
-    });
+  const navigateStep = (newStep: number) => {
+    if (newStep >= 0 && newStep < STEPS.length) {
+      setDirection(newStep > viewingStep ? 1 : -1);
+      setViewingStep(newStep);
+    }
   };
 
   const handleMarkComplete = (stepKey: JourneyStepKey, step: StepConfig) => {
@@ -172,175 +186,188 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
     }
   };
 
-  return (
-    <div className={cn('space-y-4', className)} role="list" aria-label={t('journey.title')}>
-      {STEPS.map((step, index) => {
-        const Icon = step.icon;
-        const stepProgress = journeyProgress[step.key];
-        const isCompleted = stepProgress?.completed || false;
-        const isCurrent = index === currentStep && !isCompleted;
-        const isUpcoming = index > currentStep && !isCompleted;
-        const isEditing = editingStep === step.key;
-        const canComplete = index <= currentStep + 1; // Can only complete current or next step
-        const hasChecklist = step.hasChecklist && STEP_CHECKLISTS[step.key];
-        const isChecklistExpanded = expandedChecklists.has(step.key);
+  const step = STEPS[viewingStep];
+  const Icon = step.icon;
+  const stepProgress = journeyProgress[step.key];
+  const isCompleted = stepProgress?.completed || false;
+  const isCurrent = viewingStep === currentJourneyStep && !isCompleted;
+  const isEditing = editingStep === step.key;
+  const canComplete = viewingStep <= currentJourneyStep + 1;
+  const hasChecklist = step.hasChecklist && STEP_CHECKLISTS[step.key];
 
-        return (
-          <div
-            key={step.key}
-            role="listitem"
+  return (
+    <div className={cn('space-y-6', className)}>
+      {/* Step Progress Dots */}
+      <div className="flex items-center justify-center gap-2 pb-2">
+        {STEPS.map((s, index) => {
+          const sProgress = journeyProgress[s.key];
+          const sCompleted = sProgress?.completed || false;
+          const sCurrent = index === currentJourneyStep && !sCompleted;
+          const isViewing = index === viewingStep;
+          
+          return (
+            <button
+              key={s.key}
+              onClick={() => navigateStep(index)}
+              className={cn(
+                'w-3 h-3 rounded-full transition-all duration-300 ease-out-expo',
+                sCompleted && 'bg-status-ok',
+                sCurrent && 'bg-primary',
+                !sCompleted && !sCurrent && 'bg-muted',
+                isViewing && 'ring-2 ring-offset-2 ring-primary/50 scale-125'
+              )}
+              aria-label={t(`journey.steps.${s.key}.title`)}
+            />
+          );
+        })}
+      </div>
+
+      {/* Step Counter */}
+      <div className="text-center text-sm text-muted-foreground">
+        {t('journey.stepOf', { current: viewingStep + 1, total: STEPS.length })}
+      </div>
+
+      {/* Current Step Card */}
+      <div className="relative overflow-hidden min-h-[320px]">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={viewingStep}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
             className={cn(
-              'relative flex flex-col gap-2 p-4 rounded-lg border-2 transition-all',
-              isCompleted && 'bg-status-ok-bg border-status-ok-border status-pattern-ok',
-              isCurrent && 'bg-primary-light border-primary ring-2 ring-primary/20',
-              isUpcoming && 'bg-muted/50 border-border'
+              'rounded-2xl border-2 p-6 transition-colors shadow-soft',
+              isCompleted && 'bg-status-ok-bg border-status-ok-border',
+              isCurrent && 'bg-accent/30 border-primary',
+              !isCompleted && !isCurrent && 'bg-card border-border/60'
             )}
           >
-            <div className="flex gap-4">
-              {/* Step indicator */}
+            {/* Step Header */}
+            <div className="flex items-start gap-4 mb-6">
               <div 
                 className={cn(
-                  'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center',
+                  'flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center',
                   isCompleted && 'bg-status-ok text-primary-foreground',
-                  isCurrent && 'bg-primary text-primary-foreground animate-pulse-soft',
-                  isUpcoming && 'bg-muted text-muted-foreground'
+                  isCurrent && 'bg-primary text-primary-foreground',
+                  !isCompleted && !isCurrent && 'bg-secondary text-muted-foreground'
                 )}
-                aria-hidden="true"
               >
                 {isCompleted ? (
-                  <CheckCircle2 className="h-5 w-5" />
-                ) : isCurrent ? (
-                  <ArrowRight className="h-5 w-5" />
+                  <CheckCircle2 className="h-7 w-7" />
                 ) : (
-                  <Circle className="h-5 w-5" />
+                  <Icon className="h-7 w-7" />
                 )}
               </div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Icon className="h-4 w-4 text-foreground/70" aria-hidden="true" />
-                  <h3 className="font-semibold text-foreground">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <h3 className="font-semibold text-xl text-foreground tracking-tight">
                     {t(`journey.steps.${step.key}.title`)}
                   </h3>
                   {isCurrent && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-primary-foreground">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
                       {t('journey.youAreHere')}
                     </span>
                   )}
-                  {step.mandatory && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-warning-bg text-status-warning border border-status-warning-border">
-                      {t(`journey.steps.${step.key}.mandatory`)}
-                    </span>
-                  )}
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {t(`journey.steps.${step.key}.description`)}
-                </p>
-                
-                {/* Certificate display */}
-                {isCompleted && stepProgress?.certificateNumber && (
-                  <div className="mt-2 p-2 bg-background/50 rounded border border-border text-sm">
-                    <span className="text-muted-foreground">{t(step.certificateLabel || 'journey.certificate.number')}: </span>
-                    <span className="font-mono font-medium">{stepProgress.certificateNumber}</span>
-                  </div>
-                )}
-
-                {/* Certificate input form */}
-                {isEditing && (
-                  <div className="mt-3 space-y-2">
-                    <label className="text-sm font-medium text-foreground">
-                      {t(step.certificateLabel || 'journey.certificate.number')}
-                      <span className="text-destructive ml-1">*</span>
-                    </label>
-                    <div className="flex gap-2">
-                      <Input
-                        value={certificateInput}
-                        onChange={(e) => {
-                          setCertificateInput(e.target.value);
-                          setInputError('');
-                        }}
-                        placeholder={t('journey.certificate.placeholder')}
-                        className={cn(inputError && 'border-destructive')}
-                        aria-invalid={!!inputError}
-                      />
-                      <Button size="sm" onClick={() => handleSaveCertificate(step)}>
-                        <Save className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    {inputError && (
-                      <p className="text-xs text-destructive">{inputError}</p>
-                    )}
-                    {step.key === 'acas' && (
-                      <p className="text-xs text-muted-foreground">
-                        {t('journey.certificate.acasHint')}
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {/* Completion status and actions */}
-                {isCompleted && !isEditing && (
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className="text-xs text-status-ok font-medium flex items-center gap-1">
-                      <CheckCircle2 className="h-3 w-3" />
-                      {t('journey.completed')}
-                    </span>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="text-xs h-6 px-2"
-                      onClick={() => step.requiresCertificate ? setEditingStep(step.key) : handleUndoComplete(step.key)}
-                    >
-                      <Edit2 className="h-3 w-3 mr-1" />
-                      {t('journey.edit')}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Mark complete button */}
-                {!isCompleted && canComplete && !isEditing && step.key !== 'incident' && (
-                  <Button
-                    size="sm"
-                    variant={isCurrent ? 'default' : 'outline'}
-                    className="mt-3"
-                    onClick={() => handleMarkComplete(step.key, step)}
-                  >
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    {t('journey.markComplete')}
-                  </Button>
-                )}
-
-                {/* Checklist toggle */}
-                {hasChecklist && (isCurrent || isCompleted || index === currentStep + 1) && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="mt-2 text-xs"
-                    onClick={() => toggleChecklist(step.key)}
-                  >
-                    {isChecklistExpanded ? (
-                      <>
-                        <ChevronUp className="h-3 w-3 mr-1" />
-                        {t('journey.hideChecklist')}
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="h-3 w-3 mr-1" />
-                        {t('journey.showChecklist')}
-                      </>
-                    )}
-                  </Button>
+                {step.mandatory && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent text-accent-foreground">
+                    {t(`journey.steps.${step.key}.mandatory`)}
+                  </span>
                 )}
               </div>
             </div>
 
+            {/* Step Description */}
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              {t(`journey.steps.${step.key}.description`)}
+            </p>
+
+            {/* Certificate display */}
+            {isCompleted && stepProgress?.certificateNumber && (
+              <div className="mb-4 p-4 bg-card/80 rounded-xl border border-border/60">
+                <span className="text-sm text-muted-foreground">{t(step.certificateLabel || 'journey.certificate.number')}: </span>
+                <span className="font-mono font-semibold text-foreground">{stepProgress.certificateNumber}</span>
+              </div>
+            )}
+
+            {/* Certificate input form */}
+            {isEditing && (
+              <div className="mb-4 space-y-3 p-4 bg-card/80 rounded-xl border border-border/60">
+                <label className="text-sm font-medium text-foreground">
+                  {t(step.certificateLabel || 'journey.certificate.number')}
+                  <span className="text-destructive ml-1">*</span>
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    value={certificateInput}
+                    onChange={(e) => {
+                      setCertificateInput(e.target.value);
+                      setInputError('');
+                    }}
+                    placeholder={t('journey.certificate.placeholder')}
+                    className={cn(inputError && 'border-destructive')}
+                    aria-invalid={!!inputError}
+                  />
+                  <Button size="icon" onClick={() => handleSaveCertificate(step)}>
+                    <Save className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="outline" onClick={handleCancelEdit}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                {inputError && (
+                  <p className="text-xs text-destructive">{inputError}</p>
+                )}
+                {step.key === 'acas' && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('journey.certificate.acasHint')}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Completion status and actions */}
+            {isCompleted && !isEditing && (
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-sm text-status-ok font-medium flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4" />
+                  {t('journey.completed')}
+                </span>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="text-xs"
+                  onClick={() => step.requiresCertificate ? setEditingStep(step.key) : handleUndoComplete(step.key)}
+                >
+                  <Edit2 className="h-3 w-3 mr-1" />
+                  {t('journey.edit')}
+                </Button>
+              </div>
+            )}
+
+            {/* Mark complete button */}
+            {!isCompleted && canComplete && !isEditing && step.key !== 'incident' && (
+              <Button
+                size="lg"
+                variant={isCurrent ? 'default' : 'outline'}
+                className="w-full mb-4"
+                onClick={() => handleMarkComplete(step.key, step)}
+              >
+                <CheckCircle2 className="h-5 w-5 mr-2" />
+                {t('journey.markComplete')}
+              </Button>
+            )}
+
             {/* Checklist */}
-            {hasChecklist && isChecklistExpanded && (isCurrent || isCompleted || index === currentStep + 1) && (
-              <div className="ml-14 mt-2 pt-3 border-t border-border/50">
+            {hasChecklist && (isCurrent || isCompleted || viewingStep === currentJourneyStep + 1) && (
+              <div className="pt-4 border-t border-border/40">
                 <StepChecklist
                   stepKey={step.key}
                   completedItems={stepProgress?.checklistItems || []}
@@ -349,20 +376,33 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
                 />
               </div>
             )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-            {/* Connecting line */}
-            {index < STEPS.length - 1 && (
-              <div 
-                className={cn(
-                  'absolute left-9 top-full w-0.5 h-4 -translate-x-1/2',
-                  isCompleted ? 'bg-status-ok' : 'bg-border'
-                )}
-                aria-hidden="true"
-              />
-            )}
-          </div>
-        );
-      })}
+      {/* Navigation Buttons */}
+      <div className="flex items-center justify-between gap-4">
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => navigateStep(viewingStep - 1)}
+          disabled={viewingStep === 0}
+          className="flex-1"
+        >
+          <ChevronLeft className="h-5 w-5 mr-2" />
+          {t('journey.previous')}
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => navigateStep(viewingStep + 1)}
+          disabled={viewingStep === STEPS.length - 1}
+          className="flex-1"
+        >
+          {t('journey.next')}
+          <ChevronRight className="h-5 w-5 ml-2" />
+        </Button>
+      </div>
     </div>
   );
 }
