@@ -131,13 +131,12 @@ export default function DashboardPage() {
             </motion.section>
 
             {/* Reminders Section */}
-            {
-              <motion.section 
-                custom={4}
-                initial="hidden"
-                animate="visible"
-                variants={fadeUpVariants}
-              >
+            <motion.section 
+              custom={3}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUpVariants}
+            >
               {!showReminders ? (
                 <Button 
                   variant="outline" 
