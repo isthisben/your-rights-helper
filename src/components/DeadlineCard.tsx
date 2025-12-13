@@ -36,9 +36,9 @@ export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, cl
   const deadline = calculateDeadline(incidentDate);
   
   const urgencyStyles = {
-    ok: 'bg-status-ok-bg border-status-ok-border text-status-ok status-pattern-ok',
-    warning: 'bg-status-warning-bg border-status-warning-border text-status-warning status-pattern-warning',
-    urgent: 'bg-status-urgent-bg border-status-urgent-border text-status-urgent status-pattern-urgent',
+    ok: 'bg-status-ok-bg border-status-ok-border text-status-ok status-pattern-ok colorblind-pattern-ok',
+    warning: 'bg-status-warning-bg border-status-warning-border text-status-warning status-pattern-warning colorblind-pattern-warning',
+    urgent: 'bg-status-urgent-bg border-status-urgent-border text-status-urgent status-pattern-urgent colorblind-pattern-urgent',
   };
 
   return (
@@ -73,7 +73,7 @@ export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, cl
             >
               <UrgencyIcon urgency={deadline.urgency} />
               <div>
-                <span className="font-semibold block">
+                <span className={`font-semibold block status-indicator-${deadline.urgency}`}>
                   {deadline.urgency === 'ok' && t('deadline.statusOk')}
                   {deadline.urgency === 'warning' && t('deadline.statusWarning')}
                   {deadline.urgency === 'urgent' && t('deadline.statusUrgent')}

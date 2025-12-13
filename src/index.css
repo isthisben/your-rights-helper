@@ -94,19 +94,19 @@
     --status-urgent: 0 100% 30%;
   }
 
-  /* Colorblind-friendly mode */
+  /* Colorblind-friendly mode - uses blue/orange/purple instead of green/yellow/red */
   .colorblind-mode {
-    --status-ok: 200 70% 35%;
-    --status-ok-bg: 200 50% 94%;
-    --status-ok-border: 200 50% 60%;
+    --status-ok: 210 80% 40%;
+    --status-ok-bg: 210 60% 94%;
+    --status-ok-border: 210 60% 50%;
     
-    --status-warning: 45 80% 40%;
-    --status-warning-bg: 45 70% 94%;
-    --status-warning-border: 45 60% 55%;
+    --status-warning: 35 90% 45%;
+    --status-warning-bg: 35 80% 94%;
+    --status-warning-border: 35 70% 55%;
     
-    --status-urgent: 280 60% 45%;
+    --status-urgent: 280 70% 50%;
     --status-urgent-bg: 280 50% 95%;
-    --status-urgent-border: 280 40% 60%;
+    --status-urgent-border: 280 50% 60%;
   }
 
   .dark {
@@ -202,34 +202,55 @@
 }
 
 /* Status indicator patterns for colorblind accessibility */
-.status-pattern-ok {
+.colorblind-mode .status-pattern-ok,
+.colorblind-mode .colorblind-pattern-ok {
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 2px,
-    hsl(var(--status-ok-border) / 0.3) 2px,
-    hsl(var(--status-ok-border) / 0.3) 4px
+    transparent 3px,
+    hsl(var(--status-ok-border) / 0.4) 3px,
+    hsl(var(--status-ok-border) / 0.4) 6px
   );
 }
 
-.status-pattern-warning {
+.colorblind-mode .status-pattern-warning,
+.colorblind-mode .colorblind-pattern-warning {
   background-image: repeating-linear-gradient(
     -45deg,
     transparent,
-    transparent 3px,
-    hsl(var(--status-warning-border) / 0.4) 3px,
-    hsl(var(--status-warning-border) / 0.4) 6px
+    transparent 4px,
+    hsl(var(--status-warning-border) / 0.5) 4px,
+    hsl(var(--status-warning-border) / 0.5) 8px
   );
 }
 
-.status-pattern-urgent {
+.colorblind-mode .status-pattern-urgent,
+.colorblind-mode .colorblind-pattern-urgent {
   background-image: repeating-linear-gradient(
-    90deg,
+    0deg,
     transparent,
     transparent 4px,
     hsl(var(--status-urgent-border) / 0.5) 4px,
     hsl(var(--status-urgent-border) / 0.5) 8px
   );
+}
+
+/* Add distinct shapes/icons in colorblind mode */
+.colorblind-mode .status-indicator-ok::before {
+  content: '✓';
+  margin-right: 0.25rem;
+}
+
+.colorblind-mode .status-indicator-warning::before {
+  content: '!';
+  margin-right: 0.25rem;
+  font-weight: bold;
+}
+
+.colorblind-mode .status-indicator-urgent::before {
+  content: '!!';
+  margin-right: 0.25rem;
+  font-weight: bold;
 }
 
 /* Skip link for accessibility */

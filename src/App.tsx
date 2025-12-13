@@ -8,6 +8,7 @@ import WelcomePage from "./pages/WelcomePage";
 import IntakePage from "./pages/IntakePage";
 import DashboardPage from "./pages/DashboardPage";
 import SettingsPage from "./pages/SettingsPage";
+import FAQPage from "./pages/FAQPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/intake" element={<IntakePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/faq" element={<FAQPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
