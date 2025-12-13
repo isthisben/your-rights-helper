@@ -2,12 +2,13 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { Home, LayoutDashboard, Settings, HelpCircle } from 'lucide-react';
+import { Home, LayoutDashboard, Settings, HelpCircle, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const NAV_ITEMS = [
   { path: '/', label: 'nav.home', icon: Home },
   { path: '/dashboard', label: 'nav.dashboard', icon: LayoutDashboard },
+  { path: '/documents', label: 'nav.documents', icon: FileText },
   { path: '/faq', label: 'nav.help', icon: HelpCircle },
   { path: '/settings', label: 'nav.settings', icon: Settings },
 ];

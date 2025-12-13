@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState } from 'react';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Header } from '@/components/Header';
@@ -8,9 +8,6 @@ import { JourneyStepper } from '@/components/JourneyStepper';
 import { JourneyProgressSidebar } from '@/components/JourneyProgressSidebar';
 import { DeadlineCard } from '@/components/DeadlineCard';
 import { ContactHumanButton } from '@/components/ContactHumanButton';
-import { DocumentPrepCard } from '@/components/DocumentPrepCard';
-import { DocumentWizard } from '@/components/DocumentWizard';
-import { DocumentType, DocumentDraft } from '@/types/documents';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -43,48 +40,6 @@ export default function DashboardPage() {
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
   const [reminderStatus, setReminderStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [activeDocument, setActiveDocument] = useState<DocumentType | null>(null);
-
-  // Memoize document drafts
-  const documentDrafts = useMemo(() => {
-    return caseState.documentDrafts || {};
-  }, [caseState.documentDrafts]);
-
-  // Document wizard handlers
-  const handleStartDocument = useCallback((type: DocumentType) => {
-    setActiveDocument(type);
-  }, []);
-
-  const handleEditDocument = useCallback((type: DocumentType) => {
-    setActiveDocument(type);
-  }, []);
-
-  const handleDocumentComplete = useCallback((draft: DocumentDraft) => {
-    updateCaseState({
-      documentDrafts: {
-        ...documentDrafts,
-        [draft.type]: {
-          type: draft.type,
-          sections: draft.sections,
-          createdAt: draft.createdAt,
-          updatedAt: draft.updatedAt,
-          completed: draft.completed,
-        },
-      },
-    });
-    setActiveDocument(null);
-    toast.success(t('documents.saved'));
-  }, [documentDrafts, updateCaseState]);
-
-  const handleDocumentCancel = useCallback(() => {
-    setActiveDocument(null);
-  }, []);
-
-  const handleDocumentHelp = useCallback((prompt: string) => {
-    // Open chat widget with the help prompt
-    // This would require exposing a method from ChatWidget, but for now we'll just show a toast
-    toast.info('Open the chat widget for help with: ' + prompt);
-  }, []);
 
   const handleSetReminders = async () => {
     if (!email || !consent) return;
@@ -175,41 +130,8 @@ export default function DashboardPage() {
               <JourneyStepper acasStatus={caseState.acasStatus} />
             </motion.section>
 
-            {/* Document Preparation */}
-            {!activeDocument && (
-              <motion.section 
-                custom={3}
-                initial="hidden"
-                animate="visible"
-                variants={fadeUpVariants}
-              >
-                <DocumentPrepCard
-                  drafts={documentDrafts}
-                  onStartDocument={handleStartDocument}
-                  onEditDocument={handleEditDocument}
-                />
-              </motion.section>
-            )}
-
-            {/* Document Wizard */}
-            {activeDocument && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <DocumentWizard
-                  documentType={activeDocument}
-                  onComplete={handleDocumentComplete}
-                  onCancel={handleDocumentCancel}
-                  onAskForHelp={handleDocumentHelp}
-                  existingDraft={documentDrafts[activeDocument]}
-                />
-              </motion.section>
-            )}
-
             {/* Reminders Section */}
-            {!activeDocument && (
+            {
               <motion.section 
                 custom={4}
                 initial="hidden"
@@ -289,7 +211,6 @@ export default function DashboardPage() {
                 </motion.div>
               )}
             </motion.section>
-            )}
           </div>
         </div>
       </main>

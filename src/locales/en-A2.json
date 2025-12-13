@@ -7,6 +7,7 @@
   "nav": {
     "home": "Home",
     "dashboard": "My Plan",
+    "documents": "Documents",
     "settings": "Settings",
     "help": "Help"
   },

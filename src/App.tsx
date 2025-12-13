@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import WelcomePage from "./pages/WelcomePage";
 import IntakePage from "./pages/IntakePage";
 import DashboardPage from "./pages/DashboardPage";
+import DocumentsPage from "./pages/DocumentsPage";
 import SettingsPage from "./pages/SettingsPage";
 import FAQPage from "./pages/FAQPage";
 import NotFound from "./pages/NotFound";
@@ -51,6 +52,7 @@ function AnimatedRoutes() {
           <Route path="/" element={<WelcomePage />} />
           <Route path="/intake" element={<IntakePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="*" element={<NotFound />} />
