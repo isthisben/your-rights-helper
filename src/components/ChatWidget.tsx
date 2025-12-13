@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/context/AppContext';
-import { supabase } from '@/integrations/supabase/client';
 import { ContactHumanButton } from '@/components/ContactHumanButton';
 import { 
   MessageCircle, 
@@ -25,16 +24,12 @@ interface Message {
   timestamp: Date;
 }
 
-// Get chat URL with validation
+// Get chat URL - uses Vercel API route
 function getChatUrl(): string {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error('VITE_SUPABASE_URL is not configured. Please check your .env file.');
-  }
-  
-  // Ensure URL doesn't have trailing slash
-  const cleanUrl = supabaseUrl.replace(/\/$/, '');
-  return `${cleanUrl}/functions/v1/chat`;
+  // In production, use the Vercel deployment URL
+  // In development, Vite proxy will handle it
+  const apiUrl = import.meta.env.VITE_API_URL || '/api/chat';
+  return apiUrl;
 }
 
 // Language code to BCP 47 mapping for speech recognition
@@ -63,31 +58,16 @@ async function streamChat({
 }) {
   try {
     const chatUrl = getChatUrl();
-    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    
-    if (!anonKey) {
-      throw new Error('Supabase API key is not configured. Please check your environment variables.');
-    }
-    
-    // Get Supabase session for authentication
-    const { data: { session } } = await supabase.auth.getSession();
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      'apikey': anonKey,
-    };
-    
-    // Add Supabase auth headers if session exists
-    if (session?.access_token) {
-      headers['Authorization'] = `Bearer ${session.access_token}`;
-    }
     
     const resp = await fetch(chatUrl, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ messages }),
     }).catch((fetchError) => {
       // Network errors (CORS, connection refused, etc.)
-      throw new Error(`Network error: ${fetchError.message}. Please check if the Supabase function is deployed and accessible.`);
+      throw new Error(`Network error: ${fetchError.message}. Please check if the API endpoint is accessible.`);
     });
 
     if (!resp.ok) {
@@ -219,8 +199,7 @@ async function streamChat({
 
     if (!receivedAnyContent) {
       // This might mean the stream format is different or the function returned an error
-      // Check if we can read the response again
-      onError('No content received from chat service. The function may not be deployed or the API key may be missing. Please check your Supabase configuration.');
+      onError('No content received from chat service. The API may not be configured correctly. Please check your Vercel environment variables.');
       return;
     }
 
@@ -230,11 +209,9 @@ async function streamChat({
     let errorMessage = 'Failed to connect to chat service';
     if (error instanceof Error) {
       if (error.message.includes('Network error') || error.message.includes('fetch')) {
-        errorMessage = `Network error: ${error.message}. This usually means:\n1. The Supabase function is not deployed\n2. The GREENPT_API_KEY is not set in Supabase\n3. There's a CORS issue\n\nPlease check CHAT_SETUP.md for setup instructions.`;
-      } else if (error.message.includes('VITE_SUPABASE_URL') || error.message.includes('not configured')) {
-        errorMessage = 'Chat service is not configured. Please check your .env file has VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.';
+        errorMessage = `Network error: ${error.message}. Please check:\n1. The Vercel API is deployed\n2. The GREENPT_API_KEY is set in Vercel environment variables\n3. There's no CORS issue`;
       } else if (error.message.includes('Chat service not configured')) {
-        errorMessage = 'The chat function is deployed but GREENPT_API_KEY is missing. Please add it in Supabase project settings.';
+        errorMessage = 'The chat API is deployed but GREENPT_API_KEY is missing. Please add it in Vercel project settings.';
       } else {
         errorMessage = error.message;
       }
@@ -255,18 +232,26 @@ function useElevenLabsTTS() {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('text-to-speech', {
-        body: { 
+      const apiUrl = import.meta.env.VITE_API_URL || '/api/text-to-speech';
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
           text, 
           language: caseState.language,
           speed: caseState.accessibility.speechRate 
-        },
+        }),
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
 
-      // Create audio from the response
-      const audioBlob = new Blob([data], { type: 'audio/mpeg' });
+      // Get audio blob from response
+      const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       
       if (audioRef.current) {

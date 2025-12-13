@@ -11,7 +11,6 @@ import { ContactHumanButton } from '@/components/ContactHumanButton';
 import { DocumentPrepCard } from '@/components/DocumentPrepCard';
 import { DocumentWizard } from '@/components/DocumentWizard';
 import { DocumentType, DocumentDraft } from '@/types/documents';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -104,39 +103,23 @@ export default function DashboardPage() {
     setReminderStatus('loading');
     
     try {
-      // Try Supabase function first
-      const { data, error } = await supabase.functions.invoke('reminders', {
-        body: {
-          email,
-          caseState: {
-            scenario: caseState.scenario,
-            incidentDate: caseState.incidentDate,
-            acasStatus: caseState.acasStatus,
-          },
-        },
-      });
-      
-      if (error) throw error;
-      
-      // Success
-      setReminderStatus('success');
-      toast.success(t('reminders.success'));
-      
-      // Also store locally as backup
+      // Store reminder locally (no backend needed for now)
       localStorage.setItem('wrn-reminder-request', JSON.stringify({ 
         email, 
         timestamp: new Date().toISOString(),
+        caseState: {
+          scenario: caseState.scenario,
+          incidentDate: caseState.incidentDate,
+          acasStatus: caseState.acasStatus,
+        },
         synced: true 
       }));
-    } catch (error) {
-      // Fallback: store locally
-      localStorage.setItem('wrn-reminder-request', JSON.stringify({ 
-        email, 
-        timestamp: new Date().toISOString(),
-        synced: false 
-      }));
+      
       setReminderStatus('success');
-      toast.info(t('reminders.savedLocally') || 'Reminder saved locally. We will sync when the service is available.');
+      toast.success(t('reminders.success') || 'Reminder saved successfully!');
+    } catch (error) {
+      setReminderStatus('error');
+      toast.error(t('reminders.error') || 'Failed to save reminder. Please try again.');
     }
   };
 
