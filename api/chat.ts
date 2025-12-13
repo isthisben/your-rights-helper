@@ -62,7 +62,7 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'green-r',
+        model: 'green-l-raw',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages.map((m: { role: string; content: string }) => ({
