@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/context/AppContext';
 import { supabase } from '@/integrations/supabase/client';
+import { ContactHumanButton } from '@/components/ContactHumanButton';
 import { 
   MessageCircle, 
   X, 
@@ -592,9 +593,12 @@ export function ChatWidget() {
               <MessageCircle className="h-5 w-5 text-primary" />
               <h2 className="font-semibold">{t('chat.title')}</h2>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label={t('common.close')}>
-              <X className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <ContactHumanButton variant="ghost" size="icon" showLabel={false} />
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label={t('common.close')}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
 
           {/* Disclaimer */}
