@@ -347,5 +347,16 @@
     "citizensAdviceDesc": "Free advice on work rights",
     "lawWorksDesc": "Free legal help for some cases",
     "addAdvisorHint": "You can add your own legal advisor in settings."
+  },
+  "faq": {
+    "title": "Help & FAQ",
+    "subtitle": "Find answers to common questions.",
+    "disclaimerTitle": "This is not legal advice",
+    "disclaimer": "This app helps you understand the process. For legal advice, talk to a legal advisor or solicitor.",
+    "searchPlaceholder": "Search questions...",
+    "noResults": "No questions found. Try different words.",
+    "askChatbot": "Ask the chatbot",
+    "stillNeedHelp": "Still need help?",
+    "stillNeedHelpDesc": "Talk to a real person if you can't find your answer."
   }
 }

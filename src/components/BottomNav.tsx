@@ -7,6 +7,7 @@ import { Home, LayoutDashboard, Settings, HelpCircle } from 'lucide-react';
 const NAV_ITEMS = [
   { path: '/', label: 'nav.home', icon: Home },
   { path: '/dashboard', label: 'nav.dashboard', icon: LayoutDashboard },
+  { path: '/faq', label: 'nav.help', icon: HelpCircle },
   { path: '/settings', label: 'nav.settings', icon: Settings },
 ];
 
