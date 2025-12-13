@@ -13,11 +13,11 @@
     /* Text size scale - controlled by accessibility */
     --text-scale: 1;
     
-    /* Core palette - Warmer ivory cream with more saturation */
-    --background: 28 42% 92%;
+    /* Core palette - Warm, inviting cream with golden undertones */
+    --background: 35 38% 88%;
     --foreground: 20 40% 18%;
 
-    --card: 32 40% 96%;
+    --card: 32 32% 92%;
     --card-foreground: 20 40% 18%;
 
     --popover: 35 45% 99%;
@@ -29,11 +29,11 @@
     --primary-light: 25 40% 92%;
 
     /* Secondary - Soft warm sand */
-    --secondary: 32 30% 88%;
+    --secondary: 35 28% 85%;
     --secondary-foreground: 20 35% 25%;
 
     /* Muted - Warm beige */
-    --muted: 30 25% 90%;
+    --muted: 32 22% 87%;
     --muted-foreground: 20 20% 40%;
 
     /* Accent - Soft peach */
@@ -58,8 +58,8 @@
     --status-urgent-border: 5 40% 70%;
 
     /* Borders & inputs - warm tones */
-    --border: 30 25% 85%;
-    --input: 30 25% 85%;
+    --border: 32 22% 82%;
+    --input: 32 22% 82%;
     --ring: 25 45% 50%;
 
     --radius: 1rem;
@@ -69,7 +69,7 @@
     --header-foreground: 20 40% 18%;
 
     /* Sidebar */
-    --sidebar-background: 35 45% 98%;
+    --sidebar-background: 32 32% 92%;
     --sidebar-foreground: 20 40% 18%;
     --sidebar-primary: 25 45% 50%;
     --sidebar-primary-foreground: 35 50% 98%;
@@ -103,9 +103,9 @@
     --status-urgent: 0 80% 40%;
   }
 
-  /* Colorblind-friendly mode - Base colors for all types */
+  /* Colorblind-friendly mode - Base colors (will be overridden by specific types) */
   .colorblind-mode {
-    /* Default: blue/orange/purple scheme */
+    /* Default: blue/orange/purple scheme - only used if no specific type is set */
     --status-ok: 210 80% 40%;
     --status-ok-bg: 210 60% 94%;
     --status-ok-border: 210 60% 50%;
@@ -119,49 +119,49 @@
     --status-urgent-border: 280 50% 60%;
   }
   
-  /* Protanopia (red-blind) - use blue/cyan/yellow */
-  .colorblind-protanopia {
-    --status-ok: 200 85% 45%;
-    --status-ok-bg: 200 65% 94%;
-    --status-ok-border: 200 65% 55%;
+  /* Protanopia (red-blind) - use blue/cyan/yellow - MUST override base */
+  .colorblind-mode.colorblind-protanopia {
+    --status-ok: 200 85% 45% !important;
+    --status-ok-bg: 200 65% 94% !important;
+    --status-ok-border: 200 65% 55% !important;
     
-    --status-warning: 55 90% 50%;
-    --status-warning-bg: 55 80% 94%;
-    --status-warning-border: 55 70% 60%;
+    --status-warning: 55 90% 50% !important;
+    --status-warning-bg: 55 80% 94% !important;
+    --status-warning-border: 55 70% 60% !important;
     
-    --status-urgent: 15 85% 55%;
-    --status-urgent-bg: 15 70% 96%;
-    --status-urgent-border: 15 65% 65%;
+    --status-urgent: 15 85% 55% !important;
+    --status-urgent-bg: 15 70% 96% !important;
+    --status-urgent-border: 15 65% 65% !important;
   }
   
-  /* Deuteranopia (green-blind) - use blue/purple/orange */
-  .colorblind-deuteranopia {
-    --status-ok: 220 80% 45%;
-    --status-ok-bg: 220 60% 94%;
-    --status-ok-border: 220 60% 55%;
+  /* Deuteranopia (green-blind) - use blue/purple/orange - MUST override base */
+  .colorblind-mode.colorblind-deuteranopia {
+    --status-ok: 220 80% 45% !important;
+    --status-ok-bg: 220 60% 94% !important;
+    --status-ok-border: 220 60% 55% !important;
     
-    --status-warning: 280 75% 50%;
-    --status-warning-bg: 280 60% 94%;
-    --status-warning-border: 280 55% 60%;
+    --status-warning: 280 75% 50% !important;
+    --status-warning-bg: 280 60% 94% !important;
+    --status-warning-border: 280 55% 60% !important;
     
-    --status-urgent: 25 85% 55%;
-    --status-urgent-bg: 25 70% 96%;
-    --status-urgent-border: 25 65% 65%;
+    --status-urgent: 25 85% 55% !important;
+    --status-urgent-bg: 25 70% 96% !important;
+    --status-urgent-border: 25 65% 65% !important;
   }
   
-  /* Tritanopia (blue-blind) - use red/orange/green */
-  .colorblind-tritanopia {
-    --status-ok: 145 70% 40%;
-    --status-ok-bg: 145 55% 94%;
-    --status-ok-border: 145 50% 50%;
+  /* Tritanopia (blue-blind) - use red/orange/green - MUST override base */
+  .colorblind-mode.colorblind-tritanopia {
+    --status-ok: 145 70% 40% !important;
+    --status-ok-bg: 145 55% 94% !important;
+    --status-ok-border: 145 50% 50% !important;
     
-    --status-warning: 30 85% 50%;
-    --status-warning-bg: 30 70% 94%;
-    --status-warning-border: 30 65% 60%;
+    --status-warning: 30 85% 50% !important;
+    --status-warning-bg: 30 70% 94% !important;
+    --status-warning-border: 30 65% 60% !important;
     
-    --status-urgent: 0 75% 50%;
-    --status-urgent-bg: 0 60% 96%;
-    --status-urgent-border: 0 55% 60%;
+    --status-urgent: 0 75% 50% !important;
+    --status-urgent-bg: 0 60% 96% !important;
+    --status-urgent-border: 0 55% 60% !important;
   }
 
   .dark {

@@ -29,9 +29,12 @@ interface Message {
 function getChatUrl(): string {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   if (!supabaseUrl) {
-    throw new Error('VITE_SUPABASE_URL is not configured');
+    throw new Error('VITE_SUPABASE_URL is not configured. Please check your .env file.');
   }
-  return `${supabaseUrl}/functions/v1/chat`;
+  
+  // Ensure URL doesn't have trailing slash
+  const cleanUrl = supabaseUrl.replace(/\/$/, '');
+  return `${cleanUrl}/functions/v1/chat`;
 }
 
 // Language code to BCP 47 mapping for speech recognition
@@ -60,11 +63,17 @@ async function streamChat({
 }) {
   try {
     const chatUrl = getChatUrl();
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    
+    if (!anonKey) {
+      throw new Error('Supabase API key is not configured. Please check your environment variables.');
+    }
     
     // Get Supabase session for authentication
     const { data: { session } } = await supabase.auth.getSession();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
+      'apikey': anonKey,
     };
     
     // Add Supabase auth headers if session exists
@@ -72,23 +81,20 @@ async function streamChat({
       headers['Authorization'] = `Bearer ${session.access_token}`;
     }
     
-    // Add Supabase anon key as fallback
-    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    if (anonKey) {
-      headers['apikey'] = anonKey;
-    }
-    
     const resp = await fetch(chatUrl, {
       method: 'POST',
       headers,
       body: JSON.stringify({ messages }),
+    }).catch((fetchError) => {
+      // Network errors (CORS, connection refused, etc.)
+      throw new Error(`Network error: ${fetchError.message}. Please check if the Supabase function is deployed and accessible.`);
     });
 
     if (!resp.ok) {
       let errorText = 'Unknown error';
       try {
         const errorData = await resp.json();
-        errorText = errorData.error || errorData.message || JSON.stringify(errorData);
+        errorText = errorData.error || errorData.message || errorData.details || JSON.stringify(errorData);
       } catch {
         try {
           errorText = await resp.text();
@@ -100,7 +106,7 @@ async function streamChat({
     }
 
     if (!resp.body) {
-      throw new Error('No response body');
+      throw new Error('No response body from chat service');
     }
 
     const reader = resp.body.getReader();
@@ -212,8 +218,9 @@ async function streamChat({
     }
 
     if (!receivedAnyContent) {
-      // Try to get error message from response if available
-      onError('No response received from chat service. Please check your connection and try again.');
+      // This might mean the stream format is different or the function returned an error
+      // Check if we can read the response again
+      onError('No content received from chat service. The function may not be deployed or the API key may be missing. Please check your Supabase configuration.');
       return;
     }
 
@@ -222,10 +229,12 @@ async function streamChat({
     // Provide more helpful error messages
     let errorMessage = 'Failed to connect to chat service';
     if (error instanceof Error) {
-      if (error.message.includes('Network error')) {
-        errorMessage = 'Network error. Please check your internet connection.';
-      } else if (error.message.includes('VITE_SUPABASE_URL')) {
-        errorMessage = 'Chat service is not configured. Please contact support.';
+      if (error.message.includes('Network error') || error.message.includes('fetch')) {
+        errorMessage = `Network error: ${error.message}. This usually means:\n1. The Supabase function is not deployed\n2. The GREENPT_API_KEY is not set in Supabase\n3. There's a CORS issue\n\nPlease check CHAT_SETUP.md for setup instructions.`;
+      } else if (error.message.includes('VITE_SUPABASE_URL') || error.message.includes('not configured')) {
+        errorMessage = 'Chat service is not configured. Please check your .env file has VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.';
+      } else if (error.message.includes('Chat service not configured')) {
+        errorMessage = 'The chat function is deployed but GREENPT_API_KEY is missing. Please add it in Supabase project settings.';
       } else {
         errorMessage = error.message;
       }
