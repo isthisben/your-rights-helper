@@ -85,9 +85,18 @@ async function streamChat({
     });
 
     if (!resp.ok) {
-      const errorText = await resp.text();
-      console.error('[Chat] Error response:', errorText);
-      throw new Error(`Request failed with status ${resp.status}: ${errorText}`);
+      let errorText = 'Unknown error';
+      try {
+        const errorData = await resp.json();
+        errorText = errorData.error || errorData.message || JSON.stringify(errorData);
+      } catch {
+        try {
+          errorText = await resp.text();
+        } catch {
+          errorText = `HTTP ${resp.status}`;
+        }
+      }
+      throw new Error(errorText);
     }
 
     if (!resp.body) {
@@ -203,13 +212,25 @@ async function streamChat({
     }
 
     if (!receivedAnyContent) {
-      onError('No response received from chat service. Please try again.');
+      // Try to get error message from response if available
+      onError('No response received from chat service. Please check your connection and try again.');
       return;
     }
 
     onDone();
   } catch (error) {
-    onError(error instanceof Error ? error.message : 'Failed to connect to chat service');
+    // Provide more helpful error messages
+    let errorMessage = 'Failed to connect to chat service';
+    if (error instanceof Error) {
+      if (error.message.includes('Network error')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (error.message.includes('VITE_SUPABASE_URL')) {
+        errorMessage = 'Chat service is not configured. Please contact support.';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    onError(errorMessage);
   }
 }
 

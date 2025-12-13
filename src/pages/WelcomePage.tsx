@@ -22,7 +22,7 @@ export default function WelcomePage() {
       <Header />
 
       <main id="main-content" className="flex-1 pb-24">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-3 py-6">
           {/* Hero Section */}
           <div className="text-center max-w-lg mx-auto animate-fade-in">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">

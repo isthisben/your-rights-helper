@@ -13,11 +13,11 @@
     /* Text size scale - controlled by accessibility */
     --text-scale: 1;
     
-    /* Core palette - Warm ivory cream */
-    --background: 35 50% 96%;
+    /* Core palette - Warmer ivory cream with more saturation */
+    --background: 28 42% 92%;
     --foreground: 20 40% 18%;
 
-    --card: 35 45% 98%;
+    --card: 32 40% 96%;
     --card-foreground: 20 40% 18%;
 
     --popover: 35 45% 99%;
@@ -103,8 +103,9 @@
     --status-urgent: 0 80% 40%;
   }
 
-  /* Colorblind-friendly mode - uses blue/orange/purple instead of green/yellow/red */
+  /* Colorblind-friendly mode - Base colors for all types */
   .colorblind-mode {
+    /* Default: blue/orange/purple scheme */
     --status-ok: 210 80% 40%;
     --status-ok-bg: 210 60% 94%;
     --status-ok-border: 210 60% 50%;
@@ -116,6 +117,51 @@
     --status-urgent: 280 70% 50%;
     --status-urgent-bg: 280 50% 95%;
     --status-urgent-border: 280 50% 60%;
+  }
+  
+  /* Protanopia (red-blind) - use blue/cyan/yellow */
+  .colorblind-protanopia {
+    --status-ok: 200 85% 45%;
+    --status-ok-bg: 200 65% 94%;
+    --status-ok-border: 200 65% 55%;
+    
+    --status-warning: 55 90% 50%;
+    --status-warning-bg: 55 80% 94%;
+    --status-warning-border: 55 70% 60%;
+    
+    --status-urgent: 15 85% 55%;
+    --status-urgent-bg: 15 70% 96%;
+    --status-urgent-border: 15 65% 65%;
+  }
+  
+  /* Deuteranopia (green-blind) - use blue/purple/orange */
+  .colorblind-deuteranopia {
+    --status-ok: 220 80% 45%;
+    --status-ok-bg: 220 60% 94%;
+    --status-ok-border: 220 60% 55%;
+    
+    --status-warning: 280 75% 50%;
+    --status-warning-bg: 280 60% 94%;
+    --status-warning-border: 280 55% 60%;
+    
+    --status-urgent: 25 85% 55%;
+    --status-urgent-bg: 25 70% 96%;
+    --status-urgent-border: 25 65% 65%;
+  }
+  
+  /* Tritanopia (blue-blind) - use red/orange/green */
+  .colorblind-tritanopia {
+    --status-ok: 145 70% 40%;
+    --status-ok-bg: 145 55% 94%;
+    --status-ok-border: 145 50% 50%;
+    
+    --status-warning: 30 85% 50%;
+    --status-warning-bg: 30 70% 94%;
+    --status-warning-border: 30 65% 60%;
+    
+    --status-urgent: 0 75% 50%;
+    --status-urgent-bg: 0 60% 96%;
+    --status-urgent-border: 0 55% 60%;
   }
 
   .dark {
@@ -155,8 +201,15 @@
   }
 
   html {
-    font-size: calc(16px * var(--text-scale));
+    font-size: calc(18px * var(--text-scale));
     scroll-behavior: smooth;
+    zoom: 1.15;
+  }
+  
+  @media (max-width: 768px) {
+    html {
+      zoom: 1.1;
+    }
   }
 
   body {

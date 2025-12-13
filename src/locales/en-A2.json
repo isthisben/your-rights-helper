@@ -295,6 +295,12 @@
     "reduceMotion": "Reduce motion",
     "dyslexiaFont": "Dyslexia-friendly font",
     "colorblindMode": "Colorblind-friendly colors",
+    "colorblindType": "Colorblind type",
+    "colorblindTypeOptions": {
+      "protanopia": "Protanopia (Red-blind)",
+      "deuteranopia": "Deuteranopia (Green-blind)",
+      "tritanopia": "Tritanopia (Blue-blind)"
+    },
     "speechRate": "Speech speed",
     "autoRead": "Read messages aloud"
   },

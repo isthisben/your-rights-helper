@@ -355,9 +355,9 @@ export default function IntakePage() {
       <Header />
 
       <main id="main-content" className="flex-1 pb-32">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-3 py-4">
           {/* Progress indicator */}
-          <div className="mb-6">
+          <div className="mb-4">
             <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
               <span>{t('intake.progress', { current: step + 1, total: TOTAL_STEPS })}</span>
             </div>
@@ -370,7 +370,7 @@ export default function IntakePage() {
           </div>
 
           {/* Step content */}
-          <div className="max-w-lg mx-auto">
+          <div className="max-w-2xl mx-auto">
             {renderStep()}
           </div>
         </div>

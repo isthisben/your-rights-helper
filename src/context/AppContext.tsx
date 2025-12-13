@@ -36,8 +36,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Dyslexia font
     html.classList.toggle('dyslexia-font', accessibility.dyslexiaFont);
     
-    // Colorblind mode
-    html.classList.toggle('colorblind-mode', accessibility.colorblindMode);
+    // Colorblind mode - remove all types first
+    html.classList.remove('colorblind-mode', 'colorblind-protanopia', 'colorblind-deuteranopia', 'colorblind-tritanopia');
+    
+    if (accessibility.colorblindMode && accessibility.colorblindType !== 'none') {
+      html.classList.add('colorblind-mode');
+      html.classList.add(`colorblind-${accessibility.colorblindType}`);
+    }
   }, [caseState.accessibility]);
 
   // Persist case state

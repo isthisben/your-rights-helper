@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { t } from '@/lib/i18n';
-import { TextSize, SpeechRate } from '@/types/case';
+import { TextSize, SpeechRate, ColorblindType } from '@/types/case';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Type, 
   Sun, 
@@ -155,9 +155,38 @@ export function AccessibilityBar() {
             <Switch
               id="colorblind-mode"
               checked={accessibility.colorblindMode}
-              onCheckedChange={(checked) => updateAccessibility({ colorblindMode: checked })}
+              onCheckedChange={(checked) => {
+                updateAccessibility({ 
+                  colorblindMode: checked,
+                  colorblindType: checked && accessibility.colorblindType === 'none' 
+                    ? 'protanopia' 
+                    : accessibility.colorblindType
+                });
+              }}
             />
           </div>
+          
+          {/* Colorblind Type Selector */}
+          {accessibility.colorblindMode && (
+            <div className="flex items-center gap-2">
+              <Label htmlFor="colorblind-type" className="text-sm sr-only md:not-sr-only">
+                {t('accessibility.colorblindType') || 'Type'}
+              </Label>
+              <Select
+                value={accessibility.colorblindType}
+                onValueChange={(value: ColorblindType) => updateAccessibility({ colorblindType: value })}
+              >
+                <SelectTrigger id="colorblind-type" className="h-9 w-[140px] text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="protanopia">{t('accessibility.colorblindTypeOptions.protanopia') || 'Protanopia (Red-blind)'}</SelectItem>
+                  <SelectItem value="deuteranopia">{t('accessibility.colorblindTypeOptions.deuteranopia') || 'Deuteranopia (Green-blind)'}</SelectItem>
+                  <SelectItem value="tritanopia">{t('accessibility.colorblindTypeOptions.tritanopia') || 'Tritanopia (Blue-blind)'}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </div>
     </div>

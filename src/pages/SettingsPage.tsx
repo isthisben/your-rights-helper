@@ -29,8 +29,8 @@ export default function SettingsPage() {
       <Header />
 
       <main id="main-content" className="flex-1 pb-24">
-        <div className="container mx-auto px-4 py-6">
-          <div className="max-w-2xl mx-auto space-y-8">
+        <div className="container mx-auto px-3 py-4">
+          <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="text-2xl font-semibold text-foreground">{t('settings.title')}</h2>
 
             {/* Language Section */}

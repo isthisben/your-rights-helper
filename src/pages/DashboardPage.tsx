@@ -155,8 +155,8 @@ export default function DashboardPage() {
       />
 
       <main id="main-content" className="flex-1 pb-28 lg:pr-72">
-        <div className="container mx-auto px-4 py-10">
-          <div className="max-w-2xl mx-auto space-y-10">
+        <div className="container mx-auto px-3 py-6">
+          <div className="max-w-3xl mx-auto space-y-6">
             {/* Contact Human Button - always visible */}
             <motion.div 
               custom={0}

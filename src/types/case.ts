@@ -23,12 +23,15 @@ export type TextSize = 'small' | 'medium' | 'large';
 
 export type SpeechRate = 0.5 | 0.75 | 1.0 | 1.25 | 1.5;
 
+export type ColorblindType = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia';
+
 export interface AccessibilitySettings {
   textSize: TextSize;
   highContrast: boolean;
   reduceMotion: boolean;
   dyslexiaFont: boolean;
   colorblindMode: boolean;
+  colorblindType: ColorblindType;
   speechRate: SpeechRate;
   autoReadMessages: boolean;
   useElevenLabs: boolean;
@@ -72,6 +75,7 @@ export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
   reduceMotion: false,
   dyslexiaFont: false,
   colorblindMode: false,
+  colorblindType: 'none',
   speechRate: 1.0,
   autoReadMessages: false,
   useElevenLabs: true,
