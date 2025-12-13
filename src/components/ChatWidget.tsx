@@ -25,7 +25,14 @@ interface Message {
   timestamp: Date;
 }
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+// Get chat URL with validation
+function getChatUrl(): string {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  if (!supabaseUrl) {
+    throw new Error('VITE_SUPABASE_URL is not configured');
+  }
+  return `${supabaseUrl}/functions/v1/chat`;
+}
 
 // Language code to BCP 47 mapping for speech recognition
 const LANG_TO_BCP47: Record<string, string> = {
@@ -52,19 +59,30 @@ async function streamChat({
   onError: (error: string) => void;
 }) {
   try {
-    console.log('[Chat] Sending request to:', CHAT_URL);
-    console.log('[Chat] Messages:', messages);
+    const chatUrl = getChatUrl();
     
-    const resp = await fetch(CHAT_URL, {
+    // Get Supabase session for authentication
+    const { data: { session } } = await supabase.auth.getSession();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add Supabase auth headers if session exists
+    if (session?.access_token) {
+      headers['Authorization'] = `Bearer ${session.access_token}`;
+    }
+    
+    // Add Supabase anon key as fallback
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    if (anonKey) {
+      headers['apikey'] = anonKey;
+    }
+    
+    const resp = await fetch(chatUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({ messages }),
     });
-
-    console.log('[Chat] Response status:', resp.status);
-    console.log('[Chat] Response headers:', Object.fromEntries(resp.headers.entries()));
 
     if (!resp.ok) {
       const errorText = await resp.text();
@@ -85,12 +103,10 @@ async function streamChat({
       const { done, value } = await reader.read();
       
       if (done) {
-        console.log('[Chat] Stream ended');
         break;
       }
       
       const chunk = decoder.decode(value, { stream: true });
-      console.log('[Chat] Raw chunk:', chunk);
       textBuffer += chunk;
 
       // Process complete lines
@@ -100,8 +116,6 @@ async function streamChat({
       for (const line of lines) {
         const trimmedLine = line.trim();
         if (!trimmedLine) continue;
-        
-        console.log('[Chat] Processing line:', trimmedLine);
 
         // Skip SSE comments
         if (trimmedLine.startsWith(':')) continue;
@@ -111,13 +125,11 @@ async function streamChat({
           const jsonStr = trimmedLine.slice(6).trim();
           
           if (jsonStr === '[DONE]') {
-            console.log('[Chat] Received [DONE]');
             continue;
           }
 
           try {
             const parsed = JSON.parse(jsonStr);
-            console.log('[Chat] Parsed JSON:', parsed);
             
             // Try different response formats
             let content: string | undefined;
@@ -141,18 +153,16 @@ async function streamChat({
             }
 
             if (content) {
-              console.log('[Chat] Content delta:', content);
               receivedAnyContent = true;
               onDelta(content);
             }
-          } catch (parseError) {
-            console.warn('[Chat] Failed to parse JSON:', jsonStr, parseError);
+          } catch {
+            // Silently ignore parse errors for malformed JSON
           }
         } else {
           // Try parsing line directly as JSON (non-SSE format)
           try {
             const parsed = JSON.parse(trimmedLine);
-            console.log('[Chat] Direct JSON:', parsed);
             
             const content = parsed.choices?.[0]?.delta?.content || 
                            parsed.choices?.[0]?.message?.content ||
@@ -160,13 +170,11 @@ async function streamChat({
                            parsed.text;
             
             if (content) {
-              console.log('[Chat] Content from direct JSON:', content);
               receivedAnyContent = true;
               onDelta(content);
             }
           } catch {
-            // Not JSON, might be plain text
-            console.log('[Chat] Non-JSON line, treating as text:', trimmedLine);
+            // Not JSON, might be plain text - ignore
           }
         }
       }
@@ -174,7 +182,6 @@ async function streamChat({
 
     // Process any remaining buffer
     if (textBuffer.trim()) {
-      console.log('[Chat] Processing remaining buffer:', textBuffer);
       const trimmedLine = textBuffer.trim();
       
       if (trimmedLine.startsWith('data: ')) {
@@ -196,12 +203,12 @@ async function streamChat({
     }
 
     if (!receivedAnyContent) {
-      console.warn('[Chat] No content received from stream');
+      onError('No response received from chat service. Please try again.');
+      return;
     }
 
     onDone();
   } catch (error) {
-    console.error('[Chat] Stream error:', error);
     onError(error instanceof Error ? error.message : 'Failed to connect to chat service');
   }
 }
@@ -253,7 +260,6 @@ function useElevenLabsTTS() {
       setIsLoading(false);
       await audio.play();
     } catch (error) {
-      console.error('ElevenLabs TTS error:', error);
       setIsLoading(false);
       throw error; // Re-throw to allow fallback
     }
@@ -314,7 +320,6 @@ function useSpeechSynthesis() {
         await elevenLabs.speak(text);
       } catch {
         // Fallback to Web Speech API
-        console.log('Falling back to Web Speech API');
         setActiveTTS('webspeech');
         webSpeech.speak(text);
       }
@@ -482,6 +487,10 @@ export function ChatWidget() {
     }
   }, [messages, caseState.accessibility.autoReadMessages, speak]);
 
+  // Refs for managing streaming state (outside handleSend to persist across renders)
+  const assistantContentRef = useRef('');
+  const streamingMessageIdRef = useRef<string | null>(null);
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -496,23 +505,34 @@ export function ChatWidget() {
     setInput('');
     setIsLoading(true);
 
-    let assistantContent = '';
+    // Reset refs for new message
+    assistantContentRef.current = '';
+    streamingMessageIdRef.current = null;
     
     const updateAssistantMessage = (chunk: string) => {
-      assistantContent += chunk;
+      assistantContentRef.current += chunk;
       setMessages(prev => {
-        const last = prev[prev.length - 1];
-        if (last?.role === 'assistant' && last.id.startsWith('streaming-')) {
+        // Find existing streaming message
+        const streamingIndex = prev.findIndex(m => m.id === streamingMessageIdRef.current);
+        
+        if (streamingIndex !== -1) {
+          // Update existing streaming message
           return prev.map((m, i) => 
-            i === prev.length - 1 ? { ...m, content: assistantContent } : m
+            i === streamingIndex 
+              ? { ...m, content: assistantContentRef.current }
+              : m
           );
+        } else {
+          // Create new streaming message
+          const newId = 'streaming-' + Date.now();
+          streamingMessageIdRef.current = newId;
+          return [...prev, {
+            id: newId,
+            role: 'assistant' as const,
+            content: assistantContentRef.current,
+            timestamp: new Date(),
+          }];
         }
-        return [...prev, {
-          id: 'streaming-' + Date.now(),
-          role: 'assistant' as const,
-          content: assistantContent,
-          timestamp: new Date(),
-        }];
       });
     };
 
@@ -527,9 +547,15 @@ export function ChatWidget() {
       onDone: () => {
         setIsLoading(false);
         // Update the streaming message to have a permanent ID
+        const finalId = Date.now().toString();
         setMessages(prev => prev.map(m => 
-          m.id.startsWith('streaming-') ? { ...m, id: Date.now().toString() } : m
+          m.id === streamingMessageIdRef.current 
+            ? { ...m, id: finalId } 
+            : m
         ));
+        // Reset refs
+        assistantContentRef.current = '';
+        streamingMessageIdRef.current = null;
       },
       onError: (error) => {
         setIsLoading(false);
@@ -539,7 +565,7 @@ export function ChatWidget() {
           description: error,
         });
         // Add error message if no content was streamed
-        if (!assistantContent) {
+        if (!assistantContentRef.current) {
           setMessages(prev => [...prev, {
             id: Date.now().toString(),
             role: 'assistant',
@@ -547,6 +573,9 @@ export function ChatWidget() {
             timestamp: new Date(),
           }]);
         }
+        // Reset refs
+        assistantContentRef.current = '';
+        streamingMessageIdRef.current = null;
       },
     });
   };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Header } from '@/components/Header';
@@ -8,6 +8,10 @@ import { JourneyStepper } from '@/components/JourneyStepper';
 import { JourneyProgressSidebar } from '@/components/JourneyProgressSidebar';
 import { DeadlineCard } from '@/components/DeadlineCard';
 import { ContactHumanButton } from '@/components/ContactHumanButton';
+import { DocumentPrepCard } from '@/components/DocumentPrepCard';
+import { DocumentWizard } from '@/components/DocumentWizard';
+import { DocumentType, DocumentDraft } from '@/types/documents';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,6 +23,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+
+// Email validation
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
 
 const fadeUpVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -34,45 +44,99 @@ const fadeUpVariants = {
 };
 
 export default function DashboardPage() {
-  const { caseState } = useApp();
+  const { caseState, updateCaseState } = useApp();
   const [showReminders, setShowReminders] = useState(false);
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
   const [reminderStatus, setReminderStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [activeDocument, setActiveDocument] = useState<DocumentType | null>(null);
+
+  // Memoize document drafts
+  const documentDrafts = useMemo(() => {
+    return caseState.documentDrafts || {};
+  }, [caseState.documentDrafts]);
+
+  // Document wizard handlers
+  const handleStartDocument = useCallback((type: DocumentType) => {
+    setActiveDocument(type);
+  }, []);
+
+  const handleEditDocument = useCallback((type: DocumentType) => {
+    setActiveDocument(type);
+  }, []);
+
+  const handleDocumentComplete = useCallback((draft: DocumentDraft) => {
+    updateCaseState({
+      documentDrafts: {
+        ...documentDrafts,
+        [draft.type]: {
+          type: draft.type,
+          sections: draft.sections,
+          createdAt: draft.createdAt,
+          updatedAt: draft.updatedAt,
+          completed: draft.completed,
+        },
+      },
+    });
+    setActiveDocument(null);
+    toast.success(t('documents.saved'));
+  }, [documentDrafts, updateCaseState]);
+
+  const handleDocumentCancel = useCallback(() => {
+    setActiveDocument(null);
+  }, []);
+
+  const handleDocumentHelp = useCallback((prompt: string) => {
+    // Open chat widget with the help prompt
+    // This would require exposing a method from ChatWidget, but for now we'll just show a toast
+    toast.info('Open the chat widget for help with: ' + prompt);
+  }, []);
 
   const handleSetReminders = async () => {
     if (!email || !consent) return;
     
+    // Validate email
+    if (!isValidEmail(email)) {
+      toast.error(t('reminders.invalidEmail') || 'Please enter a valid email address');
+      return;
+    }
+    
     setReminderStatus('loading');
     
     try {
-      const response = await fetch('/api/reminders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      // Try Supabase function first
+      const { data, error } = await supabase.functions.invoke('reminders', {
+        body: {
           email,
           caseState: {
             scenario: caseState.scenario,
             incidentDate: caseState.incidentDate,
             acasStatus: caseState.acasStatus,
           },
-        }),
+        },
       });
       
-      if (response.ok) {
-        setReminderStatus('success');
-        toast.success(t('reminders.success'));
-      } else {
-        // API not connected, store locally
-        localStorage.setItem('wrn-reminder-request', JSON.stringify({ email, timestamp: new Date().toISOString() }));
-        setReminderStatus('success');
-        toast.info(t('reminders.notConnected'));
-      }
-    } catch {
-      // Store locally as fallback
-      localStorage.setItem('wrn-reminder-request', JSON.stringify({ email, timestamp: new Date().toISOString() }));
+      if (error) throw error;
+      
+      // Success
       setReminderStatus('success');
-      toast.info(t('reminders.notConnected'));
+      toast.success(t('reminders.success'));
+      
+      // Also store locally as backup
+      localStorage.setItem('wrn-reminder-request', JSON.stringify({ 
+        email, 
+        timestamp: new Date().toISOString(),
+        synced: true 
+      }));
+    } catch (error) {
+      // Fallback: store locally
+      localStorage.setItem('wrn-reminder-request', JSON.stringify({ 
+        email, 
+        timestamp: new Date().toISOString(),
+        synced: false 
+      }));
+      setReminderStatus('success');
+      toast.info(t('reminders.savedLocally') || 'Reminder saved locally. We will sync when the service is available.');
     }
   };
 
@@ -115,6 +179,7 @@ export default function DashboardPage() {
                 incidentDate={caseState.incidentDate}
                 incidentDateUnknown={caseState.incidentDateUnknown}
                 acasStatus={caseState.acasStatus}
+                acasStartDate={caseState.acasStartDate}
               />
             </motion.section>
 
@@ -132,13 +197,47 @@ export default function DashboardPage() {
               <JourneyStepper acasStatus={caseState.acasStatus} />
             </motion.section>
 
+            {/* Document Preparation */}
+            {!activeDocument && (
+              <motion.section 
+                custom={3}
+                initial="hidden"
+                animate="visible"
+                variants={fadeUpVariants}
+              >
+                <DocumentPrepCard
+                  drafts={documentDrafts}
+                  onStartDocument={handleStartDocument}
+                  onEditDocument={handleEditDocument}
+                />
+              </motion.section>
+            )}
+
+            {/* Document Wizard */}
+            {activeDocument && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <DocumentWizard
+                  documentType={activeDocument}
+                  onComplete={handleDocumentComplete}
+                  onCancel={handleDocumentCancel}
+                  onAskForHelp={handleDocumentHelp}
+                  existingDraft={documentDrafts[activeDocument]}
+                />
+              </motion.section>
+            )}
+
             {/* Reminders Section */}
-            <motion.section 
-              custom={3}
-              initial="hidden"
-              animate="visible"
-              variants={fadeUpVariants}
-            >
+            {!activeDocument && (
+              <motion.section 
+                custom={4}
+                initial="hidden"
+                animate="visible"
+                variants={fadeUpVariants}
+              >
               {!showReminders ? (
                 <Button 
                   variant="outline" 
@@ -212,6 +311,7 @@ export default function DashboardPage() {
                 </motion.div>
               )}
             </motion.section>
+            )}
           </div>
         </div>
       </main>

@@ -1,4 +1,5 @@
-import { addMonths, subDays, differenceInDays, format, isValid, parseISO } from 'date-fns';
+import { addMonths, subDays, differenceInDays, format, isValid, parseISO, addDays } from 'date-fns';
+import { AcasStatus } from '@/types/case';
 
 export type UrgencyLevel = 'ok' | 'warning' | 'urgent';
 
@@ -7,22 +8,32 @@ export interface DeadlineInfo {
   daysLeft: number | null;
   urgency: UrgencyLevel;
   formattedDeadline: string | null;
+  includesAcasExtension: boolean;
 }
 
 /**
  * Calculate the tribunal deadline based on UK Employment Tribunal rules.
- * The deadline is typically 3 calendar months minus 1 day from the incident date.
  * 
- * Note: This is a simplified calculation. Real cases may have extensions
- * for ACAS Early Conciliation period.
+ * Base deadline: 3 calendar months minus 1 day from the incident date.
+ * 
+ * ACAS Early Conciliation Extension:
+ * - If ACAS Early Conciliation was started, the deadline is extended by the period
+ *   between the incident date and when ACAS was contacted (up to a maximum extension)
+ * - The extension period is typically the number of days from incident to ACAS start
+ * - Maximum extension is typically 1 month (30 days) as per UK Employment Tribunal rules
  */
-export function calculateDeadline(incidentDate: string | null): DeadlineInfo {
+export function calculateDeadline(
+  incidentDate: string | null,
+  acasStatus: AcasStatus = 'not_started',
+  acasStartDate: string | null = null
+): DeadlineInfo {
   if (!incidentDate) {
     return {
       deadline: null,
       daysLeft: null,
       urgency: 'warning',
       formattedDeadline: null,
+      includesAcasExtension: false,
     };
   }
 
@@ -33,11 +44,30 @@ export function calculateDeadline(incidentDate: string | null): DeadlineInfo {
       daysLeft: null,
       urgency: 'warning',
       formattedDeadline: null,
+      includesAcasExtension: false,
     };
   }
 
-  // 3 calendar months minus 1 day
-  const deadline = subDays(addMonths(date, 3), 1);
+  // Base deadline: 3 calendar months minus 1 day
+  let deadline = subDays(addMonths(date, 3), 1);
+  let includesAcasExtension = false;
+
+  // Apply ACAS Early Conciliation extension if applicable
+  if (acasStatus === 'started' && acasStartDate) {
+    const acasDate = parseISO(acasStartDate);
+    if (isValid(acasDate) && acasDate >= date) {
+      // Calculate days between incident and ACAS start
+      const extensionDays = differenceInDays(acasDate, date);
+      // Maximum extension is 30 days (1 month) as per UK Employment Tribunal rules
+      const actualExtension = Math.min(extensionDays, 30);
+      
+      if (actualExtension > 0) {
+        deadline = addDays(deadline, actualExtension);
+        includesAcasExtension = true;
+      }
+    }
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
@@ -57,6 +87,7 @@ export function calculateDeadline(incidentDate: string | null): DeadlineInfo {
     daysLeft: Math.max(0, daysLeft),
     urgency,
     formattedDeadline: format(deadline, 'd MMMM yyyy'),
+    includesAcasExtension,
   };
 }
 

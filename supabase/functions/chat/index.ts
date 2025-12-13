@@ -1,8 +1,21 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+// Get allowed origin from environment or use a default
+function getAllowedOrigin(): string {
+  const origin = Deno.env.get('ALLOWED_ORIGIN');
+  if (origin) return origin;
+  // In production, you should set this to your actual domain
+  // For now, allow all origins but log a warning
+  if (Deno.env.get('ENVIRONMENT') === 'production') {
+    console.warn('ALLOWED_ORIGIN not set in production - using wildcard');
+  }
+  return '*';
+}
+
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': getAllowedOrigin(),
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {

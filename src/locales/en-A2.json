@@ -56,7 +56,8 @@
       "date": "Date",
       "dateUnknown": "Date not known",
       "acasStatus": "ACAS status",
-      "edit": "Change"
+      "edit": "Change",
+      "saved": "Your information is saved. Click \"See my plan\" to view your journey map and deadlines."
     },
     "navigation": {
       "back": "Back",
@@ -141,6 +142,7 @@
     "statusOk": "You have time",
     "statusWarning": "Time is running out",
     "statusUrgent": "Very urgent",
+    "acasExtension": "This deadline includes an extension for ACAS Early Conciliation.",
     "disclaimer": "Check official sites or talk to an advisor if unsure.",
     "nextAction": {
       "startAcas": "Start ACAS now",
@@ -170,6 +172,7 @@
     "start": "Start",
     "completed": "Done",
     "draft": "Draft",
+    "saved": "Document saved successfully",
     "witnessStatement": {
       "title": "Witness Statement",
       "description": "Your story in your own words",
@@ -310,7 +313,9 @@
     "consent": "I agree to receive reminder emails",
     "enable": "Turn on reminders",
     "success": "Reminders set up!",
-    "notConnected": "Reminders are not connected yet. We saved your request."
+    "notConnected": "Reminders are not connected yet. We saved your request.",
+    "invalidEmail": "Please enter a valid email address",
+    "savedLocally": "Reminder saved locally. We will sync when the service is available."
   },
   "errors": {
     "required": "This field is required",

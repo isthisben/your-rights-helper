@@ -42,7 +42,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Persist case state
   useEffect(() => {
-    saveCaseState(caseState);
+    const success = saveCaseState(caseState);
+    if (!success && import.meta.env.DEV) {
+      console.warn('Failed to save case state to localStorage');
+    }
   }, [caseState]);
 
   const updateCaseState = useCallback((updates: Partial<CaseState>) => {

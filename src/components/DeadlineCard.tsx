@@ -18,6 +18,7 @@ interface DeadlineCardProps {
   incidentDate: string | null;
   incidentDateUnknown: boolean;
   acasStatus: AcasStatus;
+  acasStartDate?: string | null;
   className?: string;
 }
 
@@ -32,8 +33,8 @@ function UrgencyIcon({ urgency }: { urgency: UrgencyLevel }) {
   }
 }
 
-export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, className }: DeadlineCardProps) {
-  const deadline = calculateDeadline(incidentDate);
+export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, acasStartDate, className }: DeadlineCardProps) {
+  const deadline = calculateDeadline(incidentDate, acasStatus, acasStartDate);
   
   const urgencyStyles = {
     ok: 'bg-status-ok-bg border-status-ok-border text-status-ok status-pattern-ok colorblind-pattern-ok',
@@ -85,10 +86,18 @@ export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, cl
             </div>
 
             {/* Date display */}
-            <div className="flex items-center gap-2.5 text-foreground">
-              <Calendar className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-              <span className="text-sm">{t('deadline.limitLabel')}:</span>
-              <strong className="text-lg font-semibold">{deadline.formattedDeadline}</strong>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5 text-foreground">
+                <Calendar className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                <span className="text-sm">{t('deadline.limitLabel')}:</span>
+                <strong className="text-lg font-semibold">{deadline.formattedDeadline}</strong>
+              </div>
+              {deadline.includesAcasExtension && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Info className="h-3 w-3" />
+                  {t('deadline.acasExtension')}
+                </p>
+              )}
             </div>
           </div>
         ) : (

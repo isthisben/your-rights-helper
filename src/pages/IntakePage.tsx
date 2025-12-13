@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Scenario, AcasStatus } from '@/types/case';
+import { validateDateInput } from '@/lib/validation';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
@@ -13,7 +14,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -52,24 +54,39 @@ export default function IntakePage() {
   
   // Local form state
   const [scenario, setScenario] = useState<Scenario | null>(caseState.scenario);
-  const [incidentDate, setIncidentDate] = useState<Date | undefined>(
-    caseState.incidentDate ? parseISO(caseState.incidentDate) : undefined
-  );
+  const [incidentDate, setIncidentDate] = useState<Date | undefined>(() => {
+    if (caseState.incidentDate) {
+      const parsed = parseISO(caseState.incidentDate);
+      return isValid(parsed) ? parsed : undefined;
+    }
+    return undefined;
+  });
   const [dateUnknown, setDateUnknown] = useState(caseState.incidentDateUnknown);
   const [acasStatus, setAcasStatus] = useState<AcasStatus>(caseState.acasStatus);
-  const [acasDate, setAcasDate] = useState<Date | undefined>(
-    caseState.acasStartDate ? parseISO(caseState.acasStartDate) : undefined
-  );
+  const [acasDate, setAcasDate] = useState<Date | undefined>(() => {
+    if (caseState.acasStartDate) {
+      const parsed = parseISO(caseState.acasStartDate);
+      return isValid(parsed) ? parsed : undefined;
+    }
+    return undefined;
+  });
 
   // Save progress on step change
   useEffect(() => {
+    const incidentDateStr = incidentDate && isValid(incidentDate) 
+      ? incidentDate.toISOString().split('T')[0] 
+      : null;
+    const acasDateStr = acasDate && isValid(acasDate)
+      ? acasDate.toISOString().split('T')[0]
+      : null;
+    
     updateCaseState({
       currentIntakeStep: step,
       scenario,
-      incidentDate: incidentDate?.toISOString().split('T')[0] ?? null,
+      incidentDate: incidentDateStr,
       incidentDateUnknown: dateUnknown,
       acasStatus,
-      acasStartDate: acasDate?.toISOString().split('T')[0] ?? null,
+      acasStartDate: acasDateStr,
     });
   }, [step, scenario, incidentDate, dateUnknown, acasStatus, acasDate, updateCaseState]);
 
@@ -318,7 +335,7 @@ export default function IntakePage() {
             <div className="bg-status-ok-bg border border-status-ok-border rounded-lg p-4 flex items-start gap-3">
               <CheckCircle2 className="h-5 w-5 text-status-ok flex-shrink-0 mt-0.5" />
               <p className="text-sm text-foreground">
-                Your information is saved. Click "See my plan" to view your journey map and deadlines.
+                {t('intake.step4.saved')}
               </p>
             </div>
           </div>
