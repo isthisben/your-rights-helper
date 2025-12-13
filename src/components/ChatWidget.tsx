@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { t } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { 
   MessageCircle, 
   X, 
@@ -21,20 +22,96 @@ interface Message {
   timestamp: Date;
 }
 
-// Stub chat API - will be replaced with real API later
-async function sendChatMessage(messages: Message[]): Promise<string> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Placeholder response
-  const responses = [
-    "I understand. Let me help you think through this step by step. Remember, I can't give legal advice, but I can explain the process.",
-    "That's a good question. The employment tribunal process has several steps. The most important thing right now is to check your time limits.",
-    "I hear you. Many people find this stressful. Let's break it down into smaller steps. First, have you contacted ACAS yet?",
-    "Thank you for sharing. To help you best, I need to understand: when did this situation first happen?",
-  ];
-  
-  return responses[Math.floor(Math.random() * responses.length)];
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+// Stream chat with GreenPT API
+async function streamChat({
+  messages,
+  onDelta,
+  onDone,
+  onError,
+}: {
+  messages: { role: string; content: string }[];
+  onDelta: (deltaText: string) => void;
+  onDone: () => void;
+  onError: (error: string) => void;
+}) {
+  try {
+    const resp = await fetch(CHAT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages }),
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json().catch(() => ({}));
+      throw new Error(errorData.error || `Request failed with status ${resp.status}`);
+    }
+
+    if (!resp.body) {
+      throw new Error('No response body');
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let textBuffer = '';
+    let streamDone = false;
+
+    while (!streamDone) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      textBuffer += decoder.decode(value, { stream: true });
+
+      let newlineIndex: number;
+      while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+        let line = textBuffer.slice(0, newlineIndex);
+        textBuffer = textBuffer.slice(newlineIndex + 1);
+
+        if (line.endsWith('\r')) line = line.slice(0, -1);
+        if (line.startsWith(':') || line.trim() === '') continue;
+        if (!line.startsWith('data: ')) continue;
+
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === '[DONE]') {
+          streamDone = true;
+          break;
+        }
+
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) onDelta(content);
+        } catch {
+          // Incomplete JSON, put it back
+          textBuffer = line + '\n' + textBuffer;
+          break;
+        }
+      }
+    }
+
+    // Final flush
+    if (textBuffer.trim()) {
+      for (let raw of textBuffer.split('\n')) {
+        if (!raw) continue;
+        if (raw.endsWith('\r')) raw = raw.slice(0, -1);
+        if (raw.startsWith(':') || raw.trim() === '') continue;
+        if (!raw.startsWith('data: ')) continue;
+        const jsonStr = raw.slice(6).trim();
+        if (jsonStr === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) onDelta(content);
+        } catch { /* ignore */ }
+      }
+    }
+
+    onDone();
+  } catch (error) {
+    onError(error instanceof Error ? error.message : 'Failed to connect to chat service');
+  }
 }
 
 // Web Speech API helpers
@@ -132,6 +209,7 @@ export function ChatWidget() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   
   const { speak, stop, isSpeaking } = useSpeechSynthesis();
   const { startListening, stopListening, isListening, transcript, supported: sttSupported } = useSpeechRecognition();
@@ -162,27 +240,59 @@ export function ChatWidget() {
     setInput('');
     setIsLoading(true);
 
-    try {
-      const response = await sendChatMessage([...messages, userMessage]);
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch {
-      // Show error message
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: t('errors.somethingWrong'),
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    let assistantContent = '';
+    
+    const updateAssistantMessage = (chunk: string) => {
+      assistantContent += chunk;
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.role === 'assistant' && last.id.startsWith('streaming-')) {
+          return prev.map((m, i) => 
+            i === prev.length - 1 ? { ...m, content: assistantContent } : m
+          );
+        }
+        return [...prev, {
+          id: 'streaming-' + Date.now(),
+          role: 'assistant' as const,
+          content: assistantContent,
+          timestamp: new Date(),
+        }];
+      });
+    };
+
+    const chatMessages = [...messages, userMessage].map(m => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    await streamChat({
+      messages: chatMessages,
+      onDelta: updateAssistantMessage,
+      onDone: () => {
+        setIsLoading(false);
+        // Update the streaming message to have a permanent ID
+        setMessages(prev => prev.map(m => 
+          m.id.startsWith('streaming-') ? { ...m, id: Date.now().toString() } : m
+        ));
+      },
+      onError: (error) => {
+        setIsLoading(false);
+        toast({
+          variant: 'destructive',
+          title: t('errors.somethingWrong'),
+          description: error,
+        });
+        // Add error message if no content was streamed
+        if (!assistantContent) {
+          setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: t('errors.somethingWrong'),
+            timestamp: new Date(),
+          }]);
+        }
+      },
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
