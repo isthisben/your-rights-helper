@@ -59,7 +59,10 @@ export default function SettingsPage() {
         },
       });
 
-      toast.success('Export requested! You will receive an email shortly.');
+      // Note: Success here means the webhook was sent to Activepieces
+      // The actual email sending depends on the Activepieces flow execution
+      // Check Activepieces dashboard to verify the flow ran successfully
+      toast.success('Export requested! Check your email shortly. If you don\'t receive it, check Activepieces dashboard for flow status.');
       setExportEmail(email); // Save email for next time
     } catch (error) {
       console.error('Failed to send export snapshot webhook:', error);
