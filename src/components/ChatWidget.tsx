@@ -51,6 +51,9 @@ async function streamChat({
   onError: (error: string) => void;
 }) {
   try {
+    console.log('[Chat] Sending request to:', CHAT_URL);
+    console.log('[Chat] Messages:', messages);
+    
     const resp = await fetch(CHAT_URL, {
       method: 'POST',
       headers: {
@@ -59,9 +62,13 @@ async function streamChat({
       body: JSON.stringify({ messages }),
     });
 
+    console.log('[Chat] Response status:', resp.status);
+    console.log('[Chat] Response headers:', Object.fromEntries(resp.headers.entries()));
+
     if (!resp.ok) {
-      const errorData = await resp.json().catch(() => ({}));
-      throw new Error(errorData.error || `Request failed with status ${resp.status}`);
+      const errorText = await resp.text();
+      console.error('[Chat] Error response:', errorText);
+      throw new Error(`Request failed with status ${resp.status}: ${errorText}`);
     }
 
     if (!resp.body) {
@@ -71,59 +78,129 @@ async function streamChat({
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let textBuffer = '';
-    let streamDone = false;
+    let receivedAnyContent = false;
 
-    while (!streamDone) {
+    while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
-      textBuffer += decoder.decode(value, { stream: true });
+      
+      if (done) {
+        console.log('[Chat] Stream ended');
+        break;
+      }
+      
+      const chunk = decoder.decode(value, { stream: true });
+      console.log('[Chat] Raw chunk:', chunk);
+      textBuffer += chunk;
 
-      let newlineIndex: number;
-      while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
-        let line = textBuffer.slice(0, newlineIndex);
-        textBuffer = textBuffer.slice(newlineIndex + 1);
+      // Process complete lines
+      const lines = textBuffer.split('\n');
+      textBuffer = lines.pop() || ''; // Keep incomplete line in buffer
 
-        if (line.endsWith('\r')) line = line.slice(0, -1);
-        if (line.startsWith(':') || line.trim() === '') continue;
-        if (!line.startsWith('data: ')) continue;
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) continue;
+        
+        console.log('[Chat] Processing line:', trimmedLine);
 
-        const jsonStr = line.slice(6).trim();
-        if (jsonStr === '[DONE]') {
-          streamDone = true;
-          break;
-        }
+        // Skip SSE comments
+        if (trimmedLine.startsWith(':')) continue;
 
-        try {
-          const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) onDelta(content);
-        } catch {
-          // Incomplete JSON, put it back
-          textBuffer = line + '\n' + textBuffer;
-          break;
+        // Handle SSE data format
+        if (trimmedLine.startsWith('data: ')) {
+          const jsonStr = trimmedLine.slice(6).trim();
+          
+          if (jsonStr === '[DONE]') {
+            console.log('[Chat] Received [DONE]');
+            continue;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            console.log('[Chat] Parsed JSON:', parsed);
+            
+            // Try different response formats
+            let content: string | undefined;
+            
+            // OpenAI streaming format: choices[0].delta.content
+            content = parsed.choices?.[0]?.delta?.content;
+            
+            // OpenAI non-streaming format: choices[0].message.content
+            if (!content) {
+              content = parsed.choices?.[0]?.message?.content;
+            }
+            
+            // Direct content field
+            if (!content && typeof parsed.content === 'string') {
+              content = parsed.content;
+            }
+            
+            // Text field
+            if (!content && typeof parsed.text === 'string') {
+              content = parsed.text;
+            }
+
+            if (content) {
+              console.log('[Chat] Content delta:', content);
+              receivedAnyContent = true;
+              onDelta(content);
+            }
+          } catch (parseError) {
+            console.warn('[Chat] Failed to parse JSON:', jsonStr, parseError);
+          }
+        } else {
+          // Try parsing line directly as JSON (non-SSE format)
+          try {
+            const parsed = JSON.parse(trimmedLine);
+            console.log('[Chat] Direct JSON:', parsed);
+            
+            const content = parsed.choices?.[0]?.delta?.content || 
+                           parsed.choices?.[0]?.message?.content ||
+                           parsed.content ||
+                           parsed.text;
+            
+            if (content) {
+              console.log('[Chat] Content from direct JSON:', content);
+              receivedAnyContent = true;
+              onDelta(content);
+            }
+          } catch {
+            // Not JSON, might be plain text
+            console.log('[Chat] Non-JSON line, treating as text:', trimmedLine);
+          }
         }
       }
     }
 
-    // Final flush
+    // Process any remaining buffer
     if (textBuffer.trim()) {
-      for (let raw of textBuffer.split('\n')) {
-        if (!raw) continue;
-        if (raw.endsWith('\r')) raw = raw.slice(0, -1);
-        if (raw.startsWith(':') || raw.trim() === '') continue;
-        if (!raw.startsWith('data: ')) continue;
-        const jsonStr = raw.slice(6).trim();
-        if (jsonStr === '[DONE]') continue;
-        try {
-          const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) onDelta(content);
-        } catch { /* ignore */ }
+      console.log('[Chat] Processing remaining buffer:', textBuffer);
+      const trimmedLine = textBuffer.trim();
+      
+      if (trimmedLine.startsWith('data: ')) {
+        const jsonStr = trimmedLine.slice(6).trim();
+        if (jsonStr !== '[DONE]') {
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content || 
+                           parsed.choices?.[0]?.message?.content ||
+                           parsed.content ||
+                           parsed.text;
+            if (content) {
+              receivedAnyContent = true;
+              onDelta(content);
+            }
+          } catch { /* ignore */ }
+        }
       }
+    }
+
+    if (!receivedAnyContent) {
+      console.warn('[Chat] No content received from stream');
     }
 
     onDone();
   } catch (error) {
+    console.error('[Chat] Stream error:', error);
     onError(error instanceof Error ? error.message : 'Failed to connect to chat service');
   }
 }
