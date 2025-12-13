@@ -139,7 +139,9 @@
     "highContrast": "High contrast",
     "reduceMotion": "Reduce motion",
     "dyslexiaFont": "Dyslexia-friendly font",
-    "colorblindMode": "Colorblind-friendly colors"
+    "colorblindMode": "Colorblind-friendly colors",
+    "speechRate": "Speech speed",
+    "autoRead": "Read messages aloud"
   },
   "language": {
     "title": "Language",
