@@ -26,6 +26,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const payload = req.body;
 
+    // Log the payload for debugging (without sensitive data)
+    console.log('Export snapshot webhook called');
+    console.log('Payload keys:', Object.keys(payload || {}));
+    console.log('Email in payload:', payload?.email);
+    console.log('Has caseState:', !!payload?.caseState);
+
     // Forward the request to Activepieces webhook
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
@@ -34,6 +40,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       body: JSON.stringify(payload),
     });
+
+    console.log('Activepieces response status:', response.status);
+    console.log('Activepieces response headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error');
