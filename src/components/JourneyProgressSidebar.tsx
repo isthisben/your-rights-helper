@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { JourneyProgress, JourneyStepKey } from '@/types/case';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface JourneyProgressSidebarProps {
   journeyProgress: JourneyProgress;
@@ -46,27 +47,30 @@ export function JourneyProgressSidebar({
   const currentStep = getCurrentStep();
 
   return (
-    <aside 
+    <motion.aside 
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const, delay: 0.3 }}
       className={cn(
-        "hidden lg:flex flex-col fixed right-4 top-24 w-56 bg-card border border-border rounded-xl p-4 shadow-sm",
+        "hidden lg:flex flex-col fixed right-6 top-28 w-60 bg-card/80 backdrop-blur-md border border-border/40 rounded-2xl p-5 shadow-soft",
         className
       )}
       aria-label={t('journey.progress.title')}
     >
-      <h3 className="text-sm font-semibold text-foreground mb-3">
+      <h3 className="text-sm font-semibold text-foreground mb-4 tracking-tight">
         {t('journey.progress.title')}
       </h3>
       
       {/* Progress bar */}
-      <div className="mb-4">
-        <Progress value={progressPercent} className="h-2" />
-        <p className="text-xs text-muted-foreground mt-1">
+      <div className="mb-5">
+        <Progress value={progressPercent} className="h-2 rounded-full" />
+        <p className="text-xs text-muted-foreground mt-2">
           {t('journey.progress.percent', { percent: progressPercent })}
         </p>
       </div>
       
       {/* Step indicators */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {JOURNEY_STEPS.map((step, index) => {
           const isCompleted = journeyProgress[step]?.completed;
           const isCurrent = index === currentStep && !isCompleted;
@@ -75,7 +79,7 @@ export function JourneyProgressSidebar({
             <div 
               key={step}
               className={cn(
-                "flex items-center gap-2 text-xs py-1 px-2 rounded transition-colors",
+                "flex items-center gap-2.5 text-xs py-2 px-3 rounded-xl transition-all duration-200",
                 isCompleted && "text-status-ok",
                 isCurrent && "bg-primary/10 text-primary font-medium",
                 !isCompleted && !isCurrent && "text-muted-foreground"
@@ -83,16 +87,16 @@ export function JourneyProgressSidebar({
             >
               <div 
                 className={cn(
-                  "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0",
+                  "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200",
                   isCompleted && "bg-status-ok text-white",
                   isCurrent && "bg-primary text-primary-foreground",
-                  !isCompleted && !isCurrent && "bg-muted border border-border"
+                  !isCompleted && !isCurrent && "bg-secondary border border-border/60"
                 )}
               >
                 {isCompleted ? (
                   <CheckCircle2 className="h-3 w-3" />
                 ) : (
-                  <span className="text-[10px]">{index + 1}</span>
+                  <span className="text-[10px] font-medium">{index + 1}</span>
                 )}
               </div>
               <span className="truncate">
@@ -104,7 +108,7 @@ export function JourneyProgressSidebar({
       </div>
       
       {/* Summary */}
-      <div className="mt-4 pt-3 border-t border-border">
+      <div className="mt-5 pt-4 border-t border-border/40">
         <p className="text-xs text-muted-foreground">
           {t('journey.progress.completed', { 
             completed: completedSteps, 
@@ -112,6 +116,6 @@ export function JourneyProgressSidebar({
           })}
         </p>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

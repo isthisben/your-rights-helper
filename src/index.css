@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Lexie+Readable:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexie+Readable:wght@400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Work Rights Navigator Design System
-   Calm, accessible, mobile-first
+   Calm, premium, Framer-style aesthetic
    All colors in HSL */
 
 @layer base {
@@ -13,70 +13,75 @@
     /* Text size scale - controlled by accessibility */
     --text-scale: 1;
     
-    /* Core palette - Calm teal/blue */
-    --background: 40 33% 98%;
-    --foreground: 220 20% 20%;
+    /* Core palette - Warm, calm neutrals */
+    --background: 40 30% 96%;
+    --foreground: 30 10% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    --card: 40 25% 98%;
+    --card-foreground: 30 10% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover: 40 25% 99%;
+    --popover-foreground: 30 10% 25%;
 
-    /* Primary - Calming teal */
-    --primary: 173 77% 26%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 173 60% 94%;
+    /* Primary - Muted sage green */
+    --primary: 145 25% 38%;
+    --primary-foreground: 40 30% 98%;
+    --primary-light: 145 30% 94%;
 
-    /* Secondary - Soft slate */
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 220 20% 30%;
+    /* Secondary - Soft warm gray */
+    --secondary: 35 15% 92%;
+    --secondary-foreground: 30 10% 30%;
 
-    /* Muted */
-    --muted: 210 20% 94%;
-    --muted-foreground: 220 10% 45%;
+    /* Muted - Warm neutral */
+    --muted: 35 12% 90%;
+    --muted-foreground: 30 8% 45%;
 
-    /* Accent */
-    --accent: 173 50% 92%;
-    --accent-foreground: 173 77% 20%;
+    /* Accent - Soft olive */
+    --accent: 80 20% 90%;
+    --accent-foreground: 80 30% 30%;
 
     /* Destructive - For urgent items */
-    --destructive: 0 72% 51%;
+    --destructive: 0 50% 50%;
     --destructive-foreground: 0 0% 100%;
 
     /* Status colors - always paired with icons */
-    --status-ok: 142 55% 35%;
-    --status-ok-bg: 142 50% 94%;
-    --status-ok-border: 142 50% 70%;
+    --status-ok: 145 35% 40%;
+    --status-ok-bg: 145 30% 94%;
+    --status-ok-border: 145 25% 70%;
     
-    --status-warning: 38 92% 45%;
-    --status-warning-bg: 38 80% 95%;
-    --status-warning-border: 38 70% 65%;
+    --status-warning: 35 70% 50%;
+    --status-warning-bg: 35 60% 95%;
+    --status-warning-border: 35 50% 70%;
     
-    --status-urgent: 0 72% 45%;
-    --status-urgent-bg: 0 70% 96%;
-    --status-urgent-border: 0 60% 60%;
+    --status-urgent: 0 50% 50%;
+    --status-urgent-bg: 0 40% 96%;
+    --status-urgent-border: 0 40% 70%;
 
-    /* Borders & inputs */
-    --border: 220 13% 85%;
-    --input: 220 13% 85%;
-    --ring: 173 77% 26%;
+    /* Borders & inputs - soft warm tones */
+    --border: 35 15% 88%;
+    --input: 35 15% 88%;
+    --ring: 145 25% 38%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Sidebar (not heavily used but kept for shadcn compat) */
-    --sidebar-background: 40 33% 98%;
-    --sidebar-foreground: 220 20% 20%;
-    --sidebar-primary: 173 77% 26%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 173 50% 92%;
-    --sidebar-accent-foreground: 173 77% 20%;
-    --sidebar-border: 220 13% 85%;
-    --sidebar-ring: 173 77% 26%;
+    /* Sidebar */
+    --sidebar-background: 40 25% 98%;
+    --sidebar-foreground: 30 10% 25%;
+    --sidebar-primary: 145 25% 38%;
+    --sidebar-primary-foreground: 40 30% 98%;
+    --sidebar-accent: 80 20% 92%;
+    --sidebar-accent-foreground: 80 30% 30%;
+    --sidebar-border: 35 15% 88%;
+    --sidebar-ring: 145 25% 38%;
 
     /* Accessibility overrides */
-    --font-family: 'Open Sans', system-ui, sans-serif;
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
     --font-family-dyslexia: 'Lexie Readable', 'OpenDyslexic', 'Comic Sans MS', cursive;
+    
+    /* Animation tokens */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-smooth: 0.4s var(--ease-out-expo);
+    --transition-fast: 0.2s var(--ease-out-expo);
   }
 
   /* High contrast mode */
@@ -85,13 +90,13 @@
     --foreground: 0 0% 0%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 0%;
-    --primary: 220 100% 30%;
+    --primary: 145 60% 25%;
     --primary-foreground: 0 0% 100%;
     --border: 0 0% 0%;
     --muted-foreground: 0 0% 20%;
-    --status-ok: 120 100% 20%;
-    --status-warning: 30 100% 30%;
-    --status-urgent: 0 100% 30%;
+    --status-ok: 145 80% 25%;
+    --status-warning: 35 90% 35%;
+    --status-urgent: 0 80% 40%;
   }
 
   /* Colorblind-friendly mode - uses blue/orange/purple instead of green/yellow/red */
@@ -110,33 +115,33 @@
   }
 
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 40 20% 95%;
-    --card: 220 20% 14%;
-    --card-foreground: 40 20% 95%;
-    --popover: 220 20% 14%;
-    --popover-foreground: 40 20% 95%;
-    --primary: 173 60% 45%;
-    --primary-foreground: 220 20% 10%;
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 40 20% 90%;
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 60%;
-    --accent: 173 40% 20%;
-    --accent-foreground: 173 60% 80%;
-    --destructive: 0 62% 45%;
+    --background: 30 10% 8%;
+    --foreground: 40 20% 92%;
+    --card: 30 10% 12%;
+    --card-foreground: 40 20% 92%;
+    --popover: 30 10% 12%;
+    --popover-foreground: 40 20% 92%;
+    --primary: 145 30% 50%;
+    --primary-foreground: 30 10% 8%;
+    --secondary: 30 8% 18%;
+    --secondary-foreground: 40 15% 85%;
+    --muted: 30 8% 16%;
+    --muted-foreground: 30 8% 55%;
+    --accent: 80 15% 18%;
+    --accent-foreground: 80 25% 75%;
+    --destructive: 0 50% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 25%;
-    --input: 220 15% 25%;
-    --ring: 173 60% 45%;
-    --sidebar-background: 220 20% 10%;
-    --sidebar-foreground: 40 20% 95%;
-    --sidebar-primary: 173 60% 45%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 173 40% 20%;
-    --sidebar-accent-foreground: 173 60% 80%;
-    --sidebar-border: 220 15% 25%;
-    --sidebar-ring: 173 60% 45%;
+    --border: 30 8% 22%;
+    --input: 30 8% 22%;
+    --ring: 145 30% 50%;
+    --sidebar-background: 30 10% 8%;
+    --sidebar-foreground: 40 20% 92%;
+    --sidebar-primary: 145 30% 50%;
+    --sidebar-primary-foreground: 30 10% 8%;
+    --sidebar-accent: 80 15% 18%;
+    --sidebar-accent-foreground: 80 25% 75%;
+    --sidebar-border: 30 8% 22%;
+    --sidebar-ring: 145 30% 50%;
   }
 }
 
@@ -147,12 +152,14 @@
 
   html {
     font-size: calc(16px * var(--text-scale));
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-family);
-    line-height: 1.6;
+    line-height: 1.7;
+    letter-spacing: -0.01em;
   }
 
   /* Dyslexia-friendly font toggle */
@@ -261,4 +268,77 @@
 
 .skip-link:focus {
   @apply translate-y-0;
+}
+
+/* Framer-style animation utilities */
+@layer utilities {
+  .animate-fade-up {
+    animation: fadeUp 0.6s var(--ease-out-expo) both;
+  }
+  
+  .animate-fade-up-delay-1 {
+    animation: fadeUp 0.6s var(--ease-out-expo) 0.1s both;
+  }
+  
+  .animate-fade-up-delay-2 {
+    animation: fadeUp 0.6s var(--ease-out-expo) 0.2s both;
+  }
+  
+  .animate-fade-up-delay-3 {
+    animation: fadeUp 0.6s var(--ease-out-expo) 0.3s both;
+  }
+  
+  .hover-lift {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px -12px hsl(var(--foreground) / 0.15);
+  }
+  
+  .hover-scale {
+    transition: transform var(--transition-fast);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+  
+  .card-shadow {
+    box-shadow: 0 4px 24px -8px hsl(var(--foreground) / 0.08);
+  }
+  
+  .card-shadow-lg {
+    box-shadow: 0 8px 40px -12px hsl(var(--foreground) / 0.12);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Smooth scroll-linked animations */
+@supports (animation-timeline: scroll()) {
+  .scroll-fade-in {
+    animation: fadeUp linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
 }
