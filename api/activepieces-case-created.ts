@@ -24,13 +24,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const payload = req.body;
+    // Explicitly parse body to ensure proper JSON handling
+    // Vercel auto-parses, but we need to ensure it's an object
+    let payload: any;
+    if (typeof req.body === 'string') {
+      try {
+        payload = JSON.parse(req.body);
+      } catch (e) {
+        console.error('Failed to parse request body as JSON:', e);
+        return res.status(400).json({ error: 'Invalid JSON body' });
+      }
+    } else if (req.body && typeof req.body === 'object') {
+      payload = req.body;
+    } else {
+      console.error('Invalid request body type:', typeof req.body);
+      return res.status(400).json({ error: 'Invalid request body' });
+    }
+
+    // Email is optional for case created, but if provided, validate it
+    if (payload.email !== undefined && typeof payload.email !== 'string') {
+      console.error('Email field has invalid type:', {
+        email: payload.email,
+        emailType: typeof payload.email,
+      });
+    }
 
     // Log the payload for debugging (without sensitive data)
     console.log('Case created webhook called');
     console.log('Webhook URL:', WEBHOOK_URL);
     console.log('Payload keys:', Object.keys(payload || {}));
     console.log('Email in payload:', payload?.email);
+    console.log('Email type:', typeof payload?.email);
     console.log('Has caseState:', !!payload?.caseState);
     console.log('CaseState scenario:', payload?.caseState?.scenario);
     console.log('CaseState incidentDate:', payload?.caseState?.incidentDate);
@@ -44,13 +68,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       caseStateKeys: payload?.caseState ? Object.keys(payload.caseState) : [],
     }, null, 2));
 
+    // Construct payload explicitly to ensure structure is correct
+    const webhookPayload = {
+      email: payload.email, // Explicitly ensure email is at top level if provided
+      timestamp: payload.timestamp,
+      language: payload.language,
+      caseState: payload.caseState,
+    };
+
+    // Log the exact payload being sent to Activepieces
+    console.log('Payload being sent to Activepieces:', JSON.stringify({
+      email: webhookPayload.email,
+      hasTimestamp: !!webhookPayload.timestamp,
+      hasLanguage: !!webhookPayload.language,
+      hasCaseState: !!webhookPayload.caseState,
+    }));
+
     // Forward the request to Activepieces webhook
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(webhookPayload),
     });
 
     console.log('Activepieces response status:', response.status);

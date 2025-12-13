@@ -24,23 +24,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const payload = req.body;
+    // Explicitly parse body to ensure proper JSON handling
+    // Vercel auto-parses, but we need to ensure it's an object
+    let payload: any;
+    if (typeof req.body === 'string') {
+      try {
+        payload = JSON.parse(req.body);
+      } catch (e) {
+        console.error('Failed to parse request body as JSON:', e);
+        return res.status(400).json({ error: 'Invalid JSON body' });
+      }
+    } else if (req.body && typeof req.body === 'object') {
+      payload = req.body;
+    } else {
+      console.error('Invalid request body type:', typeof req.body);
+      return res.status(400).json({ error: 'Invalid request body' });
+    }
+
+    // Validate email field exists and is a string
+    if (!payload.email || typeof payload.email !== 'string') {
+      console.error('Email field missing or invalid:', {
+        email: payload.email,
+        emailType: typeof payload.email,
+        payloadKeys: Object.keys(payload || {}),
+      });
+      return res.status(400).json({ 
+        error: 'Email field is required and must be a string',
+        received: { email: payload.email, type: typeof payload.email }
+      });
+    }
 
     // Log the payload for debugging (without sensitive data)
     console.log('Export snapshot webhook called');
     console.log('Webhook URL:', WEBHOOK_URL);
     console.log('Payload keys:', Object.keys(payload || {}));
-    console.log('Email in payload:', payload?.email);
+    console.log('Email in payload:', payload.email);
+    console.log('Email type:', typeof payload.email);
     console.log('Has caseState:', !!payload?.caseState);
     console.log('CaseState scenario:', payload?.caseState?.scenario);
     console.log('CaseState incidentDate:', payload?.caseState?.incidentDate);
     console.log('CaseState acasStatus:', payload?.caseState?.acasStatus);
     console.log('Full payload structure:', JSON.stringify({
-      email: payload?.email,
+      email: payload.email,
       timestamp: payload?.timestamp,
       hasCaseState: !!payload?.caseState,
       caseStateKeys: payload?.caseState ? Object.keys(payload.caseState) : [],
     }, null, 2));
+
+    // Construct payload explicitly to ensure email is at top level
+    const webhookPayload = {
+      email: payload.email, // Explicitly ensure email is first
+      timestamp: payload.timestamp,
+      caseState: payload.caseState,
+      metadata: payload.metadata,
+    };
+
+    // Log the exact payload being sent to Activepieces
+    console.log('Payload being sent to Activepieces:', JSON.stringify({
+      email: webhookPayload.email,
+      hasTimestamp: !!webhookPayload.timestamp,
+      hasCaseState: !!webhookPayload.caseState,
+      hasMetadata: !!webhookPayload.metadata,
+    }));
 
     // Forward the request to Activepieces webhook
     const response = await fetch(WEBHOOK_URL, {
@@ -48,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(webhookPayload),
     });
 
     console.log('Activepieces response status:', response.status);
