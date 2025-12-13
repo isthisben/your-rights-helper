@@ -1,21 +1,176 @@
 {
   "app": {
     "title": "Llwybrwr Hawliau Gwaith",
-    "subtitle": "Cymorth gyda Thribiwnlys Cyflogaeth y DU"
+    "subtitle": "Cymorth gyda Thribiwnlys Cyflogaeth y DU",
+    "skipToMain": "Neidio i'r prif gynnwys"
   },
   "nav": {
     "home": "Hafan",
     "dashboard": "Fy Nghynllun",
-    "settings": "Gosodiadau"
+    "settings": "Gosodiadau",
+    "help": "Cymorth"
   },
   "welcome": {
     "title": "Croeso",
-    "startButton": "Dechrau"
+    "subtitle": "Mae'r ap hwn yn eich helpu i ddeall hawliau gwaith.",
+    "description": "Rydym yn eich helpu i wybod eich camau nesaf. Nid ydym yn rhoi cyngor cyfreithiol. Rydym yn eich helpu i gynllunio.",
+    "disclaimer": "Nid cyngor cyfreithiol yw hwn. Mae'n eich helpu i gynllunio. Am gymorth cyfreithiol, siaradwch ag ymgynghorydd.",
+    "startButton": "Dechrau",
+    "continueButton": "Parhau o ble wnaethoch chi adael"
+  },
+  "intake": {
+    "step1": {
+      "title": "Beth ddigwyddodd?",
+      "subtitle": "Dewiswch beth sy'n disgrifio eich sefyllfa orau.",
+      "options": {
+        "fired": "Cefais fy niswyddo",
+        "hourscut": "Cafodd fy oriau eu torri",
+        "jobchanged": "Newidiodd fy swydd",
+        "bullying": "Bwlio yn y gwaith",
+        "adjustments": "Gwrthodwyd addasiadau",
+        "notsure": "Dydw i ddim yn siŵr"
+      }
+    },
+    "step2": {
+      "title": "Pryd ddigwyddodd hyn?",
+      "subtitle": "Mae hyn yn ein helpu i weithio allan terfynau amser.",
+      "dateLabel": "Dyddiad y digwyddodd",
+      "notSure": "Dydw i ddim yn siŵr o'r dyddiad",
+      "approxHint": "Os nad ydych yn siŵr, ceisiwch gofio'r mis."
+    },
+    "step3": {
+      "title": "Ydych chi wedi cysylltu ag ACAS?",
+      "subtitle": "Mae Cymodi Cynnar ACAS yn gam cyn y tribiwnlys.",
+      "explanation": "Rhaid i chi gysylltu ag ACAS cyn mynd i'r tribiwnlys. Mae'n rhad ac am ddim.",
+      "options": {
+        "started": "Ydw, dechreuais gydag ACAS",
+        "notStarted": "Nac ydw, nid wyf wedi cysylltu ag ACAS",
+        "notSure": "Dydw i ddim yn siŵr"
+      },
+      "dateLabel": "Pryd wnaethoch chi gysylltu ag ACAS?"
+    },
+    "step4": {
+      "title": "Gwiriwch eich manylion",
+      "subtitle": "Gwnewch yn siŵr bod hyn yn gywir.",
+      "situation": "Beth ddigwyddodd",
+      "date": "Dyddiad",
+      "dateUnknown": "Dyddiad ddim yn hysbys",
+      "acasStatus": "Statws ACAS",
+      "edit": "Newid"
+    },
+    "navigation": {
+      "back": "Yn ôl",
+      "next": "Nesaf",
+      "finish": "Gweld fy nghynllun"
+    },
+    "progress": "Cam {{current}} o {{total}}"
+  },
+  "journey": {
+    "title": "Eich Map Taith",
+    "subtitle": "Dyma'r camau mewn achos tribiwnlys.",
+    "youAreHere": "Rydych chi yma",
+    "completed": "Wedi'i gwblhau",
+    "upcoming": "Yn dod",
+    "steps": {
+      "incident": {
+        "title": "Digwyddodd rhywbeth",
+        "description": "Problem yn y gwaith a allai dorri'r gyfraith."
+      },
+      "acas": {
+        "title": "Cymodi Cynnar ACAS",
+        "description": "Rhaid i chi gysylltu ag ACAS yn gyntaf. Mae'n rhad ac am ddim. Maent yn ceisio eich helpu chi a'ch cyflogwr i gytuno.",
+        "mandatory": "Mae'r cam hwn yn ofynnol"
+      },
+      "et1": {
+        "title": "Ffurflen hawliad ET1",
+        "description": "Dyma'r ffurflen rydych yn ei hanfon i'r tribiwnlys."
+      },
+      "et3": {
+        "title": "Ymateb y cyflogwr (ET3)",
+        "description": "Mae eich cyflogwr yn ysgrifennu eu hochr nhw o'r stori."
+      },
+      "caseManagement": {
+        "title": "Rheoli'r achos",
+        "description": "Mae'r tribiwnlys yn gwneud gorchmynion. Maent yn dweud wrthych beth i'w wneud nesaf."
+      },
+      "witness": {
+        "title": "Datganiadau tystion a bwndel",
+        "description": "Rydych yn ysgrifennu eich stori. Rydych yn casglu dogfennau."
+      },
+      "hearing": {
+        "title": "Gwrandawiad",
+        "description": "Rydych yn mynd i'r tribiwnlys. Rydych yn dweud eich stori. Maent yn gwneud penderfyniad."
+      }
+    }
+  },
+  "deadline": {
+    "title": "Gwarchodwr Terfyn Amser",
+    "subtitle": "Mae terfynau amser yn llym. Peidiwch â'u colli.",
+    "limitLabel": "Gallai eich terfyn amser ddod i ben ar",
+    "unknownDate": "Mae angen y dyddiad arnom i ddangos eich terfyn amser.",
+    "findDate": "Ceisiwch ddod o hyd i'r dyddiad cywir. Mae'n bwysig iawn.",
+    "daysLeft": "{{days}} diwrnod ar ôl",
+    "statusOk": "Mae gennych amser",
+    "statusWarning": "Mae amser yn rhedeg allan",
+    "statusUrgent": "Brys iawn",
+    "disclaimer": "Gwiriwch safleoedd swyddogol neu siaradwch ag ymgynghorydd os nad ydych yn siŵr.",
+    "nextAction": {
+      "startAcas": "Dechreuwch ACAS nawr",
+      "acasStarted": "Cadwch eich gwybodaeth ACAS yn ddiogel. Efallai y bydd angen cod tystysgrif arnoch ar gyfer ET1."
+    }
+  },
+  "chat": {
+    "title": "Gofynnwch gwestiwn",
+    "placeholder": "Teipiwch eich cwestiwn...",
+    "send": "Anfon",
+    "listen": "Siarad",
+    "readAloud": "Darllen yn uchel",
+    "stop": "Stopio",
+    "disclaimer": "Ni allaf roi cyngor cyfreithiol. Gallaf esbonio camau a'ch helpu i drefnu gwybodaeth.",
+    "greeting": "Helo! Sut alla i eich helpu heddiw? Gallaf esbonio'r camau neu ateb cwestiynau am eich sefyllfa.",
+    "thinking": "Yn meddwl..."
+  },
+  "accessibility": {
+    "title": "Hygyrchedd",
+    "textSize": "Maint testun",
+    "small": "Bach",
+    "medium": "Canolig",
+    "large": "Mawr",
+    "highContrast": "Cyferbyniad uchel",
+    "reduceMotion": "Lleihau symudiad",
+    "dyslexiaFont": "Ffont cyfeillgar i ddyslecsia",
+    "colorblindMode": "Lliwiau cyfeillgar i ddallineb lliw"
+  },
+  "language": {
+    "title": "Iaith",
+    "current": "Iaith bresennol"
+  },
+  "settings": {
+    "title": "Gosodiadau",
+    "saved": "Gosodiadau wedi'u cadw"
+  },
+  "reminders": {
+    "title": "Cael nodiadau atgoffa",
+    "description": "Gallwn anfon nodiadau atgoffa atoch am derfynau amser.",
+    "emailLabel": "Eich e-bost",
+    "consent": "Rwy'n cytuno i dderbyn e-byst atgoffa",
+    "enable": "Troi nodiadau atgoffa ymlaen",
+    "success": "Nodiadau atgoffa wedi'u sefydlu!",
+    "notConnected": "Nid yw nodiadau atgoffa wedi'u cysylltu eto. Cadwyd eich cais."
+  },
+  "errors": {
+    "required": "Mae'r maes hwn yn ofynnol",
+    "invalidEmail": "Rhowch e-bost dilys",
+    "somethingWrong": "Aeth rhywbeth o'i le. Rhowch gynnig arall arni."
   },
   "common": {
     "loading": "Yn llwytho...",
     "save": "Cadw",
     "cancel": "Canslo",
-    "close": "Cau"
+    "close": "Cau",
+    "yes": "Ie",
+    "no": "Na",
+    "ok": "Iawn",
+    "learnMore": "Dysgu mwy"
   }
 }
