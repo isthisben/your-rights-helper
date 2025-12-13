@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DOCUMENT_TEMPLATES, DocumentType, DocumentDraft } from '@/types/documents';
+import { downloadCaseDetails, sendCaseDetailsToLegalAdvisor } from '@/lib/caseExport';
+import { useApp } from '@/context/AppContext';
+import { toast } from 'sonner';
 import { 
   FileText, 
   Calculator, 
@@ -12,7 +15,10 @@ import {
   ListChecks,
   Edit,
   Check,
-  Plus
+  Plus,
+  Download,
+  Mail,
+  FileDown
 } from 'lucide-react';
 
 interface DocumentPrepCardProps {
@@ -35,6 +41,30 @@ export function DocumentPrepCard({
   onEditDocument,
   className 
 }: DocumentPrepCardProps) {
+  const { caseState } = useApp();
+  
+  const handleDownloadAll = () => {
+    try {
+      downloadCaseDetails(caseState);
+      toast.success(t('documents.exportDownloaded') || 'Case details downloaded successfully');
+    } catch (error) {
+      toast.error(t('documents.exportError') || 'Failed to download case details');
+    }
+  };
+  
+  const handleSendToAdvisor = () => {
+    try {
+      if (!caseState.legalAdvisor?.email) {
+        toast.error(t('documents.noAdvisorEmail') || 'Please add your legal advisor\'s email in settings');
+        return;
+      }
+      sendCaseDetailsToLegalAdvisor(caseState);
+      toast.success(t('documents.exportSent') || 'Email client opened with case details');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : (t('documents.exportError') || 'Failed to send case details'));
+    }
+  };
+  
   return (
     <Card className={cn('', className)}>
       <CardHeader>
@@ -46,6 +76,42 @@ export function DocumentPrepCard({
       </CardHeader>
 
       <CardContent>
+        {/* Export All Case Details Section */}
+        <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+          <div className="flex items-center gap-2 mb-3">
+            <FileDown className="h-4 w-4 text-primary" />
+            <h4 className="font-medium text-sm">{t('documents.exportAll') || 'Export All Case Details'}</h4>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            {t('documents.exportDescription') || 'Create a text file with all your case information, including documents, dates, and progress.'}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadAll}
+              className="gap-2 flex-1"
+            >
+              <Download className="h-4 w-4" />
+              {t('documents.downloadAll') || 'Download'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSendToAdvisor}
+              disabled={!caseState.legalAdvisor?.email}
+              className="gap-2 flex-1"
+            >
+              <Mail className="h-4 w-4" />
+              {t('documents.sendToAdvisor') || 'Send to Advisor'}
+            </Button>
+          </div>
+          {!caseState.legalAdvisor?.email && (
+            <p className="text-xs text-muted-foreground mt-2">
+              {t('documents.addAdvisorHint') || 'Add your legal advisor\'s email in settings to enable sending.'}
+            </p>
+          )}
+        </div>
         <div className="space-y-3">
           {DOCUMENT_TEMPLATES.map((template) => {
             const Icon = DOCUMENT_ICONS[template.type];

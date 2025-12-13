@@ -106,62 +106,138 @@
   /* Colorblind-friendly mode - Base colors (will be overridden by specific types) */
   .colorblind-mode {
     /* Default: blue/orange/purple scheme - only used if no specific type is set */
-    --status-ok: 210 80% 40%;
-    --status-ok-bg: 210 60% 94%;
-    --status-ok-border: 210 60% 50%;
-    
-    --status-warning: 35 90% 45%;
-    --status-warning-bg: 35 80% 94%;
-    --status-warning-border: 35 70% 55%;
-    
-    --status-urgent: 280 70% 50%;
-    --status-urgent-bg: 280 50% 95%;
-    --status-urgent-border: 280 50% 60%;
+    --background: 220 25% 90% !important;
+    --foreground: 220 40% 15% !important;
+    --card: 220 20% 94% !important;
+    --card-foreground: 220 40% 15% !important;
+    --primary: 210 70% 45% !important;
+    --primary-foreground: 0 0% 100% !important;
+    --secondary: 35 30% 88% !important;
+    --secondary-foreground: 220 40% 20% !important;
+    --muted: 220 15% 90% !important;
+    --muted-foreground: 220 30% 40% !important;
+    --accent: 35 40% 94% !important;
+    --accent-foreground: 220 40% 20% !important;
+    --border: 220 20% 85% !important;
+    --input: 220 20% 85% !important;
+    --ring: 210 70% 45% !important;
+    --status-ok: 210 80% 40% !important;
+    --status-ok-bg: 210 60% 94% !important;
+    --status-ok-border: 210 60% 50% !important;
+    --status-warning: 35 90% 45% !important;
+    --status-warning-bg: 35 80% 94% !important;
+    --status-warning-border: 35 70% 55% !important;
+    --status-urgent: 280 70% 50% !important;
+    --status-urgent-bg: 280 50% 95% !important;
+    --status-urgent-border: 280 50% 60% !important;
+    --header: 210 35% 65% !important;
+    --header-foreground: 220 40% 15% !important;
+    --sidebar-background: 220 20% 94% !important;
+    --sidebar-foreground: 220 40% 15% !important;
+    --destructive: 0 70% 50% !important;
+    --destructive-foreground: 0 0% 100% !important;
   }
   
   /* Protanopia (red-blind) - use blue/cyan/yellow - MUST override base */
   .colorblind-mode.colorblind-protanopia {
+    --background: 200 25% 92% !important;
+    --foreground: 200 50% 12% !important;
+    --card: 200 20% 96% !important;
+    --card-foreground: 200 50% 12% !important;
+    --primary: 200 75% 50% !important;
+    --primary-foreground: 0 0% 100% !important;
+    --secondary: 55 35% 90% !important;
+    --secondary-foreground: 200 50% 15% !important;
+    --muted: 200 15% 92% !important;
+    --muted-foreground: 200 35% 35% !important;
+    --accent: 55 40% 95% !important;
+    --accent-foreground: 200 50% 15% !important;
+    --border: 200 20% 87% !important;
+    --input: 200 20% 87% !important;
+    --ring: 200 75% 50% !important;
     --status-ok: 200 85% 45% !important;
     --status-ok-bg: 200 65% 94% !important;
     --status-ok-border: 200 65% 55% !important;
-    
     --status-warning: 55 90% 50% !important;
     --status-warning-bg: 55 80% 94% !important;
     --status-warning-border: 55 70% 60% !important;
-    
     --status-urgent: 15 85% 55% !important;
     --status-urgent-bg: 15 70% 96% !important;
     --status-urgent-border: 15 65% 65% !important;
+    --header: 200 40% 68% !important;
+    --header-foreground: 200 50% 12% !important;
+    --sidebar-background: 200 20% 96% !important;
+    --sidebar-foreground: 200 50% 12% !important;
+    --destructive: 15 75% 55% !important;
+    --destructive-foreground: 0 0% 100% !important;
   }
   
   /* Deuteranopia (green-blind) - use blue/purple/orange - MUST override base */
   .colorblind-mode.colorblind-deuteranopia {
+    --background: 220 25% 91% !important;
+    --foreground: 220 45% 13% !important;
+    --card: 220 20% 95% !important;
+    --card-foreground: 220 45% 13% !important;
+    --primary: 220 70% 48% !important;
+    --primary-foreground: 0 0% 100% !important;
+    --secondary: 280 30% 89% !important;
+    --secondary-foreground: 220 45% 18% !important;
+    --muted: 220 15% 91% !important;
+    --muted-foreground: 220 32% 38% !important;
+    --accent: 280 35% 94% !important;
+    --accent-foreground: 220 45% 18% !important;
+    --border: 220 20% 86% !important;
+    --input: 220 20% 86% !important;
+    --ring: 220 70% 48% !important;
     --status-ok: 220 80% 45% !important;
     --status-ok-bg: 220 60% 94% !important;
     --status-ok-border: 220 60% 55% !important;
-    
     --status-warning: 280 75% 50% !important;
     --status-warning-bg: 280 60% 94% !important;
     --status-warning-border: 280 55% 60% !important;
-    
     --status-urgent: 25 85% 55% !important;
     --status-urgent-bg: 25 70% 96% !important;
     --status-urgent-border: 25 65% 65% !important;
+    --header: 220 38% 66% !important;
+    --header-foreground: 220 45% 13% !important;
+    --sidebar-background: 220 20% 95% !important;
+    --sidebar-foreground: 220 45% 13% !important;
+    --destructive: 25 75% 55% !important;
+    --destructive-foreground: 0 0% 100% !important;
   }
   
   /* Tritanopia (blue-blind) - use red/orange/green - MUST override base */
   .colorblind-mode.colorblind-tritanopia {
+    --background: 30 30% 89% !important;
+    --foreground: 30 50% 14% !important;
+    --card: 30 25% 93% !important;
+    --card-foreground: 30 50% 14% !important;
+    --primary: 145 65% 42% !important;
+    --primary-foreground: 0 0% 100% !important;
+    --secondary: 30 35% 88% !important;
+    --secondary-foreground: 30 50% 18% !important;
+    --muted: 30 20% 90% !important;
+    --muted-foreground: 30 40% 36% !important;
+    --accent: 0 40% 94% !important;
+    --accent-foreground: 30 50% 18% !important;
+    --border: 30 25% 84% !important;
+    --input: 30 25% 84% !important;
+    --ring: 145 65% 42% !important;
     --status-ok: 145 70% 40% !important;
     --status-ok-bg: 145 55% 94% !important;
     --status-ok-border: 145 50% 50% !important;
-    
     --status-warning: 30 85% 50% !important;
     --status-warning-bg: 30 70% 94% !important;
     --status-warning-border: 30 65% 60% !important;
-    
     --status-urgent: 0 75% 50% !important;
     --status-urgent-bg: 0 60% 96% !important;
     --status-urgent-border: 0 55% 60% !important;
+    --header: 145 40% 64% !important;
+    --header-foreground: 30 50% 14% !important;
+    --sidebar-background: 30 25% 93% !important;
+    --sidebar-foreground: 30 50% 14% !important;
+    --destructive: 0 70% 50% !important;
+    --destructive-foreground: 0 0% 100% !important;
   }
 
   .dark {
@@ -203,12 +279,12 @@
   html {
     font-size: calc(18px * var(--text-scale));
     scroll-behavior: smooth;
-    zoom: 1.15;
+    zoom: 0.92;
   }
   
   @media (max-width: 768px) {
     html {
-      zoom: 1.1;
+      zoom: 0.88;
     }
   }
 
