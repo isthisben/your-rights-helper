@@ -50,77 +50,11 @@ function hexToRgb(hex: string) {
   };
 }
 
-// Convert HSL to RGB (for CSS variables like "25 45% 50%")
-function hslToRgb(h: number, s: number, l: number) {
-  s /= 100;
-  l /= 100;
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - c / 2;
-  let r = 0, g = 0, b = 0;
-
-  if (0 <= h && h < 60) {
-    r = c; g = x; b = 0;
-  } else if (60 <= h && h < 120) {
-    r = x; g = c; b = 0;
-  } else if (120 <= h && h < 180) {
-    r = 0; g = c; b = x;
-  } else if (180 <= h && h < 240) {
-    r = 0; g = x; b = c;
-  } else if (240 <= h && h < 300) {
-    r = x; g = 0; b = c;
-  } else if (300 <= h && h < 360) {
-    r = c; g = 0; b = x;
-  }
-  r = Math.round((r + m) * 255);
-  g = Math.round((g + m) * 255);
-  b = Math.round((b + m) * 255);
-
-  return { r, g, b };
-}
-
-// Get CSS variable value and convert to RGB
-function getCssVarRgb(varName: string): { r: number; g: number; b: number } {
-  if (typeof window === 'undefined') return { r: 0, g: 0, b: 0 };
-  
-  const root = document.documentElement;
-  let value = getComputedStyle(root).getPropertyValue(varName).trim();
-  
-  // Remove 'hsl(' and ')' if present
-  value = value.replace(/^hsl\(|\)$/g, '');
-  
-  // If it's HSL format (e.g., "25 45% 50%" or "25, 45%, 50%")
-  if (value.includes('%')) {
-    const parts = value.split(/[\s,]+/).filter(p => p);
-    const h = parseFloat(parts[0]) || 0;
-    const s = parseFloat(parts[1]) || 0;
-    const l = parseFloat(parts[2]) || 0;
-    return hslToRgb(h, s, l);
-  }
-  
-  // If it's hex, convert it
-  if (value.startsWith('#')) {
-    return hexToRgb(value);
-  }
-  
-  // If it's rgb/rgba, parse it
-  const rgbMatch = value.match(/(\d+),\s*(\d+),\s*(\d+)/);
-  if (rgbMatch) {
-    return {
-      r: parseInt(rgbMatch[1], 10),
-      g: parseInt(rgbMatch[2], 10),
-      b: parseInt(rgbMatch[3], 10),
-    };
-  }
-  
-  return { r: 0, g: 0, b: 0 };
-}
-
 const DotGrid: React.FC<DotGridProps> = ({
   dotSize = 16,
   gap = 32,
-  baseColor,
-  activeColor,
+  baseColor = '#5227FF',
+  activeColor = '#5227FF',
   proximity = 150,
   speedTrigger = 100,
   shockRadius = 250,
@@ -145,27 +79,8 @@ const DotGrid: React.FC<DotGridProps> = ({
     lastY: 0,
   });
 
-  // Use CSS variables if colors not provided, otherwise use provided colors
-  const baseRgb = useMemo(() => {
-    if (baseColor) {
-      return baseColor.startsWith('#') ? hexToRgb(baseColor) : getCssVarRgb(baseColor);
-    }
-    // Default to primary color from CSS variables
-    return getCssVarRgb('--primary');
-  }, [baseColor]);
-
-  const activeRgb = useMemo(() => {
-    if (activeColor) {
-      return activeColor.startsWith('#') ? hexToRgb(activeColor) : getCssVarRgb(activeColor);
-    }
-    // Default to a lighter version of primary
-    const primary = getCssVarRgb('--primary');
-    return {
-      r: Math.min(255, primary.r + 30),
-      g: Math.min(255, primary.g + 30),
-      b: Math.min(255, primary.b + 30),
-    };
-  }, [activeColor]);
+  const baseRgb = useMemo(() => hexToRgb(baseColor), [baseColor]);
+  const activeRgb = useMemo(() => hexToRgb(activeColor), [activeColor]);
 
   const circlePath = useMemo(() => {
     if (typeof window === 'undefined' || !window.Path2D) return null;
@@ -233,7 +148,7 @@ const DotGrid: React.FC<DotGridProps> = ({
         const dy = dot.cy - py;
         const dsq = dx * dx + dy * dy;
 
-        let style = `rgb(${baseRgb.r},${baseRgb.g},${baseRgb.b})`;
+        let style = baseColor;
 
         if (dsq <= proxSq) {
           const dist = Math.sqrt(dsq);
@@ -257,7 +172,7 @@ const DotGrid: React.FC<DotGridProps> = ({
     draw();
 
     return () => cancelAnimationFrame(rafId);
-  }, [proximity, baseRgb, activeRgb, circlePath]);
+  }, [proximity, baseColor, activeRgb, baseRgb, circlePath]);
 
   useEffect(() => {
     buildGrid();
@@ -377,4 +292,3 @@ const DotGrid: React.FC<DotGridProps> = ({
 };
 
 export default DotGrid;
-

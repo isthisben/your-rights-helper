@@ -25,22 +25,24 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen bg-background flex flex-col relative">
       {/* Animated Dot Grid Background - only on welcome page */}
-      <DotGrid 
-        dotSize={12}
-        gap={28}
-        baseColor="#8B6F47"
-        activeColor="#B8956A"
-        proximity={120}
-        speedTrigger={80}
-        shockRadius={200}
-        shockStrength={4}
-        className="welcome-dot-grid"
-      />
+      <div className="fixed inset-0 z-0">
+        <DotGrid 
+          dotSize={16}
+          gap={32}
+          baseColor="#8B6F47"
+          activeColor="#B8956A"
+          proximity={150}
+          speedTrigger={100}
+          shockRadius={250}
+          shockStrength={5}
+          className="welcome-dot-grid"
+        />
+      </div>
       
-      {/* Content overlay with subtle background */}
-      <div className="relative z-10 min-h-screen bg-background/60 flex flex-col">
+      {/* Content overlay */}
+      <div className="relative z-10 min-h-screen flex flex-col">
       {/* Skip link */}
       <a href="#main-content" className="skip-link">
         {t('app.skipToMain')}
