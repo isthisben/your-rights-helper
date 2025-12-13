@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { format, parseISO, isValid } from 'date-fns';
 import { toast } from 'sonner';
+import { sendCaseCreated } from '@/integrations/activepieces/client';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -101,12 +102,43 @@ export default function IntakePage() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < TOTAL_STEPS - 1) {
       setStep(step + 1);
     } else {
       // Complete intake
+      const completedCaseState = {
+        ...caseState,
+        intakeCompleted: true,
+        currentIntakeStep: step,
+        scenario,
+        incidentDate: incidentDate && isValid(incidentDate) 
+          ? incidentDate.toISOString().split('T')[0] 
+          : null,
+        incidentDateUnknown: dateUnknown,
+        acasStatus,
+        acasStartDate: acasDate && isValid(acasDate)
+          ? acasDate.toISOString().split('T')[0]
+          : null,
+      };
+      
       updateCaseState({ intakeCompleted: true });
+      
+      // Send case created webhook to Activepieces (fire and forget)
+      try {
+        const email = caseState.legalAdvisor?.email || undefined;
+        await sendCaseCreated({
+          caseState: completedCaseState,
+          timestamp: new Date().toISOString(),
+          email,
+          language: caseState.language,
+        });
+        // Success is silent - don't block user flow
+      } catch (error) {
+        // Log error but don't block user - webhook failures shouldn't prevent intake completion
+        console.error('Failed to send case created webhook:', error);
+      }
+      
       navigate('/dashboard');
     }
   };
