@@ -13,8 +13,8 @@
     /* Text size scale - controlled by accessibility */
     --text-scale: 1;
     
-    /* Core palette - Golden yellow base */
-    --background: 42 99% 66%;
+    /* Core palette - Dusty rose base */
+    --background: 0 40% 56%;
     --foreground: 20 15% 25%;
 
     --card: 30 50% 96%;
