@@ -75,9 +75,14 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
+
+      // Surface more detail to help debug model / key issues (without exposing secrets)
+      const safeErrorMessage = errorText || 'Unknown error from chat provider';
       return new Response(
-        JSON.stringify({ error: 'Failed to get response from chat service' }),
+        JSON.stringify({ 
+          error: `Failed to get response from chat service (status ${response.status}).`,
+          details: safeErrorMessage.slice(0, 500),
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
