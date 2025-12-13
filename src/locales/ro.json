@@ -1,21 +1,176 @@
 {
   "app": {
     "title": "Navigator Drepturile Muncii",
-    "subtitle": "Ajutor cu Tribunalul Muncii din UK"
+    "subtitle": "Ajutor cu Tribunalul Muncii din UK",
+    "skipToMain": "Salt la conținutul principal"
   },
   "nav": {
     "home": "Acasă",
     "dashboard": "Planul meu",
-    "settings": "Setări"
+    "settings": "Setări",
+    "help": "Ajutor"
   },
   "welcome": {
     "title": "Bun venit",
-    "startButton": "Începe"
+    "subtitle": "Această aplicație te ajută să înțelegi drepturile la locul de muncă.",
+    "description": "Te ajutăm să cunoști pașii următori. Nu oferim sfaturi juridice. Te ajutăm să planifici.",
+    "disclaimer": "Aceasta nu este o consiliere juridică. Te ajută să planifici. Pentru ajutor juridic, vorbește cu un consilier.",
+    "startButton": "Începe",
+    "continueButton": "Continuă de unde ai rămas"
+  },
+  "intake": {
+    "step1": {
+      "title": "Ce s-a întâmplat?",
+      "subtitle": "Alege ce descrie cel mai bine situația ta.",
+      "options": {
+        "fired": "Am fost concediat",
+        "hourscut": "Orele mele au fost reduse",
+        "jobchanged": "Locul meu de muncă s-a schimbat",
+        "bullying": "Hărțuire la locul de muncă",
+        "adjustments": "Au refuzat ajustările",
+        "notsure": "Nu sunt sigur"
+      }
+    },
+    "step2": {
+      "title": "Când s-a întâmplat asta?",
+      "subtitle": "Asta ne ajută să calculăm termenele.",
+      "dateLabel": "Data incidentului",
+      "notSure": "Nu sunt sigur de dată",
+      "approxHint": "Dacă nu ești sigur, încearcă să îți amintești luna."
+    },
+    "step3": {
+      "title": "Ai contactat ACAS?",
+      "subtitle": "Concilierea timpurie ACAS este un pas înainte de tribunal.",
+      "explanation": "Trebuie să contactezi ACAS înainte de a merge la tribunal. Este gratuit.",
+      "options": {
+        "started": "Da, am început cu ACAS",
+        "notStarted": "Nu, nu am contactat ACAS",
+        "notSure": "Nu sunt sigur"
+      },
+      "dateLabel": "Când ai contactat ACAS?"
+    },
+    "step4": {
+      "title": "Verifică detaliile tale",
+      "subtitle": "Asigură-te că acestea sunt corecte.",
+      "situation": "Ce s-a întâmplat",
+      "date": "Data",
+      "dateUnknown": "Data necunoscută",
+      "acasStatus": "Statutul ACAS",
+      "edit": "Modifică"
+    },
+    "navigation": {
+      "back": "Înapoi",
+      "next": "Următorul",
+      "finish": "Vezi planul meu"
+    },
+    "progress": "Pasul {{current}} din {{total}}"
+  },
+  "journey": {
+    "title": "Harta ta de călătorie",
+    "subtitle": "Aceștia sunt pașii într-un caz de tribunal.",
+    "youAreHere": "Ești aici",
+    "completed": "Finalizat",
+    "upcoming": "Următorii pași",
+    "steps": {
+      "incident": {
+        "title": "S-a întâmplat ceva",
+        "description": "O problemă la locul de muncă care poate încălca legea."
+      },
+      "acas": {
+        "title": "Concilierea timpurie ACAS",
+        "description": "Trebuie să contactezi ACAS mai întâi. Este gratuit. Ei încearcă să te ajute pe tine și pe angajatorul tău să ajungeți la un acord.",
+        "mandatory": "Acest pas este obligatoriu"
+      },
+      "et1": {
+        "title": "Formularul de cerere ET1",
+        "description": "Acesta este formularul pe care îl trimiți tribunalului."
+      },
+      "et3": {
+        "title": "Răspunsul angajatorului (ET3)",
+        "description": "Angajatorul tău scrie versiunea lui a poveștii."
+      },
+      "caseManagement": {
+        "title": "Gestionarea cazului",
+        "description": "Tribunalul emite ordine. Îți spun ce să faci în continuare."
+      },
+      "witness": {
+        "title": "Declarații de martori și dosar",
+        "description": "Scrii povestea ta. Colectezi documente."
+      },
+      "hearing": {
+        "title": "Audierea",
+        "description": "Mergi la tribunal. Îți spui povestea. Ei iau o decizie."
+      }
+    }
+  },
+  "deadline": {
+    "title": "Gardianul termenelor",
+    "subtitle": "Termenele sunt stricte. Nu le rata.",
+    "limitLabel": "Termenul tău poate expira pe",
+    "unknownDate": "Avem nevoie de dată pentru a arăta termenul tău.",
+    "findDate": "Încearcă să găsești data exactă. Este foarte important.",
+    "daysLeft": "{{days}} zile rămase",
+    "statusOk": "Ai timp",
+    "statusWarning": "Timpul se scurge",
+    "statusUrgent": "Foarte urgent",
+    "disclaimer": "Verifică site-urile oficiale sau vorbește cu un consilier dacă nu ești sigur.",
+    "nextAction": {
+      "startAcas": "Începe ACAS acum",
+      "acasStarted": "Păstrează informațiile ACAS în siguranță. S-ar putea să ai nevoie de codul certificatului pentru ET1."
+    }
+  },
+  "chat": {
+    "title": "Pune o întrebare",
+    "placeholder": "Scrie întrebarea ta...",
+    "send": "Trimite",
+    "listen": "Vorbește",
+    "readAloud": "Citește cu voce tare",
+    "stop": "Oprește",
+    "disclaimer": "Nu pot oferi sfaturi juridice. Pot explica pașii și te pot ajuta să organizezi informațiile.",
+    "greeting": "Salut! Cum te pot ajuta astăzi? Pot explica pașii sau răspunde la întrebări despre situația ta.",
+    "thinking": "Mă gândesc..."
+  },
+  "accessibility": {
+    "title": "Accesibilitate",
+    "textSize": "Dimensiunea textului",
+    "small": "Mic",
+    "medium": "Mediu",
+    "large": "Mare",
+    "highContrast": "Contrast ridicat",
+    "reduceMotion": "Reduce mișcarea",
+    "dyslexiaFont": "Font prietenos pentru dislexie",
+    "colorblindMode": "Culori prietenoase pentru daltonism"
+  },
+  "language": {
+    "title": "Limbă",
+    "current": "Limba curentă"
+  },
+  "settings": {
+    "title": "Setări",
+    "saved": "Setări salvate"
+  },
+  "reminders": {
+    "title": "Primește memento-uri",
+    "description": "Îți putem trimite memento-uri despre termene.",
+    "emailLabel": "Email-ul tău",
+    "consent": "Sunt de acord să primesc email-uri de memento",
+    "enable": "Activează memento-urile",
+    "success": "Memento-uri configurate!",
+    "notConnected": "Memento-urile nu sunt încă conectate. Am salvat cererea ta."
+  },
+  "errors": {
+    "required": "Acest câmp este obligatoriu",
+    "invalidEmail": "Introdu un email valid",
+    "somethingWrong": "Ceva nu a funcționat. Încearcă din nou."
   },
   "common": {
     "loading": "Se încarcă...",
     "save": "Salvează",
     "cancel": "Anulează",
-    "close": "Închide"
+    "close": "Închide",
+    "yes": "Da",
+    "no": "Nu",
+    "ok": "OK",
+    "learnMore": "Află mai multe"
   }
 }

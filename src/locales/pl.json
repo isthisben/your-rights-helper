@@ -1,21 +1,176 @@
 {
   "app": {
     "title": "Nawigator Praw Pracy",
-    "subtitle": "Pomoc z Trybunałem Pracy UK"
+    "subtitle": "Pomoc z Trybunałem Pracy UK",
+    "skipToMain": "Przejdź do głównej treści"
   },
   "nav": {
     "home": "Strona główna",
     "dashboard": "Mój plan",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "help": "Pomoc"
   },
   "welcome": {
     "title": "Witamy",
-    "startButton": "Rozpocznij"
+    "subtitle": "Ta aplikacja pomaga zrozumieć prawa pracownicze.",
+    "description": "Pomagamy Ci poznać następne kroki. Nie udzielamy porad prawnych. Pomagamy planować.",
+    "disclaimer": "To nie jest porada prawna. Pomaga Ci planować. Aby uzyskać pomoc prawną, porozmawiaj z doradcą.",
+    "startButton": "Rozpocznij",
+    "continueButton": "Kontynuuj od miejsca, w którym skończyłeś"
+  },
+  "intake": {
+    "step1": {
+      "title": "Co się stało?",
+      "subtitle": "Wybierz to, co najlepiej opisuje Twoją sytuację.",
+      "options": {
+        "fired": "Zostałem zwolniony",
+        "hourscut": "Moje godziny zostały zmniejszone",
+        "jobchanged": "Moja praca się zmieniła",
+        "bullying": "Mobbing w pracy",
+        "adjustments": "Odmówiono dostosowań",
+        "notsure": "Nie jestem pewien"
+      }
+    },
+    "step2": {
+      "title": "Kiedy to się stało?",
+      "subtitle": "To pomaga nam obliczyć terminy.",
+      "dateLabel": "Data zdarzenia",
+      "notSure": "Nie jestem pewien daty",
+      "approxHint": "Jeśli nie jesteś pewien, spróbuj przypomnieć sobie miesiąc."
+    },
+    "step3": {
+      "title": "Czy skontaktowałeś się z ACAS?",
+      "subtitle": "Wczesna mediacja ACAS to krok przed trybunałem.",
+      "explanation": "Musisz skontaktować się z ACAS przed pójściem do trybunału. Jest bezpłatna.",
+      "options": {
+        "started": "Tak, rozpocząłem z ACAS",
+        "notStarted": "Nie, nie skontaktowałem się z ACAS",
+        "notSure": "Nie jestem pewien"
+      },
+      "dateLabel": "Kiedy skontaktowałeś się z ACAS?"
+    },
+    "step4": {
+      "title": "Sprawdź swoje dane",
+      "subtitle": "Upewnij się, że to jest poprawne.",
+      "situation": "Co się stało",
+      "date": "Data",
+      "dateUnknown": "Data nieznana",
+      "acasStatus": "Status ACAS",
+      "edit": "Zmień"
+    },
+    "navigation": {
+      "back": "Wstecz",
+      "next": "Dalej",
+      "finish": "Zobacz mój plan"
+    },
+    "progress": "Krok {{current}} z {{total}}"
+  },
+  "journey": {
+    "title": "Twoja mapa podróży",
+    "subtitle": "To są kroki w sprawie przed trybunałem.",
+    "youAreHere": "Jesteś tutaj",
+    "completed": "Zrobione",
+    "upcoming": "Nadchodzące",
+    "steps": {
+      "incident": {
+        "title": "Coś się stało",
+        "description": "Problem w pracy, który może łamać prawo."
+      },
+      "acas": {
+        "title": "Wczesna mediacja ACAS",
+        "description": "Musisz najpierw skontaktować się z ACAS. Jest bezpłatna. Starają się pomóc Tobie i pracodawcy dojść do porozumienia.",
+        "mandatory": "Ten krok jest wymagany"
+      },
+      "et1": {
+        "title": "Formularz roszczenia ET1",
+        "description": "To jest formularz, który wysyłasz do trybunału."
+      },
+      "et3": {
+        "title": "Odpowiedź pracodawcy (ET3)",
+        "description": "Twój pracodawca pisze swoją wersję historii."
+      },
+      "caseManagement": {
+        "title": "Zarządzanie sprawą",
+        "description": "Trybunał wydaje zarządzenia. Mówią Ci, co robić dalej."
+      },
+      "witness": {
+        "title": "Zeznania świadków i dokumenty",
+        "description": "Piszesz swoją historię. Zbierasz dokumenty."
+      },
+      "hearing": {
+        "title": "Rozprawa",
+        "description": "Idziesz do trybunału. Opowiadasz swoją historię. Podejmują decyzję."
+      }
+    }
+  },
+  "deadline": {
+    "title": "Strażnik terminów",
+    "subtitle": "Terminy są ścisłe. Nie przegap ich.",
+    "limitLabel": "Twój termin może upłynąć",
+    "unknownDate": "Potrzebujemy daty, aby pokazać Twój termin.",
+    "findDate": "Spróbuj znaleźć dokładną datę. To bardzo ważne.",
+    "daysLeft": "Pozostało {{days}} dni",
+    "statusOk": "Masz czas",
+    "statusWarning": "Czas się kończy",
+    "statusUrgent": "Bardzo pilne",
+    "disclaimer": "Sprawdź oficjalne strony lub porozmawiaj z doradcą, jeśli nie jesteś pewien.",
+    "nextAction": {
+      "startAcas": "Rozpocznij ACAS teraz",
+      "acasStarted": "Zachowaj bezpiecznie informacje o ACAS. Możesz potrzebować kodu certyfikatu do ET1."
+    }
+  },
+  "chat": {
+    "title": "Zadaj pytanie",
+    "placeholder": "Wpisz swoje pytanie...",
+    "send": "Wyślij",
+    "listen": "Mów",
+    "readAloud": "Przeczytaj na głos",
+    "stop": "Zatrzymaj",
+    "disclaimer": "Nie mogę udzielać porad prawnych. Mogę wyjaśnić kroki i pomóc Ci uporządkować informacje.",
+    "greeting": "Cześć! Jak mogę Ci dzisiaj pomóc? Mogę wyjaśnić kroki lub odpowiedzieć na pytania o Twoją sytuację.",
+    "thinking": "Myślę..."
+  },
+  "accessibility": {
+    "title": "Dostępność",
+    "textSize": "Rozmiar tekstu",
+    "small": "Mały",
+    "medium": "Średni",
+    "large": "Duży",
+    "highContrast": "Wysoki kontrast",
+    "reduceMotion": "Zmniejsz ruch",
+    "dyslexiaFont": "Czcionka przyjazna dla dysleksji",
+    "colorblindMode": "Kolory przyjazne dla daltonistów"
+  },
+  "language": {
+    "title": "Język",
+    "current": "Obecny język"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "saved": "Ustawienia zapisane"
+  },
+  "reminders": {
+    "title": "Otrzymuj przypomnienia",
+    "description": "Możemy wysyłać Ci przypomnienia o terminach.",
+    "emailLabel": "Twój email",
+    "consent": "Zgadzam się na otrzymywanie emaili z przypomnieniami",
+    "enable": "Włącz przypomnienia",
+    "success": "Przypomnienia skonfigurowane!",
+    "notConnected": "Przypomnienia nie są jeszcze połączone. Zapisaliśmy Twoje zgłoszenie."
+  },
+  "errors": {
+    "required": "To pole jest wymagane",
+    "invalidEmail": "Wprowadź prawidłowy email",
+    "somethingWrong": "Coś poszło nie tak. Spróbuj ponownie."
   },
   "common": {
     "loading": "Ładowanie...",
     "save": "Zapisz",
     "cancel": "Anuluj",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "yes": "Tak",
+    "no": "Nie",
+    "ok": "OK",
+    "learnMore": "Dowiedz się więcej"
   }
 }
