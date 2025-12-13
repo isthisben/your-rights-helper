@@ -5,7 +5,9 @@ import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { ChatWidget } from '@/components/ChatWidget';
 import { JourneyStepper } from '@/components/JourneyStepper';
+import { JourneyProgressSidebar } from '@/components/JourneyProgressSidebar';
 import { DeadlineCard } from '@/components/DeadlineCard';
+import { ContactHumanButton } from '@/components/ContactHumanButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -68,9 +70,20 @@ export default function DashboardPage() {
 
       <Header />
 
-      <main id="main-content" className="flex-1 pb-24">
+      {/* Progress Sidebar */}
+      <JourneyProgressSidebar 
+        journeyProgress={caseState.journeyProgress}
+        acasStatus={caseState.acasStatus}
+      />
+
+      <main id="main-content" className="flex-1 pb-24 lg:pr-64">
         <div className="container mx-auto px-4 py-6">
           <div className="max-w-2xl mx-auto space-y-8">
+            {/* Contact Human Button - always visible */}
+            <div className="flex justify-end">
+              <ContactHumanButton variant="outline" size="sm" />
+            </div>
+
             {/* Deadline Card */}
             <section className="animate-fade-in">
               <DeadlineCard

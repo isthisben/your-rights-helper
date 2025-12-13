@@ -45,6 +45,12 @@ export interface DocumentDraftState {
   completed: boolean;
 }
 
+export interface LegalAdvisorContact {
+  name?: string;
+  phone?: string;
+  email?: string;
+}
+
 export interface CaseState {
   scenario: Scenario | null;
   incidentDate: string | null; // ISO date string
@@ -52,6 +58,7 @@ export interface CaseState {
   acasStatus: AcasStatus;
   acasStartDate: string | null; // ISO date string
   language: string;
+  legalAdvisor?: LegalAdvisorContact;
   accessibility: AccessibilitySettings;
   intakeCompleted: boolean;
   currentIntakeStep: number;
@@ -77,6 +84,7 @@ export const DEFAULT_CASE_STATE: CaseState = {
   acasStatus: 'not_started',
   acasStartDate: null,
   language: 'en-A2',
+  legalAdvisor: undefined,
   accessibility: DEFAULT_ACCESSIBILITY,
   intakeCompleted: false,
   currentIntakeStep: 0,

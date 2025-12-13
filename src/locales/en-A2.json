@@ -75,6 +75,11 @@
     "edit": "Edit",
     "showChecklist": "Show tasks",
     "hideChecklist": "Hide tasks",
+    "progress": {
+      "title": "Your Progress",
+      "percent": "{{percent}}% complete",
+      "completed": "{{completed}} of {{total}} steps done"
+    },
     "certificate": {
       "acas": "ACAS certificate number",
       "et1": "ET1 case number",
@@ -312,11 +317,35 @@
   "common": {
     "loading": "Loading...",
     "save": "Save",
+    "saved": "Saved",
     "cancel": "Cancel",
     "close": "Close",
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
     "learnMore": "Learn more"
+  },
+  "legalAdvisor": {
+    "title": "Your Legal Advisor",
+    "compactTitle": "Add your legal advisor",
+    "description": "If you have a legal advisor, add their details. We will show them when you need help.",
+    "name": "Name",
+    "namePlaceholder": "Advisor name or firm",
+    "phone": "Phone number",
+    "phonePlaceholder": "Phone number",
+    "email": "Email",
+    "emailPlaceholder": "Email address",
+    "skip": "Skip for now",
+    "hint": "You can add or change this later in settings."
+  },
+  "contact": {
+    "title": "Get Human Help",
+    "description": "Talk to a real person about your case.",
+    "humanHelp": "Talk to someone",
+    "yourAdvisor": "Your Legal Advisor",
+    "freeHelplines": "Free Helplines",
+    "citizensAdviceDesc": "Free advice on work rights",
+    "lawWorksDesc": "Free legal help for some cases",
+    "addAdvisorHint": "You can add your own legal advisor in settings."
   }
 }

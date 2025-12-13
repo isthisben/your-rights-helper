@@ -8,6 +8,7 @@ import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { ChatWidget } from '@/components/ChatWidget';
 import { ChipSelector } from '@/components/ChipSelector';
+import { LegalAdvisorForm } from '@/components/LegalAdvisorForm';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -27,7 +28,7 @@ import {
   Edit3
 } from 'lucide-react';
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const SCENARIO_OPTIONS: { value: Scenario; labelKey: string; icon: React.ReactNode }[] = [
   { value: 'fired', labelKey: 'intake.step1.options.fired', icon: <Briefcase className="h-4 w-4" /> },
@@ -76,8 +77,9 @@ export default function IntakePage() {
     switch (step) {
       case 0: return scenario !== null;
       case 1: return incidentDate !== undefined || dateUnknown;
-      case 2: return true;
-      case 3: return true;
+      case 2: return true; // ACAS
+      case 3: return true; // Legal advisor (optional)
+      case 4: return true; // Summary
       default: return false;
     }
   };
@@ -246,6 +248,13 @@ export default function IntakePage() {
       case 3:
         return (
           <div className="space-y-6 animate-fade-in">
+            <LegalAdvisorForm compact onComplete={() => setStep(4)} />
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6 animate-fade-in">
             <div>
               <h2 className="text-xl font-semibold text-foreground">{t('intake.step4.title')}</h2>
               <p className="text-muted-foreground mt-1">{t('intake.step4.subtitle')}</p>
@@ -290,6 +299,20 @@ export default function IntakePage() {
                   {t('intake.step4.edit')}
                 </Button>
               </div>
+              
+              {caseState.legalAdvisor?.name && (
+                <div className="p-4 flex items-center justify-between">
+                  <div>
+                    <span className="text-sm text-muted-foreground">{t('legalAdvisor.title')}</span>
+                    <p className="font-medium text-foreground">
+                      {caseState.legalAdvisor.name}
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => setStep(3)}>
+                    {t('intake.step4.edit')}
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div className="bg-status-ok-bg border border-status-ok-border rounded-lg p-4 flex items-start gap-3">
