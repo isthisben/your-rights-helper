@@ -1,0 +1,21 @@
+{
+  "app": {
+    "title": "Nawigator Praw Pracy",
+    "subtitle": "Pomoc z Trybunałem Pracy UK"
+  },
+  "nav": {
+    "home": "Strona główna",
+    "dashboard": "Mój plan",
+    "settings": "Ustawienia"
+  },
+  "welcome": {
+    "title": "Witamy",
+    "startButton": "Rozpocznij"
+  },
+  "common": {
+    "loading": "Ładowanie...",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "close": "Zamknij"
+  }
+}

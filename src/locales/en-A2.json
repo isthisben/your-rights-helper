@@ -1,0 +1,176 @@
+{
+  "app": {
+    "title": "Work Rights Navigator",
+    "subtitle": "Help with UK Employment Tribunal",
+    "skipToMain": "Skip to main content"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "My Plan",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "welcome": {
+    "title": "Welcome",
+    "subtitle": "This app helps you understand work rights.",
+    "description": "We help you know your next steps. We do not give legal advice. We help you plan.",
+    "disclaimer": "This is not legal advice. It helps you plan. For legal help, talk to an advisor.",
+    "startButton": "Start",
+    "continueButton": "Continue where you left off"
+  },
+  "intake": {
+    "step1": {
+      "title": "What happened?",
+      "subtitle": "Choose what best describes your situation.",
+      "options": {
+        "fired": "I was fired",
+        "hourscut": "My hours were cut",
+        "jobchanged": "My job changed",
+        "bullying": "Bullying at work",
+        "adjustments": "They refused adjustments",
+        "notsure": "I'm not sure"
+      }
+    },
+    "step2": {
+      "title": "When did this happen?",
+      "subtitle": "This helps us work out time limits.",
+      "dateLabel": "Date it happened",
+      "notSure": "I'm not sure of the date",
+      "approxHint": "If you're not sure, try to remember the month."
+    },
+    "step3": {
+      "title": "Have you contacted ACAS?",
+      "subtitle": "ACAS Early Conciliation is a step before tribunal.",
+      "explanation": "You must contact ACAS before going to tribunal. It's free.",
+      "options": {
+        "started": "Yes, I started with ACAS",
+        "notStarted": "No, I have not contacted ACAS",
+        "notSure": "I'm not sure"
+      },
+      "dateLabel": "When did you contact ACAS?"
+    },
+    "step4": {
+      "title": "Check your details",
+      "subtitle": "Make sure this is correct.",
+      "situation": "What happened",
+      "date": "Date",
+      "dateUnknown": "Date not known",
+      "acasStatus": "ACAS status",
+      "edit": "Change"
+    },
+    "navigation": {
+      "back": "Back",
+      "next": "Next",
+      "finish": "See my plan"
+    },
+    "progress": "Step {{current}} of {{total}}"
+  },
+  "journey": {
+    "title": "Your Journey Map",
+    "subtitle": "These are the steps in a tribunal case.",
+    "youAreHere": "You are here",
+    "completed": "Done",
+    "upcoming": "Coming up",
+    "steps": {
+      "incident": {
+        "title": "Something happened",
+        "description": "A problem at work that may break the law."
+      },
+      "acas": {
+        "title": "ACAS Early Conciliation",
+        "description": "You must contact ACAS first. It's free. They try to help you and your employer agree.",
+        "mandatory": "This step is required"
+      },
+      "et1": {
+        "title": "ET1 claim form",
+        "description": "This is the form you send to the tribunal."
+      },
+      "et3": {
+        "title": "Employer responds (ET3)",
+        "description": "Your employer writes their side of the story."
+      },
+      "caseManagement": {
+        "title": "Case management",
+        "description": "The tribunal makes orders. They tell you what to do next."
+      },
+      "witness": {
+        "title": "Witness statements and bundle",
+        "description": "You write your story. You collect documents."
+      },
+      "hearing": {
+        "title": "Hearing",
+        "description": "You go to the tribunal. You tell your story. They make a decision."
+      }
+    }
+  },
+  "deadline": {
+    "title": "Deadline Guardian",
+    "subtitle": "Time limits are strict. Don't miss them.",
+    "limitLabel": "Your time limit may end on",
+    "unknownDate": "We need the date to show your time limit.",
+    "findDate": "Try to find the exact date. It's very important.",
+    "daysLeft": "{{days}} days left",
+    "statusOk": "You have time",
+    "statusWarning": "Time is running out",
+    "statusUrgent": "Very urgent",
+    "disclaimer": "Check official sites or talk to an advisor if unsure.",
+    "nextAction": {
+      "startAcas": "Start ACAS now",
+      "acasStarted": "Keep your ACAS info safe. You may need a certificate code for ET1."
+    }
+  },
+  "chat": {
+    "title": "Ask a question",
+    "placeholder": "Type your question...",
+    "send": "Send",
+    "listen": "Speak",
+    "readAloud": "Read aloud",
+    "stop": "Stop",
+    "disclaimer": "I can't give legal advice. I can explain steps and help you organize info.",
+    "greeting": "Hello! How can I help you today? I can explain the steps or answer questions about your situation.",
+    "thinking": "Thinking..."
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "textSize": "Text size",
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "highContrast": "High contrast",
+    "reduceMotion": "Reduce motion",
+    "dyslexiaFont": "Dyslexia-friendly font",
+    "colorblindMode": "Colorblind-friendly colors"
+  },
+  "language": {
+    "title": "Language",
+    "current": "Current language"
+  },
+  "settings": {
+    "title": "Settings",
+    "saved": "Settings saved"
+  },
+  "reminders": {
+    "title": "Get reminders",
+    "description": "We can send you reminders about deadlines.",
+    "emailLabel": "Your email",
+    "consent": "I agree to receive reminder emails",
+    "enable": "Turn on reminders",
+    "success": "Reminders set up!",
+    "notConnected": "Reminders are not connected yet. We saved your request."
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email",
+    "somethingWrong": "Something went wrong. Please try again."
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "learnMore": "Learn more"
+  }
+}
