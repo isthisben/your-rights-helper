@@ -13,7 +13,10 @@
 }
 
 .dock-panel {
-  position: relative;
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: flex-end;
   width: fit-content;
@@ -25,6 +28,8 @@
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  will-change: contents;
+  contain: layout style;
 }
 
 .dock-item {
@@ -33,21 +38,22 @@
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background-color: transparent;
-  border: 1px solid transparent;
-  box-shadow: none;
+  background-color: hsl(var(--header));
+  border: 1px solid hsl(var(--border) / 0.4);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   outline: none;
-  transition: all 0.2s ease;
   color: hsl(var(--header-foreground) / 0.6);
-  min-height: 44px;
-  min-width: 44px;
+  flex-shrink: 0;
+  will-change: width, height;
+  contain: layout;
 }
 
 .dock-item:hover,
 .dock-item:focus {
   color: hsl(var(--header-foreground));
-  background-color: hsl(var(--header-foreground) / 0.1);
 }
 
 .dock-item:focus-visible {

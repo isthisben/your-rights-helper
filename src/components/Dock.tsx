@@ -84,11 +84,7 @@ function DockItem({
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
-      className={cn(
-        'dock-item',
-        isActive && 'dock-item-active',
-        className
-      )}
+      className={cn('dock-item', isActive && 'dock-item-active', className)}
       tabIndex={0}
       role="button"
       aria-haspopup="true"
@@ -154,11 +150,11 @@ export default function Dock({
   items,
   className = '',
   spring = { mass: 0.1, stiffness: 150, damping: 12 },
-  magnification = 64,
-  distance = 150,
-  panelHeight = 64,
-  dockHeight = 240,
-  baseItemSize = 48,
+  magnification = 70,
+  distance = 200,
+  panelHeight = 68,
+  dockHeight = 256,
+  baseItemSize = 50,
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
@@ -207,4 +203,3 @@ export default function Dock({
     </motion.div>
   );
 }
-
