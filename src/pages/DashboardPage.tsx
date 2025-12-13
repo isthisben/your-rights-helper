@@ -18,6 +18,20 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+
+const fadeUpVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  }),
+};
 
 export default function DashboardPage() {
   const { caseState } = useApp();
@@ -76,34 +90,55 @@ export default function DashboardPage() {
         acasStatus={caseState.acasStatus}
       />
 
-      <main id="main-content" className="flex-1 pb-24 lg:pr-64">
-        <div className="container mx-auto px-4 py-6">
-          <div className="max-w-2xl mx-auto space-y-8">
+      <main id="main-content" className="flex-1 pb-28 lg:pr-72">
+        <div className="container mx-auto px-4 py-10">
+          <div className="max-w-2xl mx-auto space-y-10">
             {/* Contact Human Button - always visible */}
-            <div className="flex justify-end">
+            <motion.div 
+              custom={0}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUpVariants}
+              className="flex justify-end"
+            >
               <ContactHumanButton variant="outline" size="sm" />
-            </div>
+            </motion.div>
 
             {/* Deadline Card */}
-            <section className="animate-fade-in">
+            <motion.section 
+              custom={1}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUpVariants}
+            >
               <DeadlineCard
                 incidentDate={caseState.incidentDate}
                 incidentDateUnknown={caseState.incidentDateUnknown}
                 acasStatus={caseState.acasStatus}
               />
-            </section>
+            </motion.section>
 
             {/* Journey Stepper */}
-            <section className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-foreground">{t('journey.title')}</h2>
-                <p className="text-muted-foreground text-sm mt-1">{t('journey.subtitle')}</p>
+            <motion.section 
+              custom={2}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUpVariants}
+            >
+              <div className="mb-5">
+                <h2 className="text-xl font-semibold text-foreground tracking-tight">{t('journey.title')}</h2>
+                <p className="text-muted-foreground text-sm mt-1.5">{t('journey.subtitle')}</p>
               </div>
               <JourneyStepper acasStatus={caseState.acasStatus} />
-            </section>
+            </motion.section>
 
             {/* Reminders Section */}
-            <section className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+            <motion.section 
+              custom={3}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUpVariants}
+            >
               {!showReminders ? (
                 <Button 
                   variant="outline" 
@@ -114,35 +149,40 @@ export default function DashboardPage() {
                   {t('reminders.title')}
                 </Button>
               ) : (
-                <div className="bg-card border border-border rounded-lg p-4 space-y-4">
-                  <div className="flex items-center gap-2">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="bg-card border border-border/60 rounded-2xl p-6 space-y-5 shadow-soft"
+                >
+                  <div className="flex items-center gap-2.5">
                     <Bell className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold">{t('reminders.title')}</h3>
+                    <h3 className="font-semibold tracking-tight">{t('reminders.title')}</h3>
                   </div>
                   
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {t('reminders.description')}
                   </p>
 
                   {reminderStatus === 'success' ? (
-                    <div className="flex items-center gap-2 text-status-ok p-3 bg-status-ok-bg rounded-lg">
+                    <div className="flex items-center gap-2.5 text-status-ok p-4 bg-status-ok-bg rounded-xl">
                       <CheckCircle2 className="h-5 w-5" />
                       <span className="text-sm font-medium">{t('reminders.success')}</span>
                     </div>
                   ) : (
                     <>
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         <label htmlFor="reminder-email" className="text-sm font-medium">
                           {t('reminders.emailLabel')}
                         </label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="reminder-email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="pl-10 min-h-tap"
+                            className="pl-11 min-h-tap rounded-xl border-border/60"
                             placeholder="your@email.com"
                           />
                         </div>
@@ -153,8 +193,9 @@ export default function DashboardPage() {
                           id="reminder-consent"
                           checked={consent}
                           onCheckedChange={(checked) => setConsent(checked === true)}
+                          className="mt-0.5"
                         />
-                        <label htmlFor="reminder-consent" className="text-sm text-foreground cursor-pointer">
+                        <label htmlFor="reminder-consent" className="text-sm text-foreground cursor-pointer leading-relaxed">
                           {t('reminders.consent')}
                         </label>
                       </div>
@@ -168,9 +209,9 @@ export default function DashboardPage() {
                       </Button>
                     </>
                   )}
-                </div>
+                </motion.div>
               )}
-            </section>
+            </motion.section>
           </div>
         </div>
       </main>

@@ -43,29 +43,29 @@ export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, cl
 
   return (
     <div 
-      className={cn('rounded-xl border-2 overflow-hidden', className)}
+      className={cn('rounded-2xl border border-border/60 overflow-hidden bg-card shadow-soft hover:shadow-soft-lg transition-all duration-300', className)}
       role="region"
       aria-label={t('deadline.title')}
     >
       {/* Header */}
-      <div className="bg-card p-4 border-b border-border">
-        <div className="flex items-center gap-2">
+      <div className="bg-card p-5 border-b border-border/40">
+        <div className="flex items-center gap-2.5">
           <Clock className="h-5 w-5 text-primary" aria-hidden="true" />
-          <h2 className="font-semibold text-lg">{t('deadline.title')}</h2>
+          <h2 className="font-semibold text-lg tracking-tight">{t('deadline.title')}</h2>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
           {t('deadline.subtitle')}
         </p>
       </div>
 
       {/* Deadline display */}
-      <div className="p-4">
+      <div className="p-5">
         {incidentDate && deadline.deadline ? (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Urgency status */}
             <div 
               className={cn(
-                'flex items-center gap-3 p-4 rounded-lg border-2',
+                'flex items-center gap-3.5 p-5 rounded-xl border-2',
                 urgencyStyles[deadline.urgency]
               )}
               role="status"
@@ -85,27 +85,27 @@ export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, cl
             </div>
 
             {/* Date display */}
-            <div className="flex items-center gap-2 text-foreground">
+            <div className="flex items-center gap-2.5 text-foreground">
               <Calendar className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
               <span className="text-sm">{t('deadline.limitLabel')}:</span>
-              <strong className="text-lg">{deadline.formattedDeadline}</strong>
+              <strong className="text-lg font-semibold">{deadline.formattedDeadline}</strong>
             </div>
           </div>
         ) : (
-          <div className="p-4 bg-muted rounded-lg">
-            <div className="flex items-start gap-3">
+          <div className="p-5 bg-secondary/50 rounded-xl">
+            <div className="flex items-start gap-3.5">
               <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
               <div>
                 <p className="text-foreground font-medium">{t('deadline.unknownDate')}</p>
-                <p className="text-sm text-muted-foreground mt-1">{t('deadline.findDate')}</p>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{t('deadline.findDate')}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Next action */}
-        <div className="mt-4 p-4 bg-primary-light rounded-lg">
-          <h3 className="font-medium text-foreground mb-2">
+        <div className="mt-5 p-5 bg-primary/5 rounded-xl border border-primary/10">
+          <h3 className="font-medium text-foreground mb-2.5">
             {acasStatus === 'not_started' || acasStatus === 'unknown' 
               ? t('deadline.nextAction.startAcas')
               : t('deadline.nextAction.acasStarted')
@@ -125,7 +125,7 @@ export function DeadlineCard({ incidentDate, incidentDateUnknown, acasStatus, cl
         </div>
 
         {/* Disclaimer */}
-        <p className="text-xs text-muted-foreground mt-4 flex items-start gap-2">
+        <p className="text-xs text-muted-foreground mt-5 flex items-start gap-2.5 leading-relaxed">
           <Info className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
           {t('deadline.disclaimer')}
         </p>
