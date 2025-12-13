@@ -46,7 +46,7 @@ Start responses with empathy when appropriate. Keep answers concise and actionab
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'green-l',
+        model: 'mistral-nemo-instruct-2407',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages.map((m: { role: string; content: string }) => ({
