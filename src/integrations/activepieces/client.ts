@@ -7,8 +7,14 @@ import type { CaseCreatedPayload, ExportSnapshotPayload } from './types';
  * Webhook URLs are configured via environment variables.
  */
 
-const CASE_CREATED_WEBHOOK_URL = import.meta.env.VITE_AP_CASE_CREATED_WEBHOOK;
-const EXPORT_SNAPSHOT_WEBHOOK_URL = import.meta.env.VITE_AP_EXPORT_SNAPSHOT_WEBHOOK;
+// Use Vercel API proxy to avoid CORS issues
+// In development, Vite proxy will handle it; in production, Vercel routes /api/* to API functions
+const getApiUrl = () => {
+  return import.meta.env.VITE_API_URL || '/api';
+};
+
+const CASE_CREATED_WEBHOOK_URL = `${getApiUrl()}/activepieces-case-created`;
+const EXPORT_SNAPSHOT_WEBHOOK_URL = `${getApiUrl()}/activepieces-export-snapshot`;
 
 /**
  * Error class for Activepieces webhook errors
@@ -44,11 +50,7 @@ export class ActivepiecesError extends Error {
 export async function sendCaseCreated(
   payload: CaseCreatedPayload
 ): Promise<void> {
-  if (!CASE_CREATED_WEBHOOK_URL) {
-    throw new ActivepiecesError(
-      'VITE_AP_CASE_CREATED_WEBHOOK environment variable is not configured'
-    );
-  }
+  // URL is always available (uses API proxy)
 
   try {
     const response = await fetch(CASE_CREATED_WEBHOOK_URL, {
@@ -128,11 +130,7 @@ export async function sendCaseCreated(
 export async function sendExportSnapshot(
   payload: ExportSnapshotPayload
 ): Promise<void> {
-  if (!EXPORT_SNAPSHOT_WEBHOOK_URL) {
-    throw new ActivepiecesError(
-      'VITE_AP_EXPORT_SNAPSHOT_WEBHOOK environment variable is not configured'
-    );
-  }
+  // URL is always available (uses API proxy)
 
   try {
     const response = await fetch(EXPORT_SNAPSHOT_WEBHOOK_URL, {

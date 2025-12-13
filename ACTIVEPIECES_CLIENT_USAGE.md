@@ -4,15 +4,25 @@ This document explains how to use the Activepieces client integration in your ap
 
 ## Environment Variables
 
-Add these to your `.env` file (or `.env.local` for local development):
+### For Production (Vercel)
+
+Add these environment variables in Vercel Dashboard → Settings → Environment Variables:
 
 ```env
-# Activepieces Webhook URLs
-VITE_AP_CASE_CREATED_WEBHOOK=https://cloud.activepieces.com/api/v1/webhooks/ZnzLKUbit9Ym3lAnih8fS
-VITE_AP_EXPORT_SNAPSHOT_WEBHOOK=https://cloud.activepieces.com/api/v1/webhooks/ZARKWOUWKYS9hFazGxVGv
+ACTIVEPIECES_CASE_CREATED_WEBHOOK=https://cloud.activepieces.com/api/v1/webhooks/ZnzLKUbit9Ym3lAnih8fS
+ACTIVEPIECES_EXPORT_SNAPSHOT_WEBHOOK=https://cloud.activepieces.com/api/v1/webhooks/ZARKWOUWKYS9hFazGxVGv
 ```
 
-**Note**: These are client-side environment variables (prefixed with `VITE_`), so they will be exposed in the browser. This is acceptable for webhook URLs, but ensure your Activepieces flows have appropriate security measures.
+**Note**: These are server-side environment variables stored securely in Vercel. The webhooks are called through Vercel API functions to avoid CORS issues.
+
+### For Local Development
+
+When running `vercel dev`, these environment variables will be loaded from Vercel. You can also create a `.env.local` file (not committed to git) with:
+
+```env
+ACTIVEPIECES_CASE_CREATED_WEBHOOK=https://cloud.activepieces.com/api/v1/webhooks/ZnzLKUbit9Ym3lAnih8fS
+ACTIVEPIECES_EXPORT_SNAPSHOT_WEBHOOK=https://cloud.activepieces.com/api/v1/webhooks/ZARKWOUWKYS9hFazGxVGv
+```
 
 ## Usage Examples
 

@@ -45,10 +45,20 @@ This will:
      **Value:** Your ElevenLabs API key
      **Environment:** Production, Preview, Development (select all)
 
+   - **Name:** `ACTIVEPIECES_CASE_CREATED_WEBHOOK`
+     **Value:** `https://cloud.activepieces.com/api/v1/webhooks/ZnzLKUbit9Ym3lAnih8fS`
+     **Environment:** Production, Preview, Development (select all)
+
+   - **Name:** `ACTIVEPIECES_EXPORT_SNAPSHOT_WEBHOOK`
+     **Value:** `https://cloud.activepieces.com/api/v1/webhooks/ZARKWOUWKYS9hFazGxVGv`
+     **Environment:** Production, Preview, Development (select all)
+
 **Option B: Via CLI**
 ```bash
 vercel env add GREENPT_API_KEY
 vercel env add ELEVENLABS_API_KEY
+vercel env add ACTIVEPIECES_CASE_CREATED_WEBHOOK
+vercel env add ACTIVEPIECES_EXPORT_SNAPSHOT_WEBHOOK
 ```
 
 ### 5. Deploy to Vercel
