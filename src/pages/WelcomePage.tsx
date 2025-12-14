@@ -9,7 +9,7 @@ import { ChatWidget } from '@/components/ChatWidget';
 import { clearChatMessages } from '@/lib/chatStorage';
 import DotGrid from '@/components/DotGrid';
 import ScrollReveal from '@/components/ScrollReveal';
-import { Scale, ArrowRight, AlertCircle, Shield, Clock, Heart } from 'lucide-react';
+import { Scale, ArrowRight, AlertCircle, Heart } from 'lucide-react';
 
 export default function WelcomePage() {
   const { caseState, resetCase } = useApp();
@@ -17,17 +17,14 @@ export default function WelcomePage() {
   const hasProgress = caseState.currentIntakeStep > 0 || caseState.intakeCompleted;
   
   const handleStartNew = () => {
-    // Reset all case state to default (new user)
     resetCase();
-    // Clear chat messages for a fresh start
     clearChatMessages();
-    // Navigate to intake
     navigate('/intake');
   };
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Animated Dot Grid Background - fills entire screen */}
+      {/* Animated Dot Grid Background */}
       <div className="fixed inset-0 z-0 w-screen h-screen">
         <DotGrid
           dotSize={108}
@@ -44,7 +41,6 @@ export default function WelcomePage() {
       
       {/* Content overlay */}
       <div className="relative z-10 min-h-screen flex flex-col bg-transparent">
-        {/* Skip link */}
         <a href="#main-content" className="skip-link">
           {t('app.skipToMain')}
         </a>
@@ -82,7 +78,7 @@ export default function WelcomePage() {
             {/* Empathy Section */}
             <div className="min-h-[60vh] flex items-center justify-center py-16">
               <div className="max-w-2xl mx-auto text-center">
-                <div className="bg-background rounded-2xl p-8 shadow-md mb-8">
+                <div className="bg-background rounded-2xl p-8 shadow-md">
                   <Heart className="h-12 w-12 text-primary mx-auto mb-6" />
                   <h3 className="text-xl font-semibold text-foreground mb-4">
                     We understand what you are going through
@@ -94,69 +90,18 @@ export default function WelcomePage() {
               </div>
             </div>
 
-            {/* Scroll Reveal Feature Sections */}
-            <div className="py-16 space-y-32">
-              
-              {/* Deadline Tracking */}
-              <div className="min-h-[50vh] flex items-center">
-                <div className="max-w-2xl mx-auto">
-                  <div className="flex items-start gap-6 bg-background rounded-2xl p-8 shadow-md">
-                    <Clock className="h-12 w-12 text-primary flex-shrink-0" />
-                    <div>
-                      <ScrollReveal
-                        baseOpacity={0}
-                        enableBlur={true}
-                        baseRotation={5}
-                        blurStrength={10}
-                        containerClassName="mb-4"
-                        textClassName="text-foreground"
-                      >
-                        Deadline tracking to help you know your time limits and never miss an important date
-                      </ScrollReveal>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Step by Step */}
-              <div className="min-h-[50vh] flex items-center">
-                <div className="max-w-2xl mx-auto">
-                  <div className="flex items-start gap-6 bg-background rounded-2xl p-8 shadow-md">
-                    <Shield className="h-12 w-12 text-primary flex-shrink-0" />
-                    <div>
-                      <ScrollReveal
-                        baseOpacity={0}
-                        enableBlur={true}
-                        baseRotation={5}
-                        blurStrength={10}
-                        containerClassName="mb-4"
-                        textClassName="text-foreground"
-                      >
-                        Step by step guidance so you always know what comes next in your journey
-                      </ScrollReveal>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Plain Language */}
-              <div className="min-h-[50vh] flex items-center">
-                <div className="max-w-2xl mx-auto">
-                  <div className="flex items-start gap-6 bg-background rounded-2xl p-8 shadow-md">
-                    <AlertCircle className="h-12 w-12 text-primary flex-shrink-0" />
-                    <div>
-                      <ScrollReveal
-                        baseOpacity={0}
-                        enableBlur={true}
-                        baseRotation={5}
-                        blurStrength={10}
-                        containerClassName="mb-4"
-                        textClassName="text-foreground"
-                      >
-                        Plain language explanations that are easy to understand without legal jargon
-                      </ScrollReveal>
-                    </div>
-                  </div>
+            {/* Features Section - All three together with ScrollReveal */}
+            <div className="min-h-[80vh] flex items-center justify-center py-16">
+              <div className="max-w-3xl mx-auto">
+                <div className="bg-background rounded-2xl p-8 md:p-12 shadow-md">
+                  <ScrollReveal
+                    baseOpacity={0}
+                    enableBlur={true}
+                    baseRotation={5}
+                    blurStrength={10}
+                  >
+                    Deadline tracking to know your time limits. Step by step guidance so you always know what comes next. Plain language explanations without legal jargon.
+                  </ScrollReveal>
                 </div>
               </div>
             </div>
