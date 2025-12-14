@@ -92,8 +92,6 @@ export const DEFAULT_CASE_STATE: CaseState = {
   accessibility: DEFAULT_ACCESSIBILITY,
   intakeCompleted: false,
   currentIntakeStep: 0,
-  journeyProgress: {
-    incident: { completed: true }, // Always completed since they started the app
-  },
+  journeyProgress: {}, // Empty - no steps completed initially
   documentDrafts: {},
 };
