@@ -53,7 +53,7 @@ export default function WelcomePage() {
       <main id="main-content" className="flex-1 pb-24">
         <div className="container mx-auto px-3 py-6">
           {/* Hero Section */}
-          <div className="text-center max-w-lg mx-auto animate-fade-in">
+          <div className="text-center max-w-lg mx-auto animate-fade-in bg-background/70 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
               <Scale className="h-10 w-10 text-primary" />
             </div>
@@ -73,17 +73,17 @@ export default function WelcomePage() {
 
           {/* Feature Cards */}
           <div className="grid gap-4 sm:grid-cols-3 max-w-2xl mx-auto my-8">
-            <div className="bg-card rounded-lg p-4 border border-border">
+            <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm">
               <Clock className="h-6 w-6 text-primary mb-2" />
               <h3 className="font-medium text-sm">Deadline tracking</h3>
               <p className="text-xs text-muted-foreground mt-1">Know your time limits</p>
             </div>
-            <div className="bg-card rounded-lg p-4 border border-border">
+            <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm">
               <Shield className="h-6 w-6 text-primary mb-2" />
               <h3 className="font-medium text-sm">Step by step guide</h3>
               <p className="text-xs text-muted-foreground mt-1">See what comes next</p>
             </div>
-            <div className="bg-card rounded-lg p-4 border border-border">
+            <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm">
               <AlertCircle className="h-6 w-6 text-primary mb-2" />
               <h3 className="font-medium text-sm">Plain language</h3>
               <p className="text-xs text-muted-foreground mt-1">Easy to understand</p>
@@ -91,7 +91,7 @@ export default function WelcomePage() {
           </div>
 
           {/* Disclaimer */}
-          <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto mb-8">
+          <div className="bg-status-warning-bg/90 backdrop-blur-sm border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto mb-8 shadow-sm">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-status-warning flex-shrink-0 mt-0.5" />
               <p className="text-sm text-foreground">

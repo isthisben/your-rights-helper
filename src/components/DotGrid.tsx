@@ -107,18 +107,14 @@ const DotGrid: React.FC<DotGridProps> = ({
     const ctx = canvas.getContext('2d');
     if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const cols = Math.floor((width + gap) / (dotSize + gap));
-    const rows = Math.floor((height + gap) / (dotSize + gap));
     const cell = dotSize + gap;
+    // Add extra columns/rows to ensure full edge coverage
+    const cols = Math.ceil(width / cell) + 2;
+    const rows = Math.ceil(height / cell) + 2;
 
-    const gridW = cell * cols - gap;
-    const gridH = cell * rows - gap;
-
-    const extraX = width - gridW;
-    const extraY = height - gridH;
-
-    const startX = extraX / 2 + dotSize / 2;
-    const startY = extraY / 2 + dotSize / 2;
+    // Start from negative offset to ensure dots extend beyond edges
+    const startX = dotSize / 2 - cell;
+    const startY = dotSize / 2 - cell;
 
     const dots: Dot[] = [];
     for (let y = 0; y < rows; y++) {
