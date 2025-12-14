@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { AcasStatus, JourneyStepKey, JourneyStepProgress } from '@/types/case';
 import { STEP_CHECKLISTS } from '@/types/documents';
@@ -22,7 +23,8 @@ import {
   Save,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  PlayCircle
 } from 'lucide-react';
 
 interface JourneyStepperProps {
@@ -93,6 +95,7 @@ const slideVariants = {
 
 export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyStepperProps) {
   const { caseState, updateCaseState } = useApp();
+  const navigate = useNavigate();
   const journeyProgress = caseState.journeyProgress || {};
   const currentJourneyStep = getCurrentStep(acasStatus, journeyProgress);
   
@@ -101,6 +104,10 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
   const [editingStep, setEditingStep] = useState<JourneyStepKey | null>(null);
   const [certificateInput, setCertificateInput] = useState('');
   const [inputError, setInputError] = useState('');
+
+  // Check if user left intake midway or completed it
+  const intakeInProgress = !caseState.intakeCompleted && caseState.currentIntakeStep > 0;
+  const intakeCompleted = caseState.intakeCompleted;
 
   const navigateStep = (newStep: number) => {
     if (newStep >= 0 && newStep < STEPS.length) {
@@ -184,6 +191,17 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
     if (onAskForHelp) {
       onAskForHelp(prompt);
     }
+  };
+
+  // Navigate to intake - either continue where left off or go to review step
+  const handleContinueIntake = () => {
+    navigate('/intake');
+  };
+
+  const handleEditIntake = () => {
+    // Go directly to the review/summary step (step 4)
+    updateCaseState({ currentIntakeStep: 4 });
+    navigate('/intake');
   };
 
   const step = STEPS[viewingStep];
@@ -363,6 +381,33 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
                 <CheckCircle2 className="h-5 w-5 mr-2" />
                 {t('journey.markComplete')}
               </Button>
+            )}
+
+            {/* Incident step - Continue or Edit intake buttons */}
+            {step.key === 'incident' && (
+              <div className="mb-4">
+                {intakeInProgress ? (
+                  <Button
+                    size="lg"
+                    variant="default"
+                    className="w-full"
+                    onClick={handleContinueIntake}
+                  >
+                    <PlayCircle className="h-5 w-5 mr-2" />
+                    {t('journey.continueIntake') || 'Continue where you left off'}
+                  </Button>
+                ) : intakeCompleted ? (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleEditIntake}
+                  >
+                    <Edit2 className="h-5 w-5 mr-2" />
+                    {t('journey.editIntake') || 'Edit your details'}
+                  </Button>
+                ) : null}
+              </div>
             )}
 
             {/* Checklist */}
