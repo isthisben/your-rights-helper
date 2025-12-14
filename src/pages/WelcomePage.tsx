@@ -25,9 +25,9 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
       {/* Animated Dot Grid Background - only on welcome page */}
-      <div style={{ width: '100%', height: '600px', position: 'relative' }}>
+      <div className="fixed inset-0 z-0 overflow-hidden">
         <DotGrid
           dotSize={10}
           gap={15}
@@ -41,8 +41,8 @@ export default function WelcomePage() {
         />
       </div>
       
-      {/* Content */}
-      <div className="flex flex-col">
+      {/* Content overlay */}
+      <div className="relative z-10 min-h-screen flex flex-col bg-transparent">
       {/* Skip link */}
       <a href="#main-content" className="skip-link">
         {t('app.skipToMain')}
