@@ -9,7 +9,7 @@ import { ChatWidget } from '@/components/ChatWidget';
 import { clearChatMessages } from '@/lib/chatStorage';
 import DotGrid from '@/components/DotGrid';
 import ScrollReveal from '@/components/ScrollReveal';
-import { Scale, ArrowRight, AlertCircle, Heart } from 'lucide-react';
+import { Scale, ArrowRight, AlertCircle, Heart, Clock, Shield } from 'lucide-react';
 
 export default function WelcomePage() {
   const { caseState, resetCase } = useApp();
@@ -90,19 +90,49 @@ export default function WelcomePage() {
               </div>
             </div>
 
-            {/* Features Section - All three together with ScrollReveal */}
-            <div className="min-h-[80vh] flex items-center justify-center py-16">
-              <div className="max-w-3xl mx-auto">
-                <div className="bg-background rounded-2xl p-8 md:p-12 shadow-md">
+            {/* Features Section - Three cards side by side, each with ScrollReveal */}
+            <div className="min-h-[60vh] flex items-center justify-center py-16">
+              <div className="grid gap-6 sm:grid-cols-3 max-w-4xl mx-auto">
+                
+                {/* Deadline Tracking Card */}
+                <div className="bg-background rounded-2xl p-6 shadow-md">
+                  <Clock className="h-10 w-10 text-primary mb-4" />
                   <ScrollReveal
                     baseOpacity={0}
                     enableBlur={true}
                     baseRotation={5}
                     blurStrength={10}
                   >
-                    Deadline tracking to know your time limits. Step by step guidance so you always know what comes next. Plain language explanations without legal jargon.
+                    Deadline tracking to know your time limits
                   </ScrollReveal>
                 </div>
+
+                {/* Step by Step Card */}
+                <div className="bg-background rounded-2xl p-6 shadow-md">
+                  <Shield className="h-10 w-10 text-primary mb-4" />
+                  <ScrollReveal
+                    baseOpacity={0}
+                    enableBlur={true}
+                    baseRotation={5}
+                    blurStrength={10}
+                  >
+                    Step by step guidance so you know what comes next
+                  </ScrollReveal>
+                </div>
+
+                {/* Plain Language Card */}
+                <div className="bg-background rounded-2xl p-6 shadow-md">
+                  <AlertCircle className="h-10 w-10 text-primary mb-4" />
+                  <ScrollReveal
+                    baseOpacity={0}
+                    enableBlur={true}
+                    baseRotation={5}
+                    blurStrength={10}
+                  >
+                    Plain language explanations without legal jargon
+                  </ScrollReveal>
+                </div>
+
               </div>
             </div>
 
