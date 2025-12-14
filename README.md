@@ -20,8 +20,8 @@ Work Rights Navigator is a user-friendly, accessible web application that guides
   - Schedule of loss
   - Chronology of events
   - List of issues
-- **AI Chatbot**: Powered by GreenPT API (green-l-raw model), provides guidance and answers questions in A2-level English with streaming responses
-- **Case Export**: Download or email complete case details as a formatted text file to share with legal advisors
+- **AI Chatbot**: Powered by **GreenPT API** (green-l-raw model) with custom prompts and data injection to provide comforting, empathetic responses. The chatbot uses A2-level English with streaming responses and is specifically designed to be calm, friendly, and supportive for users experiencing stress during employment issues
+- **Case Export**: Download or email complete case details as a formatted text file to share with legal advisors. Email functionality powered by **ActivePieces** workflow automation
 - **Legal Advisor Integration**: Store and manage legal advisor contact information for easy case sharing
 
 ### Accessibility Features
@@ -100,10 +100,18 @@ Work Rights Navigator is a user-friendly, accessible web application that guides
 
 - **Deployment Platform**: Vercel with serverless functions
 - **API Integrations**:
-  - **GreenPT API**: AI chatbot using green-l-raw model with streaming support
-  - **ElevenLabs API**: High-quality text-to-speech synthesis
-  - **ActivePieces**: Workflow automation for case management (optional)
-- **Serverless Functions**: Node.js functions on Vercel for secure API proxying
+  - **GreenPT API**: Primary AI chatbot integration using green-l-raw model with streaming support. Custom system prompts and data injection ensure responses are comforting, empathetic, and appropriate for users experiencing employment stress. The chatbot is specifically tuned to:
+    - Use A2-level English (short sentences, common words)
+    - Provide calm, friendly, and supportive responses
+    - Start with empathy when appropriate
+    - Focus on explaining processes without giving legal advice
+    - Remind users to seek professional advice
+  - **ActivePieces**: Workflow automation platform used for email communications:
+    - **Case Created Notifications**: Automatically sends emails when users complete the intake process, including calculated deadlines and case information
+    - **Export Snapshot Emails**: Sends formatted case details via email when users request to share their information with legal advisors
+    - Integrates with Gmail and other email services for reliable delivery
+  - **ElevenLabs API**: High-quality text-to-speech synthesis for accessibility features
+- **Serverless Functions**: Node.js functions on Vercel for secure API proxying and webhook handling
 
 ### Development Tools
 
@@ -191,16 +199,19 @@ your-rights-helper/
 
 ### Component Highlights
 
-- **`src/components/ChatWidget.tsx`**: AI chatbot with streaming responses, speech recognition, and text-to-speech
+- **`src/components/ChatWidget.tsx`**: AI chatbot powered by GreenPT API with streaming responses, speech recognition, and text-to-speech. Integrates with custom prompts for empathetic, comforting responses
 - **`src/components/ScrollReveal.tsx`**: GSAP-powered scroll animations with word-by-word reveal
 - **`src/components/DotGrid.tsx`**: Interactive canvas-based background with mouse interaction
 - **`src/components/Dock.tsx`**: Animated macOS-style navigation dock
 - **`src/pages/WelcomePage.tsx`**: Animated landing page with full-screen scroll experience
+- **`src/integrations/activepieces/client.ts`**: ActivePieces client for sending case data to email workflows
 
 ### API Functions
 
-- **`api/chat.ts`**: Serverless function for proxying GreenPT API requests with streaming support
+- **`api/chat.ts`**: Serverless function for proxying GreenPT API requests with streaming support. Includes custom system prompts that inject empathy, A2-level English guidelines, and comforting tone instructions to ensure the chatbot responds appropriately to stressed users
 - **`api/text-to-speech.ts`**: Serverless function for ElevenLabs TTS API
+- **`api/activepieces-case-created.ts`**: Webhook handler for sending case creation notifications via ActivePieces email workflows
+- **`api/activepieces-export-snapshot.ts`**: Webhook handler for sending case export snapshots via ActivePieces email workflows
 
 ## Design System
 
@@ -242,6 +253,49 @@ your-rights-helper/
 - **Memoization**: Strategic use of React.memo, useMemo, and useCallback
 - **Asset Optimization**: Optimized images and fonts
 
+## Key Integrations
+
+### GreenPT API - AI Chatbot
+
+The application uses **GreenPT API** as the primary AI chatbot service, specifically leveraging the `green-l-raw` model for natural language understanding and generation. The integration is designed with a focus on user comfort and empathy:
+
+- **Custom System Prompts**: The chatbot is configured with carefully crafted system prompts that emphasize:
+  - Empathy and emotional support for users experiencing stress
+  - A2-level English (simple, clear language with short sentences)
+  - Calm, friendly, and supportive tone
+  - Clear boundaries (cannot give legal advice, only explain processes)
+  - Reminders to seek professional legal advice
+
+- **Data Injection**: User context and case information are injected into the conversation to provide personalized, relevant responses
+
+- **Streaming Responses**: Real-time streaming ensures users see responses as they're generated, creating a more natural conversation experience
+
+- **Implementation**: The chatbot is proxied through Vercel serverless functions (`api/chat.ts`) to protect API keys and ensure secure communication
+
+### ActivePieces - Email Automation
+
+**ActivePieces** is used for reliable email delivery and workflow automation:
+
+- **Case Created Workflow**: When users complete the intake process, ActivePieces automatically:
+  - Receives case data via webhook
+  - Calculates deadlines based on incident dates and ACAS status
+  - Sends formatted email notifications to users (if email provided)
+  - Stores case information in connected systems (e.g., Google Sheets)
+
+- **Export Snapshot Workflow**: When users request to share their case details:
+  - Receives complete case state via webhook
+  - Formats case information including documents, dates, and progress
+  - Sends formatted email to legal advisors or users
+  - Ensures reliable delivery through Gmail integration
+
+- **Webhook Integration**: Both workflows are triggered via secure Vercel serverless functions that forward case data to ActivePieces webhooks
+
+- **Benefits**: 
+  - Reliable email delivery through established email services
+  - Automated workflow management
+  - Easy integration with other tools (Google Sheets, CRM systems, etc.)
+  - No need to manage email servers or SMTP configuration
+
 ## Acknowledgments
 
 - Built with [Lovable](https://lovable.dev)
@@ -249,6 +303,8 @@ your-rights-helper/
 - Icons from [Lucide](https://lucide.dev)
 - Animations powered by [GSAP](https://greensock.com/gsap/) and [Framer Motion](https://www.framer.com/motion/)
 - Fonts: [Inter](https://rsms.me/inter/) and [Lexie Readable](https://fonts.google.com/specimen/Lexie+Readable)
+- AI Chatbot powered by [GreenPT](https://greenpt.ai)
+- Email automation powered by [ActivePieces](https://www.activepieces.com)
 
 ## License
 
