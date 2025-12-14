@@ -30,9 +30,9 @@ export default function WelcomePage() {
       <div className="fixed inset-0 z-0 w-screen h-screen">
         <DotGrid
           dotSize={41}
-          gap={24}
+          gap={12}
           baseColor="#8B6F47"
-          activeColor="#5227FF"
+          activeColor="#D97706"
           proximity={160}
           shockRadius={300}
           shockStrength={5}
@@ -53,7 +53,7 @@ export default function WelcomePage() {
       <main id="main-content" className="flex-1 pb-24">
         <div className="container mx-auto px-3 py-6">
           {/* Hero Section */}
-          <div className="text-center max-w-lg mx-auto animate-fade-in bg-background/70 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
+          <div className="text-center max-w-lg mx-auto animate-fade-in bg-background rounded-2xl p-6 shadow-md">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
               <Scale className="h-10 w-10 text-primary" />
             </div>
@@ -73,17 +73,17 @@ export default function WelcomePage() {
 
           {/* Feature Cards */}
           <div className="grid gap-4 sm:grid-cols-3 max-w-2xl mx-auto my-8">
-            <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm">
+            <div className="bg-card rounded-lg p-4 border border-border shadow-md">
               <Clock className="h-6 w-6 text-primary mb-2" />
               <h3 className="font-medium text-sm">Deadline tracking</h3>
               <p className="text-xs text-muted-foreground mt-1">Know your time limits</p>
             </div>
-            <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm">
+            <div className="bg-card rounded-lg p-4 border border-border shadow-md">
               <Shield className="h-6 w-6 text-primary mb-2" />
               <h3 className="font-medium text-sm">Step by step guide</h3>
               <p className="text-xs text-muted-foreground mt-1">See what comes next</p>
             </div>
-            <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm">
+            <div className="bg-card rounded-lg p-4 border border-border shadow-md">
               <AlertCircle className="h-6 w-6 text-primary mb-2" />
               <h3 className="font-medium text-sm">Plain language</h3>
               <p className="text-xs text-muted-foreground mt-1">Easy to understand</p>
@@ -91,7 +91,7 @@ export default function WelcomePage() {
           </div>
 
           {/* Disclaimer */}
-          <div className="bg-status-warning-bg/90 backdrop-blur-sm border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto mb-8 shadow-sm">
+          <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto mb-8 shadow-md">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-status-warning flex-shrink-0 mt-0.5" />
               <p className="text-sm text-foreground">
