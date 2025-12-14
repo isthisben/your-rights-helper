@@ -26,8 +26,16 @@ export default function WelcomePage() {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Animated Dot Grid Background - fills entire screen */}
-      <div className="fixed inset-0 z-0 w-screen h-screen">
+      {/* Animated Dot Grid Background - compensates for page zoom */}
+      <div 
+        className="fixed z-0"
+        style={{
+          top: 0,
+          left: 0,
+          width: 'calc(100vw / var(--page-zoom))',
+          height: 'calc(100vh / var(--page-zoom))',
+        }}
+      >
         <DotGrid
           dotSize={41}
           gap={24}

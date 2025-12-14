@@ -13,6 +13,9 @@
     /* Text size scale - controlled by accessibility */
     --text-scale: 1;
     
+    /* Page zoom - used for fixed element compensation */
+    --page-zoom: 0.92;
+    
     /* Core palette - Warm, inviting cream with golden undertones */
     --background: 35 38% 88%;
     --foreground: 20 40% 18%;
@@ -279,12 +282,12 @@
   html {
     font-size: calc(18px * var(--text-scale));
     scroll-behavior: smooth;
-    zoom: 0.92;
+    zoom: var(--page-zoom);
   }
   
   @media (max-width: 768px) {
-    html {
-      zoom: 0.88;
+    :root {
+      --page-zoom: 0.88;
     }
   }
 
