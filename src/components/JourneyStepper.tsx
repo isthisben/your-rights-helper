@@ -66,10 +66,15 @@ const STEPS: StepConfig[] = [
   { key: 'hearing', icon: Scale, hasChecklist: true },
 ];
 
-function getCurrentStep(acasStatus: AcasStatus, journeyProgress: Record<string, JourneyStepProgress | undefined>): number {
+function getCurrentStep(acasStatus: AcasStatus, journeyProgress: Record<string, JourneyStepProgress | undefined>, intakeCompleted: boolean): number {
   for (let i = 0; i < STEPS.length; i++) {
-    const stepProgress = journeyProgress[STEPS[i].key];
-    if (!stepProgress?.completed) {
+    const stepKey = STEPS[i].key;
+    const stepProgress = journeyProgress[stepKey];
+    // Incident step is completed if intake is completed
+    const isStepCompleted = stepKey === 'incident' 
+      ? (intakeCompleted || stepProgress?.completed)
+      : stepProgress?.completed;
+    if (!isStepCompleted) {
       return i;
     }
   }
@@ -97,7 +102,7 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
   const { caseState, updateCaseState } = useApp();
   const navigate = useNavigate();
   const journeyProgress = caseState.journeyProgress || {};
-  const currentJourneyStep = getCurrentStep(acasStatus, journeyProgress);
+  const currentJourneyStep = getCurrentStep(acasStatus, journeyProgress, caseState.intakeCompleted);
   
   const [viewingStep, setViewingStep] = useState(currentJourneyStep);
   const [direction, setDirection] = useState(0);
@@ -207,7 +212,10 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
   const step = STEPS[viewingStep];
   const Icon = step.icon;
   const stepProgress = journeyProgress[step.key];
-  const isCompleted = stepProgress?.completed || false;
+  // Incident step is completed if intake is completed OR if explicitly marked
+  const isCompleted = step.key === 'incident' 
+    ? (intakeCompleted || stepProgress?.completed || false)
+    : (stepProgress?.completed || false);
   const isCurrent = viewingStep === currentJourneyStep && !isCompleted;
   const isEditing = editingStep === step.key;
   const canComplete = viewingStep <= currentJourneyStep + 1;
@@ -219,7 +227,10 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
       <div className="flex items-center justify-center gap-2 pb-2">
         {STEPS.map((s, index) => {
           const sProgress = journeyProgress[s.key];
-          const sCompleted = sProgress?.completed || false;
+          // Incident step is completed if intake is completed
+          const sCompleted = s.key === 'incident' 
+            ? (intakeCompleted || sProgress?.completed || false)
+            : (sProgress?.completed || false);
           const sCurrent = index === currentJourneyStep && !sCompleted;
           const isViewing = index === viewingStep;
           
