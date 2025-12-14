@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 interface DocumentPrepCardProps {
-  drafts: Record<DocumentType, DocumentDraft | undefined>;
+  drafts: Partial<Record<DocumentType, DocumentDraft>>;
   onStartDocument: (type: DocumentType) => void;
   onEditDocument: (type: DocumentType) => void;
   className?: string;

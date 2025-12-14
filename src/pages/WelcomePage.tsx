@@ -26,15 +26,15 @@ export default function WelcomePage() {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Animated Dot Grid Background - only on welcome page */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
+      {/* Animated Dot Grid Background - centered on welcome content */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
         <DotGrid
-          dotSize={10}
-          gap={15}
+          dotSize={18}
+          gap={24}
           baseColor="#8B6F47"
           activeColor="#5227FF"
-          proximity={120}
-          shockRadius={250}
+          proximity={140}
+          shockRadius={280}
           shockStrength={5}
           resistance={750}
           returnDuration={1.5}
