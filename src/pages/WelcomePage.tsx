@@ -33,9 +33,9 @@ export default function WelcomePage() {
           gap={12}
           baseColor="#D4C4A8"
           activeColor="#B8763A"
-          proximity={240}
-          shockRadius={450}
-          shockStrength={7.5}
+          proximity={360}
+          shockRadius={675}
+          shockStrength={11.25}
           resistance={750}
           returnDuration={1.5}
         />
