@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
-import { BottomNav } from '@/components/BottomNav';
+
 import { ChatWidget } from '@/components/ChatWidget';
 import { clearChatMessages } from '@/lib/chatStorage';
 import DotGrid from '@/components/DotGrid';
@@ -266,7 +266,7 @@ export default function WelcomePage() {
           </div>
         </main>
 
-        <BottomNav />
+        
         <ChatWidget />
       </div>
     </div>
