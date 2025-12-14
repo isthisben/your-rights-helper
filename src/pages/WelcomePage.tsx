@@ -52,14 +52,20 @@ export default function WelcomePage() {
             
             {/* Hero Section - Welcome */}
             <div className="min-h-[70vh] flex items-center justify-center">
-              <div className="text-center max-w-lg mx-auto animate-fade-in bg-background rounded-2xl p-8 shadow-md">
+              <div className="text-center max-w-4xl mx-auto bg-background rounded-2xl p-8 shadow-md">
                 <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
                   <Scale className="h-10 w-10 text-primary" />
                 </div>
                 
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                <ScrollReveal
+                  baseOpacity={0}
+                  enableBlur={true}
+                  baseRotation={5}
+                  blurStrength={10}
+                  containerClassName="mb-6"
+                >
                   {t('welcome.title')}
-                </h2>
+                </ScrollReveal>
                 
                 <p className="text-lg text-muted-foreground mb-6">
                   {t('welcome.subtitle')}
@@ -77,13 +83,20 @@ export default function WelcomePage() {
 
             {/* Empathy Section */}
             <div className="min-h-[50vh] flex items-center justify-center py-12">
-              <div className="max-w-lg mx-auto text-center">
+              <div className="max-w-4xl mx-auto text-center">
                 <div className="bg-background rounded-lg p-6 shadow-md border border-border">
                   <Heart className="h-8 w-8 text-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-3">
+                  <ScrollReveal
+                    baseOpacity={0}
+                    enableBlur={true}
+                    baseRotation={5}
+                    blurStrength={10}
+                    containerClassName="mb-3"
+                    textClassName="!text-lg !font-semibold"
+                  >
                     We understand what you are going through
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  </ScrollReveal>
+                  <p className="text-sm text-muted-foreground leading-relaxed mt-4">
                     Facing workplace issues can feel overwhelming and isolating. You may feel confused about your rights, worried about deadlines, or unsure where to turn. We are here to help guide you through this difficult time, one step at a time.
                   </p>
                 </div>
