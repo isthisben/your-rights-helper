@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-interface Message {
+export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;

@@ -78,8 +78,7 @@ async function verifyWebhookSignature(
     const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
     
     // Convert to base64 (common format for webhook signatures)
-    const uint8Array = new Uint8Array(signatureBuffer);
-    const expectedSignature = base64Encode(uint8Array);
+    const expectedSignature = base64Encode(signatureBuffer);
     
     // Compare signatures
     // Note: For production, use constant-time comparison
