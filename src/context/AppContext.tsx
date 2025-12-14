@@ -67,10 +67,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const resetCase = useCallback(() => {
     // Reset to default state, but preserve language and accessibility preferences
     // This allows users to keep their settings when starting fresh
+    // Journey progress and all case data are fully reset
     setCaseState({
       ...DEFAULT_CASE_STATE,
       language: caseState.language,
       accessibility: caseState.accessibility,
+      journeyProgress: DEFAULT_CASE_STATE.journeyProgress, // Ensure journey is reset
+      documentDrafts: {}, // Clear all document drafts
     });
   }, [caseState.language, caseState.accessibility]);
 

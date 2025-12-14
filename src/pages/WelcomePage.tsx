@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,12 @@ gsap.registerPlugin(ScrollTrigger);
 export default function WelcomePage() {
   const { caseState, resetCase } = useApp();
   const navigate = useNavigate();
-  const hasProgress = caseState.currentIntakeStep > 0 || caseState.intakeCompleted;
+  
+  // Check if there's any meaningful progress to continue from
+  const hasExistingSession = caseState.currentIntakeStep > 0 || 
+    caseState.intakeCompleted || 
+    caseState.scenario !== null ||
+    Object.keys(caseState.journeyProgress).length > 1; // More than just 'incident'
   
   const heroRef = useRef<HTMLDivElement>(null);
   const empathyRef = useRef<HTMLDivElement>(null);
@@ -28,6 +33,14 @@ export default function WelcomePage() {
     resetCase();
     clearChatMessages();
     navigate('/intake');
+  };
+
+  const handleContinue = () => {
+    if (caseState.intakeCompleted) {
+      navigate('/dashboard');
+    } else {
+      navigate('/intake');
+    }
   };
 
   useEffect(() => {
@@ -208,33 +221,25 @@ export default function WelcomePage() {
                     Take the first step towards clarity.
                   </p>
                   <div className="flex flex-col gap-5 max-w-md mx-auto">
-                    {hasProgress ? (
-                      <>
-                        <Button asChild size="lg" className="w-full min-h-tap text-xl py-7">
-                          <Link to={caseState.intakeCompleted ? '/dashboard' : '/intake'}>
-                            {t('welcome.continueButton')}
-                            <ArrowRight className="ml-2 h-6 w-6" />
-                          </Link>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="lg" 
-                          className="w-full min-h-tap text-xl py-7"
-                          onClick={handleStartNew}
-                        >
-                          {t('welcome.startButton')}
-                        </Button>
-                      </>
-                    ) : (
+                    {hasExistingSession && (
                       <Button 
                         size="lg" 
                         className="w-full min-h-tap text-xl py-7"
-                        onClick={handleStartNew}
+                        onClick={handleContinue}
                       >
-                        {t('welcome.startButton')}
+                        {t('welcome.continueButton')}
                         <ArrowRight className="ml-2 h-6 w-6" />
                       </Button>
                     )}
+                    <Button 
+                      variant={hasExistingSession ? "outline" : "default"}
+                      size="lg" 
+                      className="w-full min-h-tap text-xl py-7"
+                      onClick={handleStartNew}
+                    >
+                      {hasExistingSession ? t('welcome.startButton') : t('welcome.startButton')}
+                      {!hasExistingSession && <ArrowRight className="ml-2 h-6 w-6" />}
+                    </Button>
                   </div>
                 </div>
               </div>
