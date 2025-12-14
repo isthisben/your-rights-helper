@@ -18,10 +18,28 @@ export default function WelcomePage() {
   const navigate = useNavigate();
   
   // Check if there's any meaningful progress to continue from
-  const hasExistingSession = caseState.currentIntakeStep > 0 || 
-    caseState.intakeCompleted || 
-    caseState.scenario !== null ||
-    Object.keys(caseState.journeyProgress).length > 1; // More than just 'incident'
+  // Check localStorage directly for saved session to ensure we detect existing data
+  const hasExistingSession = React.useMemo(() => {
+    // Check current state
+    if (caseState.currentIntakeStep > 0 || 
+        caseState.intakeCompleted || 
+        caseState.scenario !== null) {
+      return true;
+    }
+    // Also check localStorage in case state was just reset
+    try {
+      const stored = localStorage.getItem('wrn-case-state');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed.currentIntakeStep > 0 || 
+               parsed.intakeCompleted || 
+               parsed.scenario !== null;
+      }
+    } catch {
+      // Ignore parsing errors
+    }
+    return false;
+  }, [caseState.currentIntakeStep, caseState.intakeCompleted, caseState.scenario]);
   
   const heroRef = useRef<HTMLDivElement>(null);
   const empathyRef = useRef<HTMLDivElement>(null);
