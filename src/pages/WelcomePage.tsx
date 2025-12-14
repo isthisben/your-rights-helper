@@ -8,7 +8,8 @@ import { BottomNav } from '@/components/BottomNav';
 import { ChatWidget } from '@/components/ChatWidget';
 import { clearChatMessages } from '@/lib/chatStorage';
 import DotGrid from '@/components/DotGrid';
-import { Scale, ArrowRight, AlertCircle, Shield, Clock } from 'lucide-react';
+import ScrollReveal from '@/components/ScrollReveal';
+import { Scale, ArrowRight, AlertCircle, Shield, Clock, Heart } from 'lucide-react';
 
 export default function WelcomePage() {
   const { caseState, resetCase } = useApp();
@@ -43,98 +44,181 @@ export default function WelcomePage() {
       
       {/* Content overlay */}
       <div className="relative z-10 min-h-screen flex flex-col bg-transparent">
-      {/* Skip link */}
-      <a href="#main-content" className="skip-link">
-        {t('app.skipToMain')}
-      </a>
+        {/* Skip link */}
+        <a href="#main-content" className="skip-link">
+          {t('app.skipToMain')}
+        </a>
 
-      <Header />
+        <Header />
 
-      <main id="main-content" className="flex-1 pb-24">
-        <div className="container mx-auto px-3 py-6">
-          {/* Hero Section */}
-          <div className="text-center max-w-lg mx-auto animate-fade-in bg-background rounded-2xl p-6 shadow-md">
-            <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
-              <Scale className="h-10 w-10 text-primary" />
-            </div>
+        <main id="main-content" className="flex-1 pb-24">
+          <div className="container mx-auto px-3 py-6">
             
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-              {t('welcome.title')}
-            </h2>
-            
-            <p className="text-lg text-muted-foreground mb-6">
-              {t('welcome.subtitle')}
-            </p>
-            
-            <p className="text-muted-foreground mb-8">
-              {t('welcome.description')}
-            </p>
-          </div>
+            {/* Hero Section - Welcome */}
+            <div className="min-h-[70vh] flex items-center justify-center">
+              <div className="text-center max-w-lg mx-auto animate-fade-in bg-background rounded-2xl p-8 shadow-md">
+                <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
+                  <Scale className="h-10 w-10 text-primary" />
+                </div>
+                
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                  {t('welcome.title')}
+                </h2>
+                
+                <p className="text-lg text-muted-foreground mb-6">
+                  {t('welcome.subtitle')}
+                </p>
+                
+                <p className="text-muted-foreground mb-4">
+                  {t('welcome.description')}
+                </p>
 
-          {/* Feature Cards */}
-          <div className="grid gap-4 sm:grid-cols-3 max-w-2xl mx-auto my-8">
-            <div className="bg-card rounded-lg p-4 border border-border shadow-md">
-              <Clock className="h-6 w-6 text-primary mb-2" />
-              <h3 className="font-medium text-sm">Deadline tracking</h3>
-              <p className="text-xs text-muted-foreground mt-1">Know your time limits</p>
+                <p className="text-sm text-muted-foreground animate-pulse">
+                  Scroll down to learn more
+                </p>
+              </div>
             </div>
-            <div className="bg-card rounded-lg p-4 border border-border shadow-md">
-              <Shield className="h-6 w-6 text-primary mb-2" />
-              <h3 className="font-medium text-sm">Step by step guide</h3>
-              <p className="text-xs text-muted-foreground mt-1">See what comes next</p>
-            </div>
-            <div className="bg-card rounded-lg p-4 border border-border shadow-md">
-              <AlertCircle className="h-6 w-6 text-primary mb-2" />
-              <h3 className="font-medium text-sm">Plain language</h3>
-              <p className="text-xs text-muted-foreground mt-1">Easy to understand</p>
-            </div>
-          </div>
 
-          {/* Disclaimer */}
-          <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto mb-8 shadow-md">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-status-warning flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground">
-                {t('welcome.disclaimer')}
-              </p>
+            {/* Empathy Section */}
+            <div className="min-h-[60vh] flex items-center justify-center py-16">
+              <div className="max-w-2xl mx-auto text-center">
+                <div className="bg-background rounded-2xl p-8 shadow-md mb-8">
+                  <Heart className="h-12 w-12 text-primary mx-auto mb-6" />
+                  <h3 className="text-xl font-semibold text-foreground mb-4">
+                    We understand what you are going through
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Facing workplace issues can feel overwhelming and isolating. You may feel confused about your rights, worried about deadlines, or unsure where to turn. We are here to help guide you through this difficult time, one step at a time.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-3 max-w-sm mx-auto">
-            {hasProgress ? (
-              <>
-                <Button asChild size="lg" className="w-full min-h-tap text-lg">
-                  <Link to={caseState.intakeCompleted ? '/dashboard' : '/intake'}>
-                    {t('welcome.continueButton')}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full min-h-tap"
-                  onClick={handleStartNew}
-                >
-                  {t('welcome.startButton')}
-                </Button>
-              </>
-            ) : (
-              <Button 
-                size="lg" 
-                className="w-full min-h-tap text-lg"
-                onClick={handleStartNew}
-              >
-                {t('welcome.startButton')}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            )}
-          </div>
-        </div>
-      </main>
+            {/* Scroll Reveal Feature Sections */}
+            <div className="py-16 space-y-32">
+              
+              {/* Deadline Tracking */}
+              <div className="min-h-[50vh] flex items-center">
+                <div className="max-w-2xl mx-auto">
+                  <div className="flex items-start gap-6 bg-background rounded-2xl p-8 shadow-md">
+                    <Clock className="h-12 w-12 text-primary flex-shrink-0" />
+                    <div>
+                      <ScrollReveal
+                        baseOpacity={0}
+                        enableBlur={true}
+                        baseRotation={5}
+                        blurStrength={10}
+                        containerClassName="mb-4"
+                        textClassName="text-foreground"
+                      >
+                        Deadline tracking to help you know your time limits and never miss an important date
+                      </ScrollReveal>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-      <BottomNav />
-      <ChatWidget />
+              {/* Step by Step */}
+              <div className="min-h-[50vh] flex items-center">
+                <div className="max-w-2xl mx-auto">
+                  <div className="flex items-start gap-6 bg-background rounded-2xl p-8 shadow-md">
+                    <Shield className="h-12 w-12 text-primary flex-shrink-0" />
+                    <div>
+                      <ScrollReveal
+                        baseOpacity={0}
+                        enableBlur={true}
+                        baseRotation={5}
+                        blurStrength={10}
+                        containerClassName="mb-4"
+                        textClassName="text-foreground"
+                      >
+                        Step by step guidance so you always know what comes next in your journey
+                      </ScrollReveal>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Plain Language */}
+              <div className="min-h-[50vh] flex items-center">
+                <div className="max-w-2xl mx-auto">
+                  <div className="flex items-start gap-6 bg-background rounded-2xl p-8 shadow-md">
+                    <AlertCircle className="h-12 w-12 text-primary flex-shrink-0" />
+                    <div>
+                      <ScrollReveal
+                        baseOpacity={0}
+                        enableBlur={true}
+                        baseRotation={5}
+                        blurStrength={10}
+                        containerClassName="mb-4"
+                        textClassName="text-foreground"
+                      >
+                        Plain language explanations that are easy to understand without legal jargon
+                      </ScrollReveal>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="py-16">
+              <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-6 max-w-lg mx-auto shadow-md">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-6 w-6 text-status-warning flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">Important Notice</h4>
+                    <p className="text-sm text-foreground">
+                      {t('welcome.disclaimer')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="py-16 min-h-[50vh] flex items-center justify-center">
+              <div className="bg-background rounded-2xl p-8 shadow-md max-w-sm mx-auto w-full">
+                <h3 className="text-xl font-semibold text-foreground text-center mb-6">
+                  Ready to get started?
+                </h3>
+                <div className="flex flex-col gap-3">
+                  {hasProgress ? (
+                    <>
+                      <Button asChild size="lg" className="w-full min-h-tap text-lg">
+                        <Link to={caseState.intakeCompleted ? '/dashboard' : '/intake'}>
+                          {t('welcome.continueButton')}
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className="w-full min-h-tap"
+                        onClick={handleStartNew}
+                      >
+                        {t('welcome.startButton')}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button 
+                      size="lg" 
+                      className="w-full min-h-tap text-lg"
+                      onClick={handleStartNew}
+                    >
+                      {t('welcome.startButton')}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <BottomNav />
+        <ChatWidget />
       </div>
     </div>
   );
