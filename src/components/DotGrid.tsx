@@ -2,28 +2,16 @@
 
 import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import { gsap } from 'gsap';
-import { InertiaPlugin } from 'gsap/InertiaPlugin';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './DotGrid.css';
 
-gsap.registerPlugin(InertiaPlugin);
-
-const throttle = (func: (...args: any[]) => void, limit: number) => {
-  let lastCall = 0;
-  return function (this: any, ...args: any[]) {
-    const now = performance.now();
-    if (now - lastCall >= limit) {
-      lastCall = now;
-      func.apply(this, args);
-    }
-  };
-};
+gsap.registerPlugin(ScrollTrigger);
 
 interface Dot {
   cx: number;
   cy: number;
   xOffset: number;
   yOffset: number;
-  _inertiaApplied: boolean;
 }
 
 export interface DotGridProps {
@@ -32,12 +20,6 @@ export interface DotGridProps {
   baseColor?: string;
   activeColor?: string;
   proximity?: number;
-  speedTrigger?: number;
-  shockRadius?: number;
-  shockStrength?: number;
-  maxSpeed?: number;
-  resistance?: number;
-  returnDuration?: number;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -58,27 +40,16 @@ const DotGrid: React.FC<DotGridProps> = ({
   baseColor = '#5227FF',
   activeColor = '#5227FF',
   proximity = 150,
-  speedTrigger = 100,
-  shockRadius = 250,
-  shockStrength = 5,
-  maxSpeed = 5000,
-  resistance = 750,
-  returnDuration = 1.5,
   className = '',
   style,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dotsRef = useRef<Dot[]>([]);
+  const scrollOffsetRef = useRef(0);
   const pointerRef = useRef({
-    x: 0,
-    y: 0,
-    vx: 0,
-    vy: 0,
-    speed: 0,
-    lastTime: 0,
-    lastX: 0,
-    lastY: 0,
+    x: -1000,
+    y: -1000,
   });
 
   const baseRgb = useMemo(() => hexToRgb(baseColor), [baseColor]);
@@ -108,15 +79,12 @@ const DotGrid: React.FC<DotGridProps> = ({
     if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const cell = dotSize + gap;
-    // Add 5 extra rows/columns for full coverage on all devices
     const cols = Math.ceil(width / cell) + 5;
-    const rows = Math.ceil(height / cell) + 5;
+    const rows = Math.ceil(height / cell) + 10; // Extra rows for parallax
 
-    // Calculate total grid dimensions
     const gridWidth = cols * cell;
     const gridHeight = rows * cell;
 
-    // Center the grid by calculating offset
     const startX = (width - gridWidth) / 2 + dotSize / 2;
     const startY = (height - gridHeight) / 2 + dotSize / 2;
 
@@ -125,7 +93,7 @@ const DotGrid: React.FC<DotGridProps> = ({
       for (let x = 0; x < cols; x++) {
         const cx = startX + x * cell;
         const cy = startY + y * cell;
-        dots.push({ cx, cy, xOffset: 0, yOffset: 0, _inertiaApplied: false });
+        dots.push({ cx, cy, xOffset: 0, yOffset: 0 });
       }
     }
 
@@ -146,15 +114,15 @@ const DotGrid: React.FC<DotGridProps> = ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Clear in CSS-pixel space (since we setTransform(dpr,...) in buildGrid)
       const { width, height } = wrap.getBoundingClientRect();
       ctx.clearRect(0, 0, width, height);
 
       const { x: px, y: py } = pointerRef.current;
+      const parallaxOffset = scrollOffsetRef.current;
 
       for (const dot of dotsRef.current) {
         const ox = dot.cx + dot.xOffset;
-        const oy = dot.cy + dot.yOffset;
+        const oy = dot.cy + dot.yOffset + parallaxOffset;
 
         const dx = dot.cx - px;
         const dy = dot.cy - py;
@@ -203,118 +171,32 @@ const DotGrid: React.FC<DotGridProps> = ({
     };
   }, [buildGrid]);
 
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // Move dots at 30% of scroll speed for subtle parallax
+      scrollOffsetRef.current = scrollY * 0.3;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Mouse move for color proximity only (no explosion)
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
-      const now = performance.now();
-      const pr = pointerRef.current;
-
-      const dt = pr.lastTime ? now - pr.lastTime : 16;
-      const dx = e.clientX - pr.lastX;
-      const dy = e.clientY - pr.lastY;
-
-      let vx = (dx / dt) * 1000;
-      let vy = (dy / dt) * 1000;
-      let speed = Math.hypot(vx, vy);
-
-      if (speed > maxSpeed) {
-        const scale = maxSpeed / speed;
-        vx *= scale;
-        vy *= scale;
-        speed = maxSpeed;
-      }
-
-      pr.lastTime = now;
-      pr.lastX = e.clientX;
-      pr.lastY = e.clientY;
-      pr.vx = vx;
-      pr.vy = vy;
-      pr.speed = speed;
-
       const rect = canvas.getBoundingClientRect();
-      pr.x = e.clientX - rect.left;
-      pr.y = e.clientY - rect.top;
-
-      for (const dot of dotsRef.current) {
-        const dist = Math.hypot(dot.cx - pr.x, dot.cy - pr.y);
-
-        if (speed > speedTrigger && dist < proximity && !dot._inertiaApplied) {
-          dot._inertiaApplied = true;
-          gsap.killTweensOf(dot);
-
-          const pushX = dot.cx - pr.x + vx * 0.005;
-          const pushY = dot.cy - pr.y + vy * 0.005;
-
-          gsap.to(dot, {
-            inertia: { xOffset: pushX, yOffset: pushY, resistance },
-            onComplete: () => {
-              gsap.to(dot, {
-                xOffset: 0,
-                yOffset: 0,
-                duration: returnDuration,
-                ease: 'elastic.out(1,0.75)',
-              });
-              dot._inertiaApplied = false;
-            },
-          });
-        }
-      }
+      pointerRef.current.x = e.clientX - rect.left;
+      pointerRef.current.y = e.clientY - rect.top;
     };
 
-    const onClick = (e: MouseEvent) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const cx = e.clientX - rect.left;
-      const cy = e.clientY - rect.top;
-
-      for (const dot of dotsRef.current) {
-        const dist = Math.hypot(dot.cx - cx, dot.cy - cy);
-
-        if (dist < shockRadius && !dot._inertiaApplied) {
-          dot._inertiaApplied = true;
-          gsap.killTweensOf(dot);
-
-          const falloff = Math.max(0, 1 - dist / shockRadius);
-          const pushX = (dot.cx - cx) * shockStrength * falloff;
-          const pushY = (dot.cy - cy) * shockStrength * falloff;
-
-          gsap.to(dot, {
-            inertia: { xOffset: pushX, yOffset: pushY, resistance },
-            onComplete: () => {
-              gsap.to(dot, {
-                xOffset: 0,
-                yOffset: 0,
-                duration: returnDuration,
-                ease: 'elastic.out(1,0.75)',
-              });
-              dot._inertiaApplied = false;
-            },
-          });
-        }
-      }
-    };
-
-    const throttledMove = throttle(onMove, 50);
-    window.addEventListener('mousemove', throttledMove, { passive: true });
-    window.addEventListener('click', onClick);
-
-    return () => {
-      window.removeEventListener('mousemove', throttledMove);
-      window.removeEventListener('click', onClick);
-    };
-  }, [
-    maxSpeed,
-    speedTrigger,
-    proximity,
-    resistance,
-    returnDuration,
-    shockRadius,
-    shockStrength,
-  ]);
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
 
   return (
     <section className={`dot-grid ${className}`} style={style}>
