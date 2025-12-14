@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
@@ -15,12 +15,44 @@ export default function WelcomePage() {
   const { caseState, resetCase } = useApp();
   const navigate = useNavigate();
   const hasProgress = caseState.currentIntakeStep > 0 || caseState.intakeCompleted;
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   
   const handleStartNew = () => {
     resetCase();
     clearChatMessages();
     navigate('/intake');
   };
+
+  // Intersection Observer to add visible class when sections come into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      {
+        threshold: 0.2, // Trigger when 20% of section is visible
+        rootMargin: '0px',
+      }
+    );
+
+    sectionRefs.current.forEach((section) => {
+      if (section) {
+        observer.observe(section);
+      }
+    });
+
+    return () => {
+      sectionRefs.current.forEach((section) => {
+        if (section) {
+          observer.unobserve(section);
+        }
+      });
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -47,106 +79,108 @@ export default function WelcomePage() {
 
         <Header />
 
-        <main id="main-content" className="flex-1 pb-24">
-          <div className="container mx-auto px-3 py-6">
-            
-            {/* Hero Section - Welcome */}
-            <div className="min-h-[70vh] flex items-center justify-center">
-              <div className="text-center max-w-4xl mx-auto bg-background rounded-2xl p-8 shadow-md">
-                <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
-                  <Scale className="h-10 w-10 text-primary" />
-                </div>
-                
-                <ScrollReveal
-                  baseOpacity={0}
-                  enableBlur={true}
-                  baseRotation={5}
-                  blurStrength={10}
-                  containerClassName="mb-6"
-                >
-                  {t('welcome.title')}
-                </ScrollReveal>
-                
-                <p className="text-lg text-muted-foreground mb-6">
-                  {t('welcome.subtitle')}
-                </p>
-                
-                <p className="text-muted-foreground mb-4">
-                  {t('welcome.description')}
-                </p>
-
-                <p className="text-sm text-muted-foreground animate-pulse">
-                  Scroll down to learn more
-                </p>
+        <main id="main-content" className="flex-1">
+          {/* Hero Section - Welcome */}
+          <section 
+            ref={(el) => { sectionRefs.current[0] = el; }}
+            className="welcome-section visible min-h-screen flex items-center justify-center snap-start"
+          >
+            <div className="text-center max-w-4xl mx-auto px-6">
+              <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary-light mb-6">
+                <Scale className="h-10 w-10 text-primary" />
               </div>
-            </div>
+              
+              <ScrollReveal
+                baseOpacity={0}
+                enableBlur={true}
+                baseRotation={5}
+                blurStrength={10}
+                containerClassName="mb-6"
+              >
+                {t('welcome.title')}
+              </ScrollReveal>
+              
+              <p className="text-lg text-muted-foreground mb-6">
+                {t('welcome.subtitle')}
+              </p>
+              
+              <p className="text-muted-foreground mb-4">
+                {t('welcome.description')}
+              </p>
 
-            {/* Empathy Section */}
-            <div className="min-h-[50vh] flex items-center justify-center py-12">
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="bg-background rounded-lg p-6 shadow-md border border-border">
-                  <Heart className="h-8 w-8 text-primary mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground animate-pulse">
+                Scroll down to learn more
+              </p>
+            </div>
+          </section>
+
+          {/* Empathy Section */}
+          <section 
+            ref={(el) => { sectionRefs.current[1] = el; }}
+            className="welcome-section min-h-screen flex items-center justify-center snap-start"
+          >
+            <div className="max-w-4xl mx-auto px-6 text-center">
+              <Heart className="h-12 w-12 text-primary mx-auto mb-6" />
+              <ScrollReveal
+                baseOpacity={0}
+                enableBlur={true}
+                baseRotation={5}
+                blurStrength={10}
+                containerClassName="mb-6"
+              >
+                We understand what you are going through
+              </ScrollReveal>
+              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                Facing workplace issues can feel overwhelming and isolating. You may feel confused about your rights, worried about deadlines, or unsure where to turn. We are here to help guide you through this difficult time, one step at a time.
+              </p>
+            </div>
+          </section>
+
+          {/* Features Section - Three cards side by side */}
+          <section 
+            ref={(el) => { sectionRefs.current[2] = el; }}
+            className="welcome-section min-h-screen flex items-center justify-center snap-start"
+          >
+            <div className="max-w-5xl mx-auto px-6 w-full">
+              <div className="grid gap-6 sm:grid-cols-3">
+                
+                {/* Deadline Tracking Card */}
+                <div className="bg-card/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-border">
+                  <Clock className="h-8 w-8 text-primary mb-4" />
                   <ScrollReveal
                     baseOpacity={0}
                     enableBlur={true}
                     baseRotation={5}
                     blurStrength={10}
-                    containerClassName="mb-3"
-                    textClassName="!text-lg !font-semibold"
-                  >
-                    We understand what you are going through
-                  </ScrollReveal>
-                  <p className="text-sm text-muted-foreground leading-relaxed mt-4">
-                    Facing workplace issues can feel overwhelming and isolating. You may feel confused about your rights, worried about deadlines, or unsure where to turn. We are here to help guide you through this difficult time, one step at a time.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Features Section - Three cards side by side, each with ScrollReveal */}
-            <div className="py-12">
-              <div className="grid gap-4 sm:grid-cols-3 max-w-2xl mx-auto">
-                
-                {/* Deadline Tracking Card */}
-                <div className="bg-card rounded-lg p-4 shadow-md border border-border">
-                  <Clock className="h-6 w-6 text-primary mb-2" />
-                  <ScrollReveal
-                    baseOpacity={0.1}
-                    enableBlur={true}
-                    baseRotation={3}
-                    blurStrength={4}
-                    wordAnimationEnd="center center"
-                    textClassName="!text-sm !font-medium"
+                    textClassName="!text-base !font-semibold"
                   >
                     Deadline tracking to know your time limits
                   </ScrollReveal>
                 </div>
 
                 {/* Step by Step Card */}
-                <div className="bg-card rounded-lg p-4 shadow-md border border-border">
-                  <Shield className="h-6 w-6 text-primary mb-2" />
+                <div className="bg-card/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-border">
+                  <Shield className="h-8 w-8 text-primary mb-4" />
                   <ScrollReveal
-                    baseOpacity={0.1}
+                    baseOpacity={0}
                     enableBlur={true}
-                    baseRotation={3}
-                    blurStrength={4}
-                    wordAnimationEnd="center+=50 center"
-                    textClassName="!text-sm !font-medium"
+                    baseRotation={5}
+                    blurStrength={10}
+                    textClassName="!text-base !font-semibold"
                   >
                     Step by step guidance so you know what comes next
                   </ScrollReveal>
                 </div>
 
                 {/* Plain Language Card */}
-                <div className="bg-card rounded-lg p-4 shadow-md border border-border">
-                  <AlertCircle className="h-6 w-6 text-primary mb-2" />
+                <div className="bg-card/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-border">
+                  <AlertCircle className="h-8 w-8 text-primary mb-4" />
                   <ScrollReveal
-                    baseOpacity={0.1}
+                    baseOpacity={0}
                     enableBlur={true}
-                    baseRotation={3}
-                    blurStrength={4}
-                    wordAnimationEnd="center+=100 center"
-                    textClassName="!text-sm !font-medium"
+                    baseRotation={5}
+                    blurStrength={10}
+                    textClassName="!text-base !font-semibold"
                   >
                     Plain language explanations without legal jargon
                   </ScrollReveal>
@@ -154,26 +188,36 @@ export default function WelcomePage() {
 
               </div>
             </div>
+          </section>
 
-            {/* Disclaimer */}
-            <div className="py-12">
-              <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto shadow-md">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-status-warning flex-shrink-0 mt-0.5" />
+          {/* Disclaimer */}
+          <section 
+            ref={(el) => { sectionRefs.current[3] = el; }}
+            className="welcome-section min-h-screen flex items-center justify-center snap-start"
+          >
+            <div className="max-w-3xl mx-auto px-6">
+              <div className="bg-status-warning-bg/90 backdrop-blur-sm border-2 border-status-warning-border rounded-xl p-8 shadow-lg">
+                <div className="flex items-start gap-4">
+                  <AlertCircle className="h-6 w-6 text-status-warning flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1 text-sm">Important Notice</h4>
-                    <p className="text-xs text-foreground">
+                    <h4 className="font-semibold text-foreground mb-2 text-lg">Important Notice</h4>
+                    <p className="text-sm text-foreground leading-relaxed">
                       {t('welcome.disclaimer')}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
+          </section>
 
-            {/* Action Buttons */}
-            <div className="py-12 flex items-center justify-center">
-              <div className="bg-background rounded-lg p-6 shadow-md border border-border max-w-sm mx-auto w-full">
-                <h3 className="text-lg font-semibold text-foreground text-center mb-4">
+          {/* Action Buttons */}
+          <section 
+            ref={(el) => { sectionRefs.current[4] = el; }}
+            className="welcome-section min-h-screen flex items-center justify-center snap-start"
+          >
+            <div className="max-w-md mx-auto px-6 w-full">
+              <div className="bg-background/90 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-border">
+                <h3 className="text-xl font-semibold text-foreground text-center mb-6">
                   Ready to get started?
                 </h3>
                 <div className="flex flex-col gap-3">
@@ -207,8 +251,8 @@ export default function WelcomePage() {
                 </div>
               </div>
             </div>
+          </section>
 
-          </div>
         </main>
 
         <BottomNav />

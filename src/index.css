@@ -279,6 +279,14 @@
   html {
     font-size: calc(18px * var(--text-scale));
     scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 
   body {
@@ -286,6 +294,7 @@
     font-family: var(--font-family);
     line-height: 1.7;
     letter-spacing: -0.01em;
+    overflow-x: hidden;
   }
 
   /* Dyslexia-friendly font toggle */
@@ -511,4 +520,26 @@
     animation-timeline: view();
     animation-range: entry 0% entry 40%;
   }
+}
+
+/* Welcome page full-screen sections with snap scrolling */
+.welcome-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.welcome-section:not(.visible) {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.welcome-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ensure smooth scrolling for welcome page */
+#main-content {
+  scroll-snap-type: y mandatory;
 }
