@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
-import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
 import { ChatWidget } from '@/components/ChatWidget';
 import { clearChatMessages } from '@/lib/chatStorage';
@@ -62,7 +61,7 @@ export default function WelcomePage() {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Animated Dot Grid Background with Parallax */}
+      {/* Animated Dot Grid Background */}
       <div className="fixed inset-0 z-0 w-screen h-screen">
         <DotGrid
           dotSize={108}
@@ -79,8 +78,6 @@ export default function WelcomePage() {
           {t('app.skipToMain')}
         </a>
 
-        <Header />
-
         <main id="main-content" className="flex-1 pb-24">
           <div className="container mx-auto px-4 py-8 max-w-6xl">
             
@@ -91,7 +88,7 @@ export default function WelcomePage() {
                 className="text-center w-full mx-auto bg-background rounded-[2rem] p-12 md:p-20 shadow-xl border border-border"
               >
                 <div className="inline-flex items-center justify-center h-28 w-28 rounded-[2rem] bg-primary-light mb-10">
-                  <Scale className="h-14 w-14 text-primary" />
+                  <Scale className="h-14 w-14 text-primary animate-float" />
                 </div>
                 
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-8">
@@ -119,7 +116,7 @@ export default function WelcomePage() {
                 className="w-full mx-auto"
               >
                 <div className="bg-background rounded-[2rem] p-12 md:p-20 shadow-xl border border-border">
-                  <Heart className="h-16 w-16 text-primary mx-auto mb-8" />
+                  <Heart className="h-16 w-16 text-primary mx-auto mb-8 animate-float" />
                   <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-10 text-center">
                     We understand what you are going through
                   </h3>
@@ -148,7 +145,7 @@ export default function WelcomePage() {
                   
                   {/* Deadline Tracking Card */}
                   <div className="bg-card rounded-[2rem] p-10 md:p-12 shadow-xl border border-border flex flex-col items-center text-center">
-                    <Clock className="h-14 w-14 text-primary mb-6" />
+                    <Clock className="h-14 w-14 text-primary mb-6 animate-float" style={{ animationDelay: '0s' }} />
                     <h4 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">Deadline Tracking</h4>
                     <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
                       Never miss an important date.
@@ -157,7 +154,7 @@ export default function WelcomePage() {
 
                   {/* Step by Step Card */}
                   <div className="bg-card rounded-[2rem] p-10 md:p-12 shadow-xl border border-border flex flex-col items-center text-center">
-                    <Shield className="h-14 w-14 text-primary mb-6" />
+                    <Shield className="h-14 w-14 text-primary mb-6 animate-float" style={{ animationDelay: '0.5s' }} />
                     <h4 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">Step by Step</h4>
                     <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
                       Always know what comes next.
@@ -166,7 +163,7 @@ export default function WelcomePage() {
 
                   {/* Plain Language Card */}
                   <div className="bg-card rounded-[2rem] p-10 md:p-12 shadow-xl border border-border flex flex-col items-center text-center">
-                    <Sparkles className="h-14 w-14 text-primary mb-6" />
+                    <Sparkles className="h-14 w-14 text-primary mb-6 animate-float" style={{ animationDelay: '1s' }} />
                     <h4 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">Plain Language</h4>
                     <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
                       No confusing legal jargon.
@@ -185,7 +182,7 @@ export default function WelcomePage() {
               >
                 <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-[2rem] p-12 md:p-16 shadow-xl">
                   <div className="flex flex-col items-center text-center gap-6">
-                    <AlertCircle className="h-14 w-14 text-status-warning" />
+                    <AlertCircle className="h-14 w-14 text-status-warning animate-float" />
                     <div className="max-w-3xl">
                       <h4 className="font-semibold text-foreground mb-4 text-2xl md:text-3xl">Important Notice</h4>
                       <p className="text-lg md:text-xl text-foreground leading-relaxed">
