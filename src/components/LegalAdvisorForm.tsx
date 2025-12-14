@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { t } from '@/lib/i18n';
 import { useApp } from '@/context/AppContext';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,9 +10,10 @@ import { User, Phone, Mail, Check, UserPlus } from 'lucide-react';
 interface LegalAdvisorFormProps {
   onComplete?: () => void;
   compact?: boolean;
+  large?: boolean;
 }
 
-export function LegalAdvisorForm({ onComplete, compact = false }: LegalAdvisorFormProps) {
+export function LegalAdvisorForm({ onComplete, compact = false, large = false }: LegalAdvisorFormProps) {
   const { caseState, updateCaseState } = useApp();
   
   const [name, setName] = useState(caseState.legalAdvisor?.name || '');
@@ -40,46 +42,59 @@ export function LegalAdvisorForm({ onComplete, compact = false }: LegalAdvisorFo
 
   if (compact) {
     return (
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-foreground">
-          <UserPlus className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium">{t('legalAdvisor.compactTitle')}</span>
+      <div className={cn("space-y-6", large && "space-y-8")}>
+        <div className={cn("flex items-center gap-3 justify-center", large && "flex-col")}>
+          <UserPlus className={cn("text-primary", large ? "h-10 w-10" : "h-4 w-4")} />
+          <span className={cn("font-medium text-foreground", large ? "text-2xl md:text-3xl" : "text-sm")}>
+            {t('legalAdvisor.compactTitle')}
+          </span>
         </div>
         
-        <div className="grid gap-2">
+        {large && (
+          <p className="text-lg md:text-xl text-muted-foreground text-center">
+            {t('legalAdvisor.description')}
+          </p>
+        )}
+        
+        <div className={cn("grid gap-4", large && "gap-5")}>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('legalAdvisor.namePlaceholder')}
-            className="h-9 text-sm"
+            className={cn(large ? "h-14 text-lg rounded-2xl px-5" : "h-9 text-sm")}
           />
           <Input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder={t('legalAdvisor.phonePlaceholder')}
             type="tel"
-            className="h-9 text-sm"
+            className={cn(large ? "h-14 text-lg rounded-2xl px-5" : "h-9 text-sm")}
           />
           <Input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('legalAdvisor.emailPlaceholder')}
             type="email"
-            className="h-9 text-sm"
+            className={cn(large ? "h-14 text-lg rounded-2xl px-5" : "h-9 text-sm")}
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className={cn("flex gap-3", large && "gap-4")}>
           <Button 
             onClick={handleSave} 
-            size="sm" 
+            size={large ? "lg" : "sm"}
             disabled={!hasAnyInfo}
-            className="flex-1"
+            className={cn("flex-1", large && "text-lg py-6 rounded-2xl")}
           >
-            {saved ? <Check className="h-4 w-4 mr-1" /> : null}
+            {saved ? <Check className={cn(large ? "h-5 w-5 mr-2" : "h-4 w-4 mr-1")} /> : null}
             {saved ? t('common.saved') : t('common.save')}
           </Button>
-          <Button onClick={handleSkip} variant="ghost" size="sm">
+          <Button 
+            onClick={handleSkip} 
+            variant="ghost" 
+            size={large ? "lg" : "sm"}
+            className={cn(large && "text-lg py-6")}
+          >
             {t('legalAdvisor.skip')}
           </Button>
         </div>

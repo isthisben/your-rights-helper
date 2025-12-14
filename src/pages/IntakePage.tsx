@@ -164,10 +164,10 @@ export default function IntakePage() {
     switch (step) {
       case 0:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">{t('intake.step1.title')}</h2>
-              <p className="text-muted-foreground mt-1">{t('intake.step1.subtitle')}</p>
+          <div className="space-y-10 animate-fade-in">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('intake.step1.title')}</h2>
+              <p className="text-xl md:text-2xl text-muted-foreground">{t('intake.step1.subtitle')}</p>
             </div>
             <ChipSelector
               options={SCENARIO_OPTIONS.map(opt => ({
@@ -178,21 +178,22 @@ export default function IntakePage() {
               value={scenario}
               onChange={(val) => setScenario(val as Scenario)}
               ariaLabel={t('intake.step1.title')}
+              large
             />
           </div>
         );
 
       case 1:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">{t('intake.step2.title')}</h2>
-              <p className="text-muted-foreground mt-1">{t('intake.step2.subtitle')}</p>
+          <div className="space-y-10 animate-fade-in">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('intake.step2.title')}</h2>
+              <p className="text-xl md:text-2xl text-muted-foreground">{t('intake.step2.subtitle')}</p>
             </div>
             
             {!dateUnknown && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
+              <div className="space-y-4">
+                <label className="text-lg font-medium text-foreground block text-center">
                   {t('intake.step2.dateLabel')}
                 </label>
                 <Popover>
@@ -200,11 +201,11 @@ export default function IntakePage() {
                     <Button
                       variant="outline"
                       className={cn(
-                        'w-full justify-start text-left font-normal min-h-tap',
+                        'w-full justify-start text-left font-normal min-h-[60px] text-lg rounded-2xl',
                         !incidentDate && 'text-muted-foreground'
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      <CalendarIcon className="mr-3 h-6 w-6" />
                       {incidentDate ? format(incidentDate, 'PPP') : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
@@ -222,7 +223,7 @@ export default function IntakePage() {
               </div>
             )}
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center space-x-4">
               <Checkbox
                 id="date-unknown"
                 checked={dateUnknown}
@@ -230,16 +231,17 @@ export default function IntakePage() {
                   setDateUnknown(checked === true);
                   if (checked) setIncidentDate(undefined);
                 }}
+                className="h-6 w-6"
               />
-              <label htmlFor="date-unknown" className="text-sm text-foreground cursor-pointer">
+              <label htmlFor="date-unknown" className="text-lg text-foreground cursor-pointer">
                 {t('intake.step2.notSure')}
               </label>
             </div>
 
             {dateUnknown && (
-              <div className="bg-status-warning-bg border border-status-warning-border rounded-lg p-4">
-                <p className="text-sm text-foreground flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-status-warning flex-shrink-0 mt-0.5" />
+              <div className="bg-status-warning-bg border border-status-warning-border rounded-2xl p-6">
+                <p className="text-lg text-foreground flex items-start gap-3">
+                  <AlertCircle className="h-6 w-6 text-status-warning flex-shrink-0 mt-0.5" />
                   {t('intake.step2.approxHint')}
                 </p>
               </div>
@@ -249,14 +251,14 @@ export default function IntakePage() {
 
       case 2:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">{t('intake.step3.title')}</h2>
-              <p className="text-muted-foreground mt-1">{t('intake.step3.subtitle')}</p>
+          <div className="space-y-10 animate-fade-in">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('intake.step3.title')}</h2>
+              <p className="text-xl md:text-2xl text-muted-foreground">{t('intake.step3.subtitle')}</p>
             </div>
 
-            <div className="bg-primary-light rounded-lg p-4">
-              <p className="text-sm text-foreground">{t('intake.step3.explanation')}</p>
+            <div className="bg-primary-light rounded-2xl p-6">
+              <p className="text-lg text-foreground text-center">{t('intake.step3.explanation')}</p>
             </div>
 
             <ChipSelector
@@ -267,11 +269,12 @@ export default function IntakePage() {
               value={acasStatus}
               onChange={(val) => setAcasStatus(val as AcasStatus)}
               ariaLabel={t('intake.step3.title')}
+              large
             />
 
             {acasStatus === 'started' && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
+              <div className="space-y-4">
+                <label className="text-lg font-medium text-foreground block text-center">
                   {t('intake.step3.dateLabel')}
                 </label>
                 <Popover>
@@ -279,11 +282,11 @@ export default function IntakePage() {
                     <Button
                       variant="outline"
                       className={cn(
-                        'w-full justify-start text-left font-normal min-h-tap',
+                        'w-full justify-start text-left font-normal min-h-[60px] text-lg rounded-2xl',
                         !acasDate && 'text-muted-foreground'
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      <CalendarIcon className="mr-3 h-6 w-6" />
                       {acasDate ? format(acasDate, 'PPP') : <span>Pick a date (optional)</span>}
                     </Button>
                   </PopoverTrigger>
@@ -305,17 +308,17 @@ export default function IntakePage() {
 
       case 3:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <LegalAdvisorForm compact onComplete={() => setStep(4)} />
+          <div className="space-y-10 animate-fade-in">
+            <LegalAdvisorForm compact onComplete={() => setStep(4)} large />
           </div>
         );
 
       case 4:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">{t('intake.step4.title')}</h2>
-              <p className="text-muted-foreground mt-1">{t('intake.step4.subtitle')}</p>
+          <div className="space-y-10 animate-fade-in">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('intake.step4.title')}</h2>
+              <p className="text-xl md:text-2xl text-muted-foreground">{t('intake.step4.subtitle')}</p>
             </div>
 
             <div className="bg-card border border-border rounded-lg divide-y divide-border">
