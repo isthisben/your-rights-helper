@@ -29,7 +29,7 @@ export default function WelcomePage() {
       {/* Animated Dot Grid Background - fills entire screen */}
       <div className="fixed inset-0 z-0 w-screen h-screen">
         <DotGrid
-          dotSize={27}
+          dotSize={41}
           gap={24}
           baseColor="#8B6F47"
           activeColor="#5227FF"
