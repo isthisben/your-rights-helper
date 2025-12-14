@@ -122,7 +122,16 @@ export default function IntakePage() {
           : null,
       };
       
-      updateCaseState({ intakeCompleted: true });
+      updateCaseState({ 
+        intakeCompleted: true,
+        journeyProgress: {
+          ...caseState.journeyProgress,
+          incident: { 
+            completed: true, 
+            completedAt: new Date().toISOString() 
+          }
+        }
+      });
       
       // Send case created webhook to Activepieces (fire and forget)
       try {
