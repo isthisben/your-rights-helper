@@ -76,14 +76,14 @@ export default function WelcomePage() {
             </div>
 
             {/* Empathy Section */}
-            <div className="min-h-[60vh] flex items-center justify-center py-16">
-              <div className="max-w-2xl mx-auto text-center">
-                <div className="bg-background rounded-2xl p-8 shadow-md">
-                  <Heart className="h-12 w-12 text-primary mx-auto mb-6" />
-                  <h3 className="text-xl font-semibold text-foreground mb-4">
+            <div className="min-h-[50vh] flex items-center justify-center py-12">
+              <div className="max-w-lg mx-auto text-center">
+                <div className="bg-background rounded-lg p-6 shadow-md border border-border">
+                  <Heart className="h-8 w-8 text-primary mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-3">
                     We understand what you are going through
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Facing workplace issues can feel overwhelming and isolating. You may feel confused about your rights, worried about deadlines, or unsure where to turn. We are here to help guide you through this difficult time, one step at a time.
                   </p>
                 </div>
@@ -91,43 +91,49 @@ export default function WelcomePage() {
             </div>
 
             {/* Features Section - Three cards side by side, each with ScrollReveal */}
-            <div className="min-h-[60vh] flex items-center justify-center py-16">
-              <div className="grid gap-6 sm:grid-cols-3 max-w-4xl mx-auto">
+            <div className="py-12">
+              <div className="grid gap-4 sm:grid-cols-3 max-w-2xl mx-auto">
                 
                 {/* Deadline Tracking Card */}
-                <div className="bg-background rounded-2xl p-6 shadow-md">
-                  <Clock className="h-10 w-10 text-primary mb-4" />
+                <div className="bg-card rounded-lg p-4 shadow-md border border-border">
+                  <Clock className="h-6 w-6 text-primary mb-2" />
                   <ScrollReveal
-                    baseOpacity={0}
+                    baseOpacity={0.1}
                     enableBlur={true}
-                    baseRotation={5}
-                    blurStrength={10}
+                    baseRotation={3}
+                    blurStrength={4}
+                    wordAnimationEnd="center center"
+                    textClassName="!text-sm !font-medium"
                   >
                     Deadline tracking to know your time limits
                   </ScrollReveal>
                 </div>
 
                 {/* Step by Step Card */}
-                <div className="bg-background rounded-2xl p-6 shadow-md">
-                  <Shield className="h-10 w-10 text-primary mb-4" />
+                <div className="bg-card rounded-lg p-4 shadow-md border border-border">
+                  <Shield className="h-6 w-6 text-primary mb-2" />
                   <ScrollReveal
-                    baseOpacity={0}
+                    baseOpacity={0.1}
                     enableBlur={true}
-                    baseRotation={5}
-                    blurStrength={10}
+                    baseRotation={3}
+                    blurStrength={4}
+                    wordAnimationEnd="center+=50 center"
+                    textClassName="!text-sm !font-medium"
                   >
                     Step by step guidance so you know what comes next
                   </ScrollReveal>
                 </div>
 
                 {/* Plain Language Card */}
-                <div className="bg-background rounded-2xl p-6 shadow-md">
-                  <AlertCircle className="h-10 w-10 text-primary mb-4" />
+                <div className="bg-card rounded-lg p-4 shadow-md border border-border">
+                  <AlertCircle className="h-6 w-6 text-primary mb-2" />
                   <ScrollReveal
-                    baseOpacity={0}
+                    baseOpacity={0.1}
                     enableBlur={true}
-                    baseRotation={5}
-                    blurStrength={10}
+                    baseRotation={3}
+                    blurStrength={4}
+                    wordAnimationEnd="center+=100 center"
+                    textClassName="!text-sm !font-medium"
                   >
                     Plain language explanations without legal jargon
                   </ScrollReveal>
@@ -137,13 +143,13 @@ export default function WelcomePage() {
             </div>
 
             {/* Disclaimer */}
-            <div className="py-16">
-              <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-6 max-w-lg mx-auto shadow-md">
+            <div className="py-12">
+              <div className="bg-status-warning-bg border-2 border-status-warning-border rounded-lg p-4 max-w-lg mx-auto shadow-md">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-6 w-6 text-status-warning flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-status-warning flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-foreground mb-2">Important Notice</h4>
-                    <p className="text-sm text-foreground">
+                    <h4 className="font-semibold text-foreground mb-1 text-sm">Important Notice</h4>
+                    <p className="text-xs text-foreground">
                       {t('welcome.disclaimer')}
                     </p>
                   </div>
@@ -152,15 +158,15 @@ export default function WelcomePage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="py-16 min-h-[50vh] flex items-center justify-center">
-              <div className="bg-background rounded-2xl p-8 shadow-md max-w-sm mx-auto w-full">
-                <h3 className="text-xl font-semibold text-foreground text-center mb-6">
+            <div className="py-12 flex items-center justify-center">
+              <div className="bg-background rounded-lg p-6 shadow-md border border-border max-w-sm mx-auto w-full">
+                <h3 className="text-lg font-semibold text-foreground text-center mb-4">
                   Ready to get started?
                 </h3>
                 <div className="flex flex-col gap-3">
                   {hasProgress ? (
                     <>
-                      <Button asChild size="lg" className="w-full min-h-tap text-lg">
+                      <Button asChild size="lg" className="w-full min-h-tap">
                         <Link to={caseState.intakeCompleted ? '/dashboard' : '/intake'}>
                           {t('welcome.continueButton')}
                           <ArrowRight className="ml-2 h-5 w-5" />
@@ -178,7 +184,7 @@ export default function WelcomePage() {
                   ) : (
                     <Button 
                       size="lg" 
-                      className="w-full min-h-tap text-lg"
+                      className="w-full min-h-tap"
                       onClick={handleStartNew}
                     >
                       {t('welcome.startButton')}
