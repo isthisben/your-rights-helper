@@ -404,7 +404,7 @@ export function JourneyStepper({ acasStatus, onAskForHelp, className }: JourneyS
                     onClick={handleEditIntake}
                   >
                     <Edit2 className="h-5 w-5 mr-2" />
-                    {t('journey.editIntake') || 'Edit'}
+                    Edit
                   </Button>
                 ) : null}
               </div>
